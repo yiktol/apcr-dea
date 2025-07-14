@@ -1,0 +1,7 @@
+streamlit
+boto3
+plotly 
+pandas
+numpy
+requests
+networkx
