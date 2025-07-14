@@ -33,12 +33,10 @@ def get_cognito_credentials(secret_name="apcr/ml-engineer/secrets",region_name="
                 'COGNITO_APP_CLIENT_SECRET': secret.get('COGNITO_APP_CLIENT_SECRET'),
                 'COGNITO_APP_CLIENT_ID': secret.get('COGNITO_APP_CLIENT_ID'),
                 'COGNITO_REDIRECT_URI': secret.get('COGNITO_REDIRECT_URI'),
-                'COGNITO_REDIRECT_URI_MLA_0': secret.get('COGNITO_REDIRECT_URI_MLA_0'),
-                'COGNITO_REDIRECT_URI_MLA_1': secret.get('COGNITO_REDIRECT_URI_MLA_1'),
-                'COGNITO_REDIRECT_URI_MLA_2': secret.get('COGNITO_REDIRECT_URI_MLA_2'),
-                'COGNITO_REDIRECT_URI_MLA_3': secret.get('COGNITO_REDIRECT_URI_MLA_3'),
-                'COGNITO_REDIRECT_URI_MLA_4': secret.get('COGNITO_REDIRECT_URI_MLA_4'),
-                'COGNITO_REDIRECT_URI_MLA_5': secret.get('COGNITO_REDIRECT_URI_MLA_5'),
+                'COGNITO_REDIRECT_URI_1': secret.get('COGNITO_REDIRECT_URI_1'),
+                'COGNITO_REDIRECT_URI_2': secret.get('COGNITO_REDIRECT_URI_2'),
+                'COGNITO_REDIRECT_URI_3': secret.get('COGNITO_REDIRECT_URI_3'),
+                'COGNITO_REDIRECT_URI_4': secret.get('COGNITO_REDIRECT_URI_4'),
             }
             
             return cognito_credentials
