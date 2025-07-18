@@ -3,7 +3,7 @@ import json
 from botocore.exceptions import ClientError
 
 
-def get_cognito_credentials(secret_name="apcr/ml-engineer/secrets",region_name="us-east-1"):
+def get_cognito_credentials(secret_name="apcr/dea/secrets",region_name="us-east-1"):
     """
     Retrieve Cognito credentials from AWS Secrets Manager
     
