@@ -884,36 +884,36 @@ def step_functions_orchestration_tab():
         st.markdown("### 📋 Sample State Machine Definition")
         st.markdown('<div class="code-container">', unsafe_allow_html=True)
         st.code(f'''
-{{
-  "Comment": "{workflow_name} - Generated workflow",
-  "StartAt": "StartProcessing",
-  "States": {{
-    "StartProcessing": {{
-      "Type": "Pass",
-      "Result": {{"status": "started"}},
-      "Next": "{'ParallelProcessing' if parallel_execution else 'ProcessData'}"
-    }},
-    {"ParallelProcessing" if parallel_execution else "ProcessData"}: {{
-      "Type": "{'Parallel' if parallel_execution else 'Task'}",
-      {"Branches" if parallel_execution else "Resource"}: {
-        f'''[
-        {{
-          "StartAt": "{data_services[0] if data_services else 'DefaultTask'}",
-          "States": {{
-            "{data_services[0] if data_services else 'DefaultTask'}": {{
-              "Type": "Task",
-              "Resource": "arn:aws:states:::glue:startJobRun.sync",
-              "End": true
+            {{
+            "Comment": "{workflow_name} - Generated workflow",
+            "StartAt": "StartProcessing",
+            "States": {{
+                "StartProcessing": {{
+                "Type": "Pass",
+                "Result": {{"status": "started"}},
+                "Next": "{'ParallelProcessing' if parallel_execution else 'ProcessData'}"
+                }},
+                {"ParallelProcessing" if parallel_execution else "ProcessData"}: {{
+                "Type": "{'Parallel' if parallel_execution else 'Task'}",
+                {"Branches" if parallel_execution else "Resource"}: {
+                    f"""[
+                    {{
+                    "StartAt": "{data_services[0] if data_services else 'DefaultTask'}",
+                    "States": {{
+                        "{data_services[0] if data_services else 'DefaultTask'}": {{
+                        "Type": "Task",
+                        "Resource": "arn:aws:states:::glue:startJobRun.sync",
+                        "End": true
+                        }}
+                    }}
+                    }}
+                ]""" if parallel_execution else '"arn:aws:states:::glue:startJobRun.sync"'
+                },
+                {"" if parallel_execution else f'"Retry": [{{ "ErrorEquals": ["States.TaskFailed"], "IntervalSeconds": 30, "MaxAttempts": {max_retries} }}],'}
+                "End": true
+                }}
             }}
-          }}
-        }}
-      ]''' if parallel_execution else '"arn:aws:states:::glue:startJobRun.sync"'
-      },
-      {"" if parallel_execution else f'"Retry": [{{ "ErrorEquals": ["States.TaskFailed"], "IntervalSeconds": 30, "MaxAttempts": {max_retries} }}],'}
-      "End": true
-    }}
-  }}
-}}
+            }}
         ''', language='json')
         st.markdown('</div>', unsafe_allow_html=True)
     

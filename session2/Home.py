@@ -590,7 +590,7 @@ def main():
     """
     
     st.markdown("### 🏗️ Complete Pipeline Architecture")
-    common.mermaid(pipeline_mermaid, height=700, show_controls=False)
+    common.mermaid(pipeline_mermaid, height=850, show_controls=False)
     
     # Pipeline Steps Breakdown
     col1, col2 = st.columns(2)
