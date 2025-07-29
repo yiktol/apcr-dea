@@ -314,7 +314,7 @@ def emr_overview_tab():
     
     # EMR Architecture
     st.markdown("#### 🏗️ EMR Cluster Architecture")
-    common.mermaid(create_emr_architecture_diagram(), height=700)
+    common.mermaid(create_emr_architecture_diagram(), height=800)
     
     # Interactive cluster configurator
     st.markdown("#### 🎛️ Interactive EMR Cluster Configurator")
@@ -537,7 +537,7 @@ def emr_storage_options_tab():
     
     # Storage comparison diagram
     st.markdown("#### 🔄 HDFS vs EMRFS Architecture")
-    common.mermaid(create_storage_comparison_diagram(), height=600)
+    common.mermaid(create_storage_comparison_diagram(), height=900)
     
     # Interactive storage calculator
     st.markdown("#### 📊 Storage Strategy Calculator")
@@ -1066,7 +1066,7 @@ def node_configuration_tab():
     """
     
     st.markdown("#### 🔄 Instance Groups vs Instance Fleets")
-    common.mermaid(configuration_diagram, height=600)
+    common.mermaid(configuration_diagram, height=350)
     
     # Interactive configuration builder
     st.markdown("#### 🎛️ EMR Configuration Builder")
@@ -1838,7 +1838,7 @@ def data_transformation_tab():
     
     # Data processing flow
     st.markdown("#### 🔄 EMR Data Processing Flow")
-    common.mermaid(create_data_processing_flow(), height=800)
+    common.mermaid(create_data_processing_flow(), height=1300)
     
     # Interactive step builder
     st.markdown("#### 🛠️ Interactive EMR Step Builder")

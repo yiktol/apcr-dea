@@ -309,7 +309,7 @@ def eventbridge_tab():
     
     # EventBridge Architecture
     st.markdown("#### 🏗️ EventBridge Architecture")
-    common.mermaid(create_eventbridge_architecture(), height=600)
+    common.mermaid(create_eventbridge_architecture(), height=700)
     
     # Interactive Event Rule Builder
     st.markdown("#### 🎛️ Interactive Event Rule Builder")
@@ -2526,7 +2526,7 @@ def event_driven_architecture_tab():
     
     # Complete architecture diagram
     st.markdown("#### 🏗️ Complete Event-Driven Pipeline")
-    common.mermaid(create_event_driven_pipeline(), height=800)
+    common.mermaid(create_event_driven_pipeline(), height=1300)
     
     # Interactive architecture builder
     st.markdown("#### 🎨 Architecture Pattern Builder")

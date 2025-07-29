@@ -353,7 +353,7 @@ def athena_tab():
     
     # Architecture diagram
     st.markdown("#### 🏗️ Athena Architecture")
-    common.mermaid(create_athena_architecture(), height=600)
+    common.mermaid(create_athena_architecture(), height=700)
     
     # Interactive query builder
     st.markdown("#### 🎮 Interactive Query Builder")
@@ -1095,7 +1095,7 @@ def federated_query_tab():
     
     # Architecture diagram
     st.markdown("#### 🏗️ Federated Query Architecture")
-    common.mermaid(create_federated_query_architecture(), height=700)
+    common.mermaid(create_federated_query_architecture(), height=600)
     
     # Interactive connector explorer
     st.markdown("#### 🔌 Available Data Source Connectors")

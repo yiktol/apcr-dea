@@ -456,7 +456,7 @@ def glue_databrew_tab():
     
     # Architecture diagram
     st.markdown("#### 🏗️ DataBrew Architecture")
-    common.mermaid(create_databrew_architecture(), height=600)
+    common.mermaid(create_databrew_architecture(), height=1100)
     
     # Interactive data quality analyzer
     st.markdown("#### 🔍 Interactive Data Quality Analyzer")
@@ -1650,7 +1650,7 @@ def sagemaker_data_wrangler_tab():
     
     # Architecture diagram
     st.markdown("#### 🏗️ Data Wrangler Architecture")
-    common.mermaid(create_data_wrangler_architecture(), height=650)
+    common.mermaid(create_data_wrangler_architecture(), height=1100)
     
     # Data Wrangler vs DataBrew comparison
     st.markdown("#### ⚖️ Data Wrangler vs DataBrew Comparison")

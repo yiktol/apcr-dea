@@ -1423,7 +1423,7 @@ def glue_workflow_tab():
     
     # Workflow diagram
     st.markdown("#### 🔄 Glue Workflow Architecture")
-    common.mermaid(create_glue_workflow_diagram(), height=800)
+    common.mermaid(create_glue_workflow_diagram(), height=1300)
     
     # Interactive workflow builder
     st.markdown("#### 🎨 Interactive Workflow Designer")
