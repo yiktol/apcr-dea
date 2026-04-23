@@ -1,0 +1,42 @@
+digraph option_b {
+    rankdir=LR;
+    bgcolor="white";
+    fontname="Helvetica";
+    node [fontname="Helvetica", fontsize=11, style="filled,rounded", shape=box, penwidth=1.5];
+    edge [fontname="Helvetica", fontsize=9, penwidth=1.5];
+    label=<<B><FONT POINT-SIZE="16">Manual Schema Conversion + DMS — Architecture</FONT></B>>;
+    labelloc=t;
+    pad=0.4;
+
+    subgraph cluster_source {
+        label=<<B>On-Premises Database</B>>;
+        style="filled,rounded"; fillcolor="#E3F2FD"; color="#1565C0"; fontsize=12;
+        src_db [label=<<B>Source Database</B><BR/>Oracle / SQL Server<BR/>Schema + Data>, fillcolor="#1565C0", fontcolor=white];
+        src_app [label=<<B>Application Code</B><BR/>Embedded SQL<BR/>statements>, fillcolor="#455A64", fontcolor=white];
+    }
+
+    subgraph cluster_manual {
+        label=<<B>Manual Process</B>>;
+        style="filled,rounded"; fillcolor="#FFEBEE"; color="#C62828"; fontsize=12;
+        manual [label=<<B>Manual SQL Scripts</B><BR/>Hand-write DDL<BR/>Convert procedures<BR/>Error-prone, slow>, fillcolor="#C62828", fontcolor=white];
+        manual_app [label=<<B>Manual Code Review</B><BR/>Find embedded SQL<BR/>Rewrite by hand>, fillcolor="#E53935", fontcolor=white];
+    }
+
+    subgraph cluster_dms {
+        label=<<B>AWS DMS</B>>;
+        style="filled,rounded"; fillcolor="#FFF3E0"; color="#FF9900"; fontsize=12;
+        repl [label=<<B>Replication Instance</B><BR/>Data migration>, fillcolor="#FF9900", fontcolor=white];
+    }
+
+    subgraph cluster_target {
+        label=<<B>Amazon RDS</B>>;
+        style="filled,rounded"; fillcolor="#E8F5E9"; color="#2E7D32"; fontsize=12;
+        tgt_db [label=<<B>Target Database</B><BR/>New schema applied>, fillcolor="#3F8624", fontcolor=white];
+    }
+
+    src_db -> manual [label="Analyze\nschema", color="#C62828"];
+    src_app -> manual_app [label="Review\ncode", color="#C62828"];
+    manual -> tgt_db [label="Apply DDL\nscripts", color="#C62828", style=dashed];
+    src_db -> repl [label="Data", color="#FF9900"];
+    repl -> tgt_db [label="Migrate\ndata", color="#3F8624"];
+}

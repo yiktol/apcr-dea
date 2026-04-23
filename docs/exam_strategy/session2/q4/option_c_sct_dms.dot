@@ -1,0 +1,44 @@
+digraph option_c {
+    rankdir=LR;
+    bgcolor="white";
+    fontname="Helvetica";
+    node [fontname="Helvetica", fontsize=11, style="filled,rounded", shape=box, penwidth=1.5];
+    edge [fontname="Helvetica", fontsize=9, penwidth=1.5];
+    label=<<B><FONT POINT-SIZE="16">AWS SCT + AWS DMS — Recommended Architecture</FONT></B>>;
+    labelloc=t;
+    pad=0.4;
+
+    subgraph cluster_source {
+        label=<<B>On-Premises</B>>;
+        style="filled,rounded"; fillcolor="#E3F2FD"; color="#1565C0"; fontsize=12;
+        src_db [label=<<B>Source Database</B><BR/>Oracle / SQL Server<BR/>Schema + Data>, fillcolor="#1565C0", fontcolor=white];
+        src_app [label=<<B>Application Code</B><BR/>Embedded SQL<BR/>statements>, fillcolor="#455A64", fontcolor=white];
+    }
+
+    subgraph cluster_sct {
+        label=<<B>AWS Schema Conversion Tool (SCT)</B>>;
+        style="filled,rounded"; fillcolor="#F3E5F5"; color="#6A1B9A"; fontsize=12;
+        schema_conv [label=<<B>Schema Conversion</B><BR/>Auto-convert DDL<BR/>Stored procedures<BR/>Functions, views>, fillcolor="#6A1B9A", fontcolor=white];
+        sql_scan [label=<<B>App SQL Scanner</B><BR/>Scan source code for<BR/>embedded SQL and<BR/>convert automatically>, fillcolor="#7B1FA2", fontcolor=white];
+        report [label=<<B>Assessment Report</B><BR/>Migration complexity<BR/>Manual items flagged>, fillcolor="#9C27B0", fontcolor=white];
+    }
+
+    subgraph cluster_dms {
+        label=<<B>AWS DMS</B>>;
+        style="filled,rounded"; fillcolor="#FFF3E0"; color="#FF9900"; fontsize=12;
+        repl [label=<<B>Replication Instance</B><BR/>Full load + CDC<BR/>Ongoing replication>, fillcolor="#FF9900", fontcolor=white];
+    }
+
+    subgraph cluster_target {
+        label=<<B>Amazon RDS</B>>;
+        style="filled,rounded"; fillcolor="#E8F5E9"; color="#2E7D32"; fontsize=12;
+        tgt_db [label=<<B>Target Database</B><BR/>Converted schema<BR/>Migrated data>, fillcolor="#3F8624", fontcolor=white];
+    }
+
+    src_db -> schema_conv [label="Convert\nschema", color="#6A1B9A"];
+    src_app -> sql_scan [label="Scan\nSQL", color="#7B1FA2"];
+    schema_conv -> report [color="#9C27B0", style=dashed];
+    schema_conv -> tgt_db [label="Apply converted\nschema", color="#6A1B9A"];
+    src_db -> repl [label="Data", color="#FF9900"];
+    repl -> tgt_db [label="Migrate\ndata", color="#3F8624"];
+}

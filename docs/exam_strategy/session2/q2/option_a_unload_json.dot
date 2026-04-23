@@ -1,0 +1,61 @@
+digraph option_a {
+    rankdir=LR;
+    bgcolor="white";
+    fontname="Helvetica";
+    node [fontname="Helvetica", fontsize=11, style="filled,rounded", shape=box, penwidth=1.5];
+    edge [fontname="Helvetica", fontsize=9, penwidth=1.5];
+    label=<<B><FONT POINT-SIZE="16">UNLOAD to S3 as JSON — Architecture</FONT></B>>;
+    labelloc=t;
+    pad=0.4;
+
+    subgraph cluster_redshift {
+        label=<<B>Amazon Redshift Cluster</B>>;
+        style="filled,rounded"; fillcolor="#E3F2FD"; color="#1565C0"; fontsize=12;
+        table [label=<<B>Source Table</B><BR/>Data older than<BR/>6 months>, fillcolor="#1565C0", fontcolor=white];
+        unload [label=<<B>UNLOAD Command</B><BR/>Exports query results<BR/>to Amazon S3<BR/>FORMAT AS JSON>, fillcolor="#FF9900", fontcolor=white];
+    }
+
+    subgraph cluster_s3 {
+        label=<<B>Amazon S3</B>>;
+        style="filled,rounded"; fillcolor="#E8F5E9"; color="#2E7D32"; fontsize=12;
+        json [label=<<B>JSON Files</B><BR/>Row-based format<BR/>Human-readable<BR/>Not columnar>, fillcolor="#3F8624", fontcolor=white];
+    }
+
+    subgraph cluster_format {
+        label=<<B>JSON Format Characteristics</B>>;
+        style="filled,rounded"; fillcolor="#F5F5F5"; color="#232F3E"; fontsize=12;
+
+        fmt [shape=none, label=<
+<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="6">
+  <TR>
+    <TD BGCOLOR="#232F3E"><FONT COLOR="white"><B>Property</B></FONT></TD>
+    <TD BGCOLOR="#232F3E"><FONT COLOR="white"><B>JSON</B></FONT></TD>
+    <TD BGCOLOR="#232F3E"><FONT COLOR="white"><B>Parquet</B></FONT></TD>
+  </TR>
+  <TR>
+    <TD>Storage Layout</TD>
+    <TD>Row-based</TD>
+    <TD BGCOLOR="#C8E6C9">Columnar</TD>
+  </TR>
+  <TR>
+    <TD>Compression</TD>
+    <TD>Poor</TD>
+    <TD BGCOLOR="#C8E6C9">Excellent</TD>
+  </TR>
+  <TR>
+    <TD>Analytics Query Speed</TD>
+    <TD>Slow (full scan)</TD>
+    <TD BGCOLOR="#C8E6C9">Fast (column pruning)</TD>
+  </TR>
+  <TR>
+    <TD>Storage Cost</TD>
+    <TD>Higher</TD>
+    <TD BGCOLOR="#C8E6C9">Lower</TD>
+  </TR>
+</TABLE>
+        >];
+    }
+
+    table -> unload [label="SELECT query", color="#1565C0"];
+    unload -> json [label="Export as\nJSON files", color="#3F8624"];
+}

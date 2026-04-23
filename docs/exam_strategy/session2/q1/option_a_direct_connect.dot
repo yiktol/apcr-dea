@@ -1,0 +1,39 @@
+digraph option_a {
+    rankdir=LR;
+    bgcolor="white";
+    fontname="Helvetica";
+    node [fontname="Helvetica", fontsize=11, style="filled,rounded", shape=box, penwidth=1.5];
+    edge [fontname="Helvetica", fontsize=9, penwidth=1.5];
+    label=<<B><FONT POINT-SIZE="16">AWS Direct Connect — Architecture</FONT></B>>;
+    labelloc=t;
+    pad=0.4;
+
+    subgraph cluster_onprem {
+        label=<<B>On-Premises Data Center</B>>;
+        style="filled,rounded"; fillcolor="#E3F2FD"; color="#1565C0"; fontsize=12;
+        historical [label=<<B>Historical Data</B><BR/>5 PB cell phone<BR/>usage records>, fillcolor="#1565C0", fontcolor=white];
+        ongoing [label=<<B>Ongoing Data</B><BR/>3 TB/month<BR/>new records>, fillcolor="#6A1B9A", fontcolor=white];
+        router [label=<<B>Customer Router</B><BR/>At colocation<BR/>facility>, fillcolor="#455A64", fontcolor=white];
+    }
+
+    subgraph cluster_dx {
+        label=<<B>AWS Direct Connect</B>>;
+        style="filled,rounded"; fillcolor="#FFF3E0"; color="#FF9900"; fontsize=12;
+        dx_port [label=<<B>DX Port</B><BR/>Dedicated connection<BR/>1 Gbps — 400 Gbps>, fillcolor="#FF9900", fontcolor=white];
+        vif [label=<<B>Virtual Interface</B><BR/>Private VIF routes<BR/>to VPC / services>, fillcolor="#E65100", fontcolor=white];
+    }
+
+    subgraph cluster_aws {
+        label=<<B>AWS Cloud</B>>;
+        style="filled,rounded"; fillcolor="#E8F5E9"; color="#2E7D32"; fontsize=12;
+        s3 [label=<<B>Amazon S3</B><BR/>Data Lake>, fillcolor="#3F8624", fontcolor=white];
+        redshift [label=<<B>Amazon Redshift</B><BR/>Query 5 PB dataset>, fillcolor="#1565C0", fontcolor=white];
+    }
+
+    historical -> router [color="#1565C0"];
+    ongoing -> router [color="#6A1B9A"];
+    router -> dx_port [label="Dedicated\nprivate link", color="#FF9900"];
+    dx_port -> vif [color="#E65100"];
+    vif -> s3 [label="Data transfer\nto S3", color="#3F8624"];
+    s3 -> redshift [label="Query", color="#1565C0", style=dashed];
+}

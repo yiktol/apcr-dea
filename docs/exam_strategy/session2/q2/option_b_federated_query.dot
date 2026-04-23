@@ -1,0 +1,37 @@
+digraph option_b {
+    rankdir=LR;
+    bgcolor="white";
+    fontname="Helvetica";
+    node [fontname="Helvetica", fontsize=11, style="filled,rounded", shape=box, penwidth=1.5];
+    edge [fontname="Helvetica", fontsize=9, penwidth=1.5];
+    label=<<B><FONT POINT-SIZE="16">Redshift Federated Query — Architecture</FONT></B>>;
+    labelloc=t;
+    pad=0.4;
+
+    subgraph cluster_redshift {
+        label=<<B>Amazon Redshift Cluster</B>>;
+        style="filled,rounded"; fillcolor="#E3F2FD"; color="#1565C0"; fontsize=12;
+        query [label=<<B>Federated Query</B><BR/>SQL query engine<BR/>Joins remote + local data>, fillcolor="#1565C0", fontcolor=white];
+    }
+
+    subgraph cluster_supported {
+        label=<<B>Supported Sources (Federated Query)</B>>;
+        style="filled,rounded"; fillcolor="#E8F5E9"; color="#2E7D32"; fontsize=12;
+        rds_pg [label=<<B>Amazon RDS</B><BR/>PostgreSQL>, fillcolor="#3F8624", fontcolor=white];
+        aurora_pg [label=<<B>Aurora</B><BR/>PostgreSQL-Compatible>, fillcolor="#3F8624", fontcolor=white];
+        rds_mysql [label=<<B>Amazon RDS</B><BR/>MySQL>, fillcolor="#3F8624", fontcolor=white];
+        aurora_mysql [label=<<B>Aurora</B><BR/>MySQL-Compatible>, fillcolor="#3F8624", fontcolor=white];
+    }
+
+    subgraph cluster_not_supported {
+        label=<<B>NOT a Federated Query Source</B>>;
+        style="filled,rounded"; fillcolor="#FFEBEE"; color="#C62828"; fontsize=12;
+        s3 [label=<<B>Amazon S3</B><BR/>Data Lake files<BR/>(Use Spectrum instead)>, fillcolor="#C62828", fontcolor=white];
+    }
+
+    query -> rds_pg [label="External\nschema", color="#2E7D32"];
+    query -> aurora_pg [color="#2E7D32"];
+    query -> rds_mysql [color="#2E7D32"];
+    query -> aurora_mysql [color="#2E7D32"];
+    query -> s3 [label="NOT supported\nby Federated Query", color="#C62828", style=dashed];
+}

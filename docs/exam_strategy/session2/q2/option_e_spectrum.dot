@@ -1,0 +1,42 @@
+digraph option_e {
+    rankdir=LR;
+    bgcolor="white";
+    fontname="Helvetica";
+    node [fontname="Helvetica", fontsize=11, style="filled,rounded", shape=box, penwidth=1.5];
+    edge [fontname="Helvetica", fontsize=9, penwidth=1.5];
+    label=<<B><FONT POINT-SIZE="16">Redshift Spectrum — Architecture</FONT></B>>;
+    labelloc=t;
+    pad=0.4;
+
+    subgraph cluster_redshift {
+        label=<<B>Amazon Redshift Cluster</B>>;
+        style="filled,rounded"; fillcolor="#E3F2FD"; color="#1565C0"; fontsize=12;
+        leader [label=<<B>Leader Node</B><BR/>Query planning<BR/>and coordination>, fillcolor="#1565C0", fontcolor=white];
+        compute [label=<<B>Compute Nodes</B><BR/>Local table data<BR/>(recent 6 months)>, fillcolor="#1565C0", fontcolor=white];
+    }
+
+    subgraph cluster_spectrum {
+        label=<<B>Redshift Spectrum Layer</B>>;
+        style="filled,rounded"; fillcolor="#FFF3E0"; color="#FF9900"; fontsize=12;
+        spectrum [label=<<B>Spectrum Workers</B><BR/>Massively parallel<BR/>Scan, filter, aggregate<BR/>on S3 data>, fillcolor="#FF9900", fontcolor=white];
+    }
+
+    subgraph cluster_catalog {
+        label=<<B>Data Catalog</B>>;
+        style="filled,rounded"; fillcolor="#F3E5F5"; color="#6A1B9A"; fontsize=12;
+        glue [label=<<B>AWS Glue Catalog</B><BR/>External schema<BR/>and table definitions>, fillcolor="#6A1B9A", fontcolor=white];
+    }
+
+    subgraph cluster_s3 {
+        label=<<B>Amazon S3 (Data Lake)</B>>;
+        style="filled,rounded"; fillcolor="#E8F5E9"; color="#2E7D32"; fontsize=12;
+        parquet [label=<<B>Parquet Files</B><BR/>Historical data<BR/>(&gt; 6 months old)<BR/>Cost-effective storage>, fillcolor="#3F8624", fontcolor=white];
+    }
+
+    leader -> compute [label="Local\ntables", color="#1565C0"];
+    leader -> spectrum [label="External\ntable query", color="#FF9900"];
+    spectrum -> glue [label="Schema\nlookup", color="#6A1B9A", style=dashed];
+    spectrum -> parquet [label="Parallel scan\nof S3 data", color="#3F8624"];
+    compute -> leader [label="JOIN results\nfrom local +\nexternal", color="#1565C0", style=dashed];
+    spectrum -> leader [color="#FF9900", style=dashed];
+}

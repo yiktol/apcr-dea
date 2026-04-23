@@ -1,0 +1,22 @@
+Your customer is an enterprise sized business in the telecommunications industry. They are looking to setup a hybrid environment and intend to utilize AWS Redshift for querying a dataset comprising 5 PB of historical cell phone usage data. They have an ongoing data accumulation rate of 3 TB per month. The requirement is for the new incoming monthly data to be accessible for querying with less than a two-day delay. You are responsible for determining the most efficient method to transfer this data into Amazon S3.
+Which combination of steps will provide an appropriate solution? (Select TWO)
+Leverage AWS Direct Connect for both the initial bulk transfer of historical data and the ongoing monthly data transfers, ensuring consistent network performance.
+Implement AWS DataSync for continuous synchronization of the 3 TB monthly data to Amazon S3, maintaining the required freshness of less than two days. (Correct) 
+Configure Amazon S3 Transfer Acceleration for the ongoing 3 TB monthly data uploads to minimize transfer times and meet the delay requirements.
+Use AWS Snowball for the initial migration of the 5 PB of historical data to Amazon S3, ensuring a fast and secure data transfer method for large datasets. (Correct) 
+Directly upload the ongoing 3 TB of data each month via the Internet using the AWS CLI or SDKs, relying on your existing internet bandwidth.
+
+
+
+
+Explanations:
+
+A. - Incorrect - While AWS Direct Connect provides a dedicated network connection between your on-premises environment and AWS, it is not the most appropriate solution for this scenario. Direct Connect is primarily used for low-latency access to AWS services, and while it can be used for data transfers, other services like Snowball and DataSync are more optimized for the specific requirements outlined.
+
+B. - Correct - AWS DataSync is a service that can be used to transfer data from on-premises or other cloud storage to Amazon S3 or Amazon EFS. It provides fast and secure data transfer, and can be configured for continuous synchronization, which is ideal for the ongoing 3 TB monthly data transfer requirement with a less than two-day delay.
+
+C. - Incorrect - S3 Transfer Acceleration is a feature that can improve transfer speeds over long distances by routing data through AWS edge locations. However, it is not the most appropriate solution for the ongoing monthly data transfer requirement, as DataSync is better suited for continuous synchronization and meeting the less than two-day delay.
+
+D. - Correct - AWS Snowball is a data migration service that involves physical storage devices shipped to your location. It is optimized for transferring large datasets, such as the 5 PB of historical data in this scenario. Snowball provides a secure and fast data transfer method for these types of large, one-time data migrations.
+
+E. - Incorrect - Uploading large amounts of data (3 TB per month) over the internet using the CLI or SDKs may not be efficient or reliable, especially if the customer's existing internet bandwidth is limited. Services like DataSync and Direct Connect are better suited for large data transfers, as they provide optimized transfer speeds and bandwidth.

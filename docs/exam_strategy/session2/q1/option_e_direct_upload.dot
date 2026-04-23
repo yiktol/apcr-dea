@@ -1,0 +1,67 @@
+digraph option_e {
+    rankdir=LR;
+    bgcolor="white";
+    fontname="Helvetica";
+    node [fontname="Helvetica", fontsize=11, style="filled,rounded", shape=box, penwidth=1.5];
+    edge [fontname="Helvetica", fontsize=9, penwidth=1.5];
+    label=<<B><FONT POINT-SIZE="16">Direct Internet Upload (CLI/SDK) — Architecture</FONT></B>>;
+    labelloc=t;
+    pad=0.4;
+
+    subgraph cluster_onprem {
+        label=<<B>On-Premises</B>>;
+        style="filled,rounded"; fillcolor="#E3F2FD"; color="#1565C0"; fontsize=12;
+        data [label=<<B>Monthly Data</B><BR/>3 TB/month<BR/>new records>, fillcolor="#6A1B9A", fontcolor=white];
+        cli [label=<<B>AWS CLI / SDK</B><BR/>aws s3 cp / sync<BR/>or boto3 upload>, fillcolor="#1565C0", fontcolor=white];
+    }
+
+    subgraph cluster_internet {
+        label=<<B>Public Internet</B>>;
+        style="filled,rounded"; fillcolor="#FFF9C4"; color="#F57F17"; fontsize=12;
+        isp [label=<<B>ISP Connection</B><BR/>Shared bandwidth<BR/>Variable throughput>, fillcolor="#F57F17", fontcolor=white];
+        risks [label=<<B>Transfer Risks</B><BR/>Congestion / packet loss<BR/>Latency spikes<BR/>No SLA guarantee>, fillcolor="#E65100", fontcolor=white];
+    }
+
+    subgraph cluster_aws {
+        label=<<B>AWS Cloud</B>>;
+        style="filled,rounded"; fillcolor="#E8F5E9"; color="#2E7D32"; fontsize=12;
+        s3 [label=<<B>Amazon S3</B><BR/>Destination bucket>, fillcolor="#3F8624", fontcolor=white];
+        redshift [label=<<B>Amazon Redshift</B><BR/>Query engine>, fillcolor="#1565C0", fontcolor=white];
+    }
+
+    subgraph cluster_time {
+        label=<<B>Transfer Time Estimate (3 TB)</B>>;
+        style="filled,rounded"; fillcolor="#F5F5F5"; color="#232F3E"; fontsize=12;
+
+        timetable [shape=none, label=<
+<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="6">
+  <TR>
+    <TD BGCOLOR="#232F3E"><FONT COLOR="white"><B>Bandwidth</B></FONT></TD>
+    <TD BGCOLOR="#232F3E"><FONT COLOR="white"><B>Time</B></FONT></TD>
+  </TR>
+  <TR>
+    <TD>50 Mbps</TD>
+    <TD>~5.6 days</TD>
+  </TR>
+  <TR>
+    <TD>100 Mbps</TD>
+    <TD>~2.8 days</TD>
+  </TR>
+  <TR>
+    <TD>500 Mbps</TD>
+    <TD>~13.3 hours</TD>
+  </TR>
+  <TR>
+    <TD>1 Gbps</TD>
+    <TD>~6.7 hours</TD>
+  </TR>
+</TABLE>
+        >];
+    }
+
+    data -> cli [color="#6A1B9A"];
+    cli -> isp [label="Upload over\npublic internet", color="#F57F17"];
+    isp -> risks [style=invis];
+    isp -> s3 [label="No optimization\nno compression", color="#E65100", style=dashed];
+    s3 -> redshift [label="Query", color="#1565C0", style=dashed];
+}

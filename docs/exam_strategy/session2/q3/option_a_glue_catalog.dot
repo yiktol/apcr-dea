@@ -1,0 +1,39 @@
+digraph option_a {
+    rankdir=LR;
+    bgcolor="white";
+    fontname="Helvetica";
+    node [fontname="Helvetica", fontsize=11, style="filled,rounded", shape=box, penwidth=1.5];
+    edge [fontname="Helvetica", fontsize=9, penwidth=1.5];
+    label=<<B><FONT POINT-SIZE="16">AWS Glue Data Catalog — Centralized Metadata</FONT></B>>;
+    labelloc=t;
+    pad=0.4;
+
+    subgraph cluster_s3 {
+        label=<<B>Amazon S3 Data Lake</B>>;
+        style="filled,rounded"; fillcolor="#E8F5E9"; color="#2E7D32"; fontsize=12;
+        data [label=<<B>Data Files</B><BR/>Parquet / CSV / JSON<BR/>Financial datasets>, fillcolor="#3F8624", fontcolor=white];
+    }
+
+    subgraph cluster_glue {
+        label=<<B>AWS Glue (Serverless)</B>>;
+        style="filled,rounded"; fillcolor="#FFF3E0"; color="#FF9900"; fontsize=12;
+        crawler [label=<<B>Glue Crawlers</B><BR/>Auto-discover schema<BR/>Classify data formats<BR/>Detect partitions>, fillcolor="#FF9900", fontcolor=white];
+        catalog [label=<<B>Glue Data Catalog</B><BR/>Centralized metadata<BR/>Table definitions<BR/>Schema versioning>, fillcolor="#E65100", fontcolor=white];
+    }
+
+    subgraph cluster_tools {
+        label=<<B>Analysis Tools (All Share Same Catalog)</B>>;
+        style="filled,rounded"; fillcolor="#E3F2FD"; color="#1565C0"; fontsize=12;
+        hive [label=<<B>Apache Hive</B><BR/>on EMR>, fillcolor="#1565C0", fontcolor=white];
+        athena [label=<<B>Amazon Athena</B><BR/>Serverless SQL>, fillcolor="#1565C0", fontcolor=white];
+        redshift [label=<<B>Amazon Redshift</B><BR/>Spectrum>, fillcolor="#1565C0", fontcolor=white];
+        quicksight [label=<<B>Amazon QuickSight</B><BR/>BI Dashboards>, fillcolor="#6A1B9A", fontcolor=white];
+    }
+
+    data -> crawler [label="Crawl S3\ndata sources", color="#FF9900"];
+    crawler -> catalog [label="Populate\nmetadata", color="#E65100"];
+    catalog -> hive [label="Hive\nmetastore", color="#1565C0"];
+    catalog -> athena [label="Query\ntables", color="#1565C0"];
+    catalog -> redshift [label="External\nschema", color="#1565C0"];
+    catalog -> quicksight [label="Data\nsource", color="#6A1B9A"];
+}

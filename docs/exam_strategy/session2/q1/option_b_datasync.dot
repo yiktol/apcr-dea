@@ -1,0 +1,39 @@
+digraph option_b {
+    rankdir=LR;
+    bgcolor="white";
+    fontname="Helvetica";
+    node [fontname="Helvetica", fontsize=11, style="filled,rounded", shape=box, penwidth=1.5];
+    edge [fontname="Helvetica", fontsize=9, penwidth=1.5];
+    label=<<B><FONT POINT-SIZE="16">AWS DataSync — Architecture</FONT></B>>;
+    labelloc=t;
+    pad=0.4;
+
+    subgraph cluster_onprem {
+        label=<<B>On-Premises Data Center</B>>;
+        style="filled,rounded"; fillcolor="#E3F2FD"; color="#1565C0"; fontsize=12;
+        storage [label=<<B>On-Prem Storage</B><BR/>NFS / SMB / HDFS<BR/>3 TB new data/month>, fillcolor="#1565C0", fontcolor=white];
+        agent [label=<<B>DataSync Agent</B><BR/>Deployed as VM<BR/>on-premises>, fillcolor="#FF9900", fontcolor=white];
+    }
+
+    subgraph cluster_transfer {
+        label=<<B>Transfer Layer</B>>;
+        style="filled,rounded"; fillcolor="#FFF3E0"; color="#FF9900"; fontsize=12;
+        protocol [label=<<B>AWS-Designed Protocol</B><BR/>Up to 10 Gbps/task<BR/>Multi-threaded, compressed<BR/>TLS encrypted in transit>, fillcolor="#FF9900", fontcolor=white];
+    }
+
+    subgraph cluster_aws {
+        label=<<B>AWS Cloud</B>>;
+        style="filled,rounded"; fillcolor="#E8F5E9"; color="#2E7D32"; fontsize=12;
+        svc [label=<<B>DataSync Service</B><BR/>Scheduling engine<BR/>Incremental sync<BR/>Integrity validation>, fillcolor="#FF9900", fontcolor=white];
+        s3 [label=<<B>Amazon S3</B><BR/>3 TB/month ingested>, fillcolor="#3F8624", fontcolor=white];
+        redshift [label=<<B>Amazon Redshift</B><BR/>Query with &lt; 2-day<BR/>freshness>, fillcolor="#1565C0", fontcolor=white];
+        cw [label=<<B>CloudWatch</B><BR/>Metrics &amp; logs>, fillcolor="#6A1B9A", fontcolor=white];
+    }
+
+    storage -> agent [label="Read via\nNFS/SMB/HDFS", color="#1565C0"];
+    agent -> protocol [label="Optimized\ntransfer", color="#FF9900"];
+    protocol -> svc [color="#FF9900"];
+    svc -> s3 [label="Write with\nintegrity check", color="#3F8624"];
+    s3 -> redshift [label="Query", color="#1565C0", style=dashed];
+    svc -> cw [label="Metrics", color="#6A1B9A", style=dashed];
+}

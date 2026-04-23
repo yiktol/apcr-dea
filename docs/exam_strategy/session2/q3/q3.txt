@@ -1,0 +1,18 @@
+A financial services company maintains a vast and secure data lake built on Amazon S3. They analyze this data using a diverse set of tools, namely Apache Hive, Amazon Athena, Amazon Redshift, and Amazon QuickSight. The company has tasked you with identifying a solution to integrate the data lake and the above tools used by the engineering teams. 
+What solution accomplishes this with the LEAST amount of operational overhead?
+
+Use AWS Glue to catalog the data and make it accessible to all the analysis tools.
+Directly connect each analysis tool to Amazon S3, configuring each tool individually.
+Export data from Amazon S3 to an Amazon EC2 instance and use it as a central analysis server.
+Upload copies of the data to each analysis tool separately.
+
+
+Explanations:
+
+A - Correct - Using AWS Glue to catalog the data in Amazon S3 and make it accessible to all the analysis tools provides a centralized and efficient solution with minimal operational overhead. Glue can crawl the data, extract schema information, and create a metadata catalog that can be easily accessed by various analytics tools.
+
+B - Incorrect - Directly connecting each analysis tool to Amazon S3 and configuring them individually would require significant operational effort and overhead. It would be more complex and less efficient than using a centralized metadata service like AWS Glue.
+
+C - Incorrect - Exporting data from Amazon S3 to an Amazon EC2 instance and using it as a central analysis server would involve additional overhead and complexity. It would require managing and scaling the EC2 instance(s), as well as handling data transfers, which can be avoided by using a serverless service like AWS Glue.
+
+D - Incorrect - Uploading copies of the data to each analysis tool separately would lead to data duplication, increased storage costs, and potential data inconsistencies. It would also require significant operational overhead to manage and maintain these separate data copies.

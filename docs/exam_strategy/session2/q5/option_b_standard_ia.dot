@@ -1,0 +1,56 @@
+digraph option_b {
+    rankdir=LR;
+    bgcolor="white";
+    fontname="Helvetica";
+    node [fontname="Helvetica", fontsize=11, style="filled,rounded", shape=box, penwidth=1.5];
+    edge [fontname="Helvetica", fontsize=9, penwidth=1.5];
+    label=<<B><FONT POINT-SIZE="16">S3 Standard + S3 Standard-IA</FONT></B>>;
+    labelloc=t;
+    pad=0.4;
+
+    subgraph cluster_content {
+        label=<<B>Video Streaming Content</B>>;
+        style="filled,rounded"; fillcolor="#E3F2FD"; color="#1565C0"; fontsize=12;
+        hot [label=<<B>Frequently Accessed</B><BR/>Popular videos>, fillcolor="#1565C0", fontcolor=white];
+        cold [label=<<B>Older Content</B><BR/>Accessed once<BR/>per quarter>, fillcolor="#455A64", fontcolor=white];
+    }
+
+    subgraph cluster_s3 {
+        label=<<B>Amazon S3 Storage Classes</B>>;
+        style="filled,rounded"; fillcolor="#FFF3E0"; color="#FF9900"; fontsize=12;
+        standard [label=<<B>S3 Standard</B><BR/>Millisecond access<BR/>No retrieval fee>, fillcolor="#3F8624", fontcolor=white];
+        ia [label=<<B>S3 Standard-IA</B><BR/>Millisecond access<BR/>Lower storage cost<BR/>$0.01/GB retrieval fee<BR/>Min 30-day charge>, fillcolor="#FF9900", fontcolor=white];
+    }
+
+    subgraph cluster_compare {
+        label=<<B>S3 Standard-IA vs Glacier Instant Retrieval</B>>;
+        style="filled,rounded"; fillcolor="#F5F5F5"; color="#232F3E"; fontsize=12;
+        cmp [shape=none, label=<
+<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="6">
+  <TR>
+    <TD BGCOLOR="#232F3E"><FONT COLOR="white"><B>Metric</B></FONT></TD>
+    <TD BGCOLOR="#232F3E"><FONT COLOR="white"><B>Standard-IA</B></FONT></TD>
+    <TD BGCOLOR="#232F3E"><FONT COLOR="white"><B>Glacier Instant</B></FONT></TD>
+  </TR>
+  <TR>
+    <TD>Storage $/GB/mo</TD>
+    <TD BGCOLOR="#FFEBEE">$0.0125</TD>
+    <TD BGCOLOR="#C8E6C9"><B>$0.004</B></TD>
+  </TR>
+  <TR>
+    <TD>Retrieval $/GB</TD>
+    <TD BGCOLOR="#C8E6C9">$0.01</TD>
+    <TD BGCOLOR="#FFEBEE">$0.03</TD>
+  </TR>
+  <TR>
+    <TD>Once/quarter total</TD>
+    <TD BGCOLOR="#FFEBEE">Higher</TD>
+    <TD BGCOLOR="#C8E6C9"><B>68% cheaper</B></TD>
+  </TR>
+</TABLE>
+        >];
+    }
+
+    hot -> standard [color="#3F8624"];
+    cold -> ia [label="Works, but\nnot cheapest", color="#FF9900"];
+}
