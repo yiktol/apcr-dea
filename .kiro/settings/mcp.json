@@ -1,0 +1,20 @@
+{
+  "mcpServers": {
+    "powerpoint": {
+      "command": "uvx",
+      "args": [
+        "--from",
+        "office-powerpoint-mcp-server",
+        "ppt_mcp_server"
+      ],
+      "env": {
+        "FASTMCP_LOG_LEVEL": "ERROR"
+      },
+      "disabled": false,
+      "autoApprove": [
+        "open_presentation",
+        "get_slide_info"
+      ]
+    }
+  }
+}

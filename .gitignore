@@ -1,6 +1,12 @@
 pid
 log/
 
+# AWS icons
+aws-icons/
+
+# PowerPoint files
+ppt/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]
