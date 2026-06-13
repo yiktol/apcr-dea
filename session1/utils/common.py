@@ -58,7 +58,7 @@ def show_tip(tip_text):
 
        
 def apply_styles():
-    """Apply custom styling to the Streamlit app."""
+    """Apply custom styling to the app."""
     
     # AWS color scheme
     aws_orange = "#FF9900"
@@ -258,7 +258,7 @@ def mermaid(
     show_controls: bool = True, 
     key: Optional[str] = None
 ) -> None:
-    """Render Mermaid diagrams in Streamlit with configurable dimensions and interactive controls.
+    """Render Mermaid diagrams with configurable dimensions and interactive controls.
     
     Args:
         code: The Mermaid diagram code to render

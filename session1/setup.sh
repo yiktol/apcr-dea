@@ -1,11 +1,11 @@
 #!/usr/bin/bash
 
 # Default values for parameters
-DEFAULT_DIRECTORY="/home/ubuntu/environment/apcr-dea/session1"
+DEFAULT_DIRECTORY="/home/ubuntu/environment/session1"
 DEFAULT_PORT=8086
 DEFAULT_APP_FILE="Home.py"
 DEFAULT_REQUIREMENTS_FILE="requirements.txt"
-DEFAULT_APP_NAME="apcr-dea-session-1"  # Will be derived from APP_FILE if not provided
+DEFAULT_APP_NAME="dea-session-1"  # Will be derived from APP_FILE if not provided
 DEFAULT_APP_USER=""  # Current user by default
 
 # Parse command line arguments
@@ -239,7 +239,7 @@ rebuild_venv() {
 
 # Function to start the application
 start_app() {
-    log "INFO" "Starting Streamlit application on port $PORT..."
+    log "INFO" "Starting Application on port $PORT..."
     
     # Ensure permissions for log file
     if [ "$(id -u)" -eq 0 ] && [ -n "$APP_USER" ]; then

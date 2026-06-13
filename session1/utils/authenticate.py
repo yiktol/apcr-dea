@@ -1,11 +1,11 @@
 """
-AWS Cognito Authentication Module for Streamlit Applications
+AWS Cognito Authentication Module
 
-This module provides functions to handle authentication with AWS Cognito in a Streamlit application.
+This module provides functions to handle authentication with AWS Cognito.
 It manages the OAuth 2.0 flow, token management, and user session handling.
 
 Functions:
-    - initialize_session: Initialize Streamlit session state variables
+    - initialize_session: Initialize session state variables
     - authenticate_user: Main function to handle the full authentication process
     - get_auth_code: Extract authorization code from query parameters
     - exchange_code_for_tokens: Exchange authorization code for access and ID tokens
@@ -36,7 +36,7 @@ AWS_TEXT = "#FFFFFF"
 
 def set_st_state_vars() -> None:
     """
-    Initialize Streamlit session state variables for authentication flow.
+    Initialize session state variables for authentication flow.
     """
     if "auth_code" not in st.session_state:
         st.session_state["auth_code"] = ""

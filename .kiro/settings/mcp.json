@@ -13,7 +13,8 @@
       "disabled": false,
       "autoApprove": [
         "open_presentation",
-        "get_slide_info"
+        "get_slide_info",
+        "extract_presentation_text"
       ]
     }
   }
