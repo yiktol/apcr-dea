@@ -13,6 +13,8 @@ import pandas as pd
 import time
 import plotly.express as px
 
+boto3.setup_default_session(region_name="ap-southeast-1")
+
 st.set_page_config(page_title="Query Data", page_icon="💎", layout="wide")
 
 st.markdown("# 💎 Query Data (Volume + Value)")

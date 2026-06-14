@@ -10,8 +10,8 @@ Parameters:
     Description: "Name of the application (lowercase, no spaces)"
   
   SourceCodeBucket:
-    Type: String
-    Default: "{{resolve:ssm:/genai/cognito/BucketName}}"
+    Type: AWS::SSM::Parameter::Value<String>
+    Default: /genai/cognito/BucketName
     Description: "S3 bucket containing application source code"
   
   SourceCodeKey:

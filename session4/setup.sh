@@ -1,367 +1,182 @@
-#!/usr/bin/bash
+#!/usr/bin/env bash
+set -euo pipefail
 
-# Default values for parameters
-DEFAULT_DIRECTORY="/home/ubuntu/environment/apcr-dea/session4"
-DEFAULT_PORT=8089
-DEFAULT_APP_FILE="Home.py"
-DEFAULT_REQUIREMENTS_FILE="requirements.txt"
-DEFAULT_APP_NAME="apcr-dea-session-4"  # Will be derived from APP_FILE if not provided
-DEFAULT_APP_USER=""  # Current user by default
+# Resolve the directory where this script lives
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-# Parse command line arguments
-while [[ $# -gt 0 ]]; do
-    case $1 in
-        --directory|-d)
-            DIRECTORY="$2"
-            shift 2
-            ;;
-        --port|-p)
-            PORT="$2"
-            shift 2
-            ;;
-        --app|-a)
-            APP_FILE="$2"
-            shift 2
-            ;;
-        --app-name|-n)
-            APP_NAME="$2"
-            shift 2
-            ;;
-        --app-user|-u)
-            APP_USER="$2"
-            shift 2
-            ;;
-        --requirements|-r)
-            REQUIREMENTS_FILE="$2"
-            shift 2
-            ;;
-        --help|-h)
-            echo "Usage: $0 [options]"
-            echo "Options:"
-            echo "  --directory, -d    Directory containing the application (default: $DEFAULT_DIRECTORY)"
-            echo "  --port, -p         Port to run the application on (default: $DEFAULT_PORT)"
-            echo "  --app, -a          Application file to run (default: $DEFAULT_APP_FILE)"
-            echo "  --app-name, -n     Custom application name for logs (default: derived from app file)"
-            echo "  --app-user, -u     User to run the application as (default: current user)"
-            echo "  --requirements, -r Requirements file (default: $DEFAULT_REQUIREMENTS_FILE)"
-            echo "  --help, -h         Show this help message"
-            exit 0
-            ;;
-        *)
-            echo "Unknown parameter: $1"
-            echo "Use --help for usage information"
-            exit 1
-            ;;
-    esac
-done
+# Configuration
+DIRECTORY="${1:-$SCRIPT_DIR}"
+PORT=8089
+APP_FILE="Home.py"
+REQUIREMENTS_FILE="requirements.txt"
+APP_NAME="dea-session-4"
 
-# Apply default values if parameters were not provided
-DIRECTORY=${DIRECTORY:-$DEFAULT_DIRECTORY}
-PORT=${PORT:-$DEFAULT_PORT}
-APP_FILE=${APP_FILE:-$DEFAULT_APP_FILE}
-REQUIREMENTS_FILE=${REQUIREMENTS_FILE:-$DEFAULT_REQUIREMENTS_FILE}
-APP_USER=${APP_USER:-$DEFAULT_APP_USER}
-
-# Define absolute paths
+# Derived paths
 APP_PATH="${DIRECTORY}/${APP_FILE}"
-
-# Set APP_NAME if not provided
-if [ -z "$APP_NAME" ]; then
-    APP_NAME=$(basename "${APP_FILE}" .py)
-fi
-
-# Check if we're root and APP_USER is specified
-if [ "$(id -u)" -eq 0 ] && [ -n "$APP_USER" ]; then
-    # Check if the specified user exists
-    if ! id -u "$APP_USER" >/dev/null 2>&1; then
-        echo "Error: User $APP_USER does not exist"
-        exit 1
-    fi
-fi
-
-# Derived values
 VENV_PATH="${DIRECTORY}/.venv"
 REQUIREMENTS_PATH="${DIRECTORY}/${REQUIREMENTS_FILE}"
-PID_FILE="${DIRECTORY}/pid"
+PID_FILE="${DIRECTORY}/${APP_NAME}.pid"
 LOG_DIR="${DIRECTORY}/log"
 LOG_FILE="${LOG_DIR}/${APP_NAME}.log"
 
-# Create log directory and ensure permissions
-mkdir -p "$LOG_DIR" || { echo "Failed to create log directory"; exit 1; }
+# Ensure log directory and file exist
+mkdir -p "$LOG_DIR"
+touch "$LOG_FILE"
 
-# Ensure proper ownership of directories if running as root and APP_USER is specified
-if [ "$(id -u)" -eq 0 ] && [ -n "$APP_USER" ]; then
-    chown -R "$APP_USER" "$LOG_DIR" || { echo "Failed to change ownership of log directory"; exit 1; }
-    touch "$LOG_FILE" 2>/dev/null || true
-    chown "$APP_USER" "$LOG_FILE" 2>/dev/null || true
-fi
-
-# Setup logging function
+# Logging
 log() {
-    local level=$1
-    local message=$2
-    local timestamp=$(date '+%Y-%m-%d %H:%M:%S')
-    echo "[$timestamp] [$level] $message" | tee -a "$LOG_FILE"
+    local level=$1; shift
+    printf '[%s] [%s] %s\n' "$(date '+%Y-%m-%d %H:%M:%S')" "$level" "$*" | tee -a "$LOG_FILE"
 }
 
-# Function to run a command as the specified user
-run_as_user() {
-    if [ "$(id -u)" -eq 0 ] && [ -n "$APP_USER" ]; then
-        sudo -u "$APP_USER" "$@"
+# Check if a port is in use — works across distros
+port_in_use() {
+    if command -v ss &>/dev/null; then
+        ss -tln 2>/dev/null | grep -q ":${PORT}\b"
+    elif command -v netstat &>/dev/null; then
+        netstat -tln 2>/dev/null | grep -q ":${PORT}\b"
+    elif command -v lsof &>/dev/null; then
+        lsof -iTCP:"$PORT" -sTCP:LISTEN &>/dev/null
+    elif [ -d /proc/net ]; then
+        local hex_port
+        hex_port=$(printf '%04X' "$PORT")
+        grep -qi ":${hex_port} " /proc/net/tcp 2>/dev/null
     else
-        "$@"
+        return 1
     fi
 }
 
-# Change to the target directory
-cd "$DIRECTORY" || { log "ERROR" "Failed to change to directory $DIRECTORY"; exit 1; }
-log "INFO" "Working in $(pwd)"
-
-# Function to check if port is in use and kill the process if needed
-check_port_and_kill() {
-    if command -v netstat &> /dev/null; then
-        PORT_PID=$(netstat -tuln | grep ":$PORT " | awk '{print $7}' | cut -d'/' -f1)
-        if [ -n "$PORT_PID" ]; then
-            log "WARNING" "Port $PORT is in use by process $PORT_PID. Killing..."
-            if [ "$(id -u)" -eq 0 ]; then
-                kill -9 "$PORT_PID" 2>/dev/null
-            else
-                # Check if we have permission to kill the process
-                if ps -o user= -p "$PORT_PID" 2>/dev/null | grep -q "^$(whoami)$"; then
-                    kill -9 "$PORT_PID" 2>/dev/null
-                else
-                    log "ERROR" "Cannot kill process $PORT_PID - insufficient permissions"
-                    exit 1
-                fi
-            fi
-            sleep 2
-        fi
-    elif command -v lsof &> /dev/null; then
-        PORT_PID=$(lsof -i:"$PORT" -t 2>/dev/null)
-        if [ -n "$PORT_PID" ]; then
-            log "WARNING" "Port $PORT is in use by process $PORT_PID. Killing..."
-            if [ "$(id -u)" -eq 0 ]; then
-                kill -9 "$PORT_PID" 2>/dev/null
-            else
-                # Check if we have permission to kill the process
-                if ps -o user= -p "$PORT_PID" 2>/dev/null | grep -q "^$(whoami)$"; then
-                    kill -9 "$PORT_PID" 2>/dev/null
-                else
-                    log "ERROR" "Cannot kill process $PORT_PID - insufficient permissions"
-                    exit 1
-                fi
-            fi
-            sleep 2
-        fi
+# Get PIDs listening on our port
+get_port_pids() {
+    if command -v ss &>/dev/null; then
+        ss -tlnp 2>/dev/null | grep ":${PORT}\b" | grep -oP 'pid=\K[0-9]+' || true
+    elif command -v lsof &>/dev/null; then
+        lsof -iTCP:"$PORT" -sTCP:LISTEN -t 2>/dev/null || true
+    elif command -v fuser &>/dev/null; then
+        fuser "$PORT/tcp" 2>/dev/null | tr -s ' ' '\n' || true
     fi
 }
 
-# Function to check if previous app instance is running
-check_previous_app() {
+# Stop any existing instance
+stop_existing() {
     if [ -f "$PID_FILE" ]; then
-        PREV_PID=$(cat "$PID_FILE")
-        if ps -p "$PREV_PID" > /dev/null 2>&1; then
-            log "WARNING" "Previous application instance running with PID $PREV_PID. Killing..."
-            if [ "$(id -u)" -eq 0 ]; then
-                kill -9 "$PREV_PID" 2>/dev/null
-            else
-                # Check if we have permission to kill the process
-                if ps -o user= -p "$PREV_PID" 2>/dev/null | grep -q "^$(whoami)$"; then
-                    kill -9 "$PREV_PID" 2>/dev/null
-                else
-                    log "ERROR" "Cannot kill process $PREV_PID - insufficient permissions"
-                    exit 1
-                fi
-            fi
+        local old_pid
+        old_pid=$(cat "$PID_FILE")
+        if [ -n "$old_pid" ] && kill -0 "$old_pid" 2>/dev/null; then
+            log "INFO" "Stopping existing process (PID $old_pid)"
+            kill "$old_pid" 2>/dev/null || true
             sleep 2
-        else
-            log "INFO" "Previous PID file exists but process is not running. Cleaning up..."
+            kill -9 "$old_pid" 2>/dev/null || true
         fi
+        rm -f "$PID_FILE"
+    fi
+
+    local pids
+    pids=$(get_port_pids)
+    if [ -n "$pids" ]; then
+        log "INFO" "Killing process(es) on port $PORT: $pids"
+        echo "$pids" | xargs -r kill -9 2>/dev/null || true
+        sleep 1
     fi
 }
 
-# Function to create and set up virtual environment
+# Find python3 binary
+find_python() {
+    if command -v python3 &>/dev/null; then
+        echo "python3"
+    elif command -v python &>/dev/null; then
+        echo "python"
+    else
+        log "ERROR" "No python3 or python found in PATH"
+        return 1
+    fi
+}
+
+# Setup virtual environment
 setup_venv() {
-    log "INFO" "Creating virtual environment..."
-    run_as_user python -m venv "$VENV_PATH" || { log "ERROR" "Failed to create virtual environment"; return 1; }
-    
-    # Activate virtual environment - must be done in the current shell
-    source "${VENV_PATH}/bin/activate" || { log "ERROR" "Failed to activate virtual environment"; return 1; }
-    
+    local python_bin
+    python_bin=$(find_python) || return 1
+
+    if [ -d "$VENV_PATH" ] && [ -f "${VENV_PATH}/bin/pip" ]; then
+        log "INFO" "Updating existing virtual environment..."
+        if "${VENV_PATH}/bin/pip" install -q -r "$REQUIREMENTS_PATH" >> "$LOG_FILE" 2>&1; then
+            return 0
+        fi
+        log "WARNING" "Update failed, rebuilding venv..."
+    fi
+
+    log "INFO" "Creating fresh virtual environment..."
+    rm -rf "$VENV_PATH"
+    "$python_bin" -m venv "$VENV_PATH" || { log "ERROR" "Failed to create venv"; return 1; }
+
     log "INFO" "Upgrading pip..."
-    run_as_user pip install -U pip >> "$LOG_FILE" 2>&1
-    
-    log "INFO" "Installing dependencies from $REQUIREMENTS_PATH..."
-    run_as_user pip install -r "$REQUIREMENTS_PATH" >> "$LOG_FILE" 2>&1 || { log "ERROR" "Failed to install requirements"; return 1; }
-    
-    return 0
-}
+    "${VENV_PATH}/bin/pip" install -q -U pip >> "$LOG_FILE" 2>&1
 
-# Function to activate and update existing environment
-update_venv() {
-    log "INFO" "Using existing virtual environment..."
-    source "${VENV_PATH}/bin/activate" || { log "ERROR" "Failed to activate virtual environment"; return 1; }
-    
-    log "INFO" "Updating dependencies from $REQUIREMENTS_PATH..."
-    run_as_user pip install -r "$REQUIREMENTS_PATH" >> "$LOG_FILE" 2>&1 || { log "ERROR" "Failed to update requirements"; return 1; }
-    
-    return 0
-}
-
-# Function to rebuild the virtual environment if needed
-rebuild_venv() {
-    log "INFO" "Rebuilding virtual environment..."
-    # Kill any running processes
-    if [ -f "$PID_FILE" ]; then
-        PREV_PID=$(cat "$PID_FILE")
-        if ps -p "$PREV_PID" > /dev/null 2>&1; then
-            if [ "$(id -u)" -eq 0 ]; then
-                kill -9 "$PREV_PID" 2>/dev/null
-            else
-                # Check if we have permission to kill the process
-                if ps -o user= -p "$PREV_PID" 2>/dev/null | grep -q "^$(whoami)$"; then
-                    kill -9 "$PREV_PID" 2>/dev/null
-                else
-                    log "ERROR" "Cannot kill process $PREV_PID - insufficient permissions"
-                    exit 1
-                fi
-            fi
-        fi
+    log "INFO" "Installing dependencies..."
+    if ! "${VENV_PATH}/bin/pip" install -q -r "$REQUIREMENTS_PATH" >> "$LOG_FILE" 2>&1; then
+        log "ERROR" "Failed to install requirements. Last output:"
+        "${VENV_PATH}/bin/pip" install -r "$REQUIREMENTS_PATH" 2>&1 | tail -20 | tee -a "$LOG_FILE"
+        return 1
     fi
-    
-    # Remove existing venv directory
-    rm -rf "$VENV_PATH" || { log "ERROR" "Failed to remove old virtual environment"; return 1; }
-    
-    # Setup new venv
-    setup_venv
-    return $?
+
+    log "INFO" "Virtual environment ready"
+    return 0
 }
 
-# Function to start the application
+# Start the streamlit application
 start_app() {
-    log "INFO" "Starting Streamlit application on port $PORT..."
-    
-    # Ensure permissions for log file
-    if [ "$(id -u)" -eq 0 ] && [ -n "$APP_USER" ]; then
-        touch "$LOG_FILE" 2>/dev/null || true
-        chown "$APP_USER" "$LOG_FILE" 2>/dev/null || true
-    fi
-    
-    if [ "$(id -u)" -eq 0 ] && [ -n "$APP_USER" ]; then
-        # Start as the specified user
-        su -c "nohup \"${VENV_PATH}/bin/streamlit\" run \"$APP_PATH\" --server.port \"$PORT\" >> \"$LOG_FILE\" 2>&1 &" "$APP_USER"
-        # Get PID of the last background process run by the specified user
-        APP_PID=$(ps -u "$APP_USER" -o pid,comm | grep streamlit | awk '{print $1}' | head -n 1)
-    else
-        # Start as current user
-        nohup "${VENV_PATH}/bin/streamlit" run "$APP_PATH" --server.port "$PORT" >> "$LOG_FILE" 2>&1 &
-        APP_PID=$!
-    fi
-    
-    if [ -z "$APP_PID" ]; then
-        log "ERROR" "Failed to get PID of the application"
-        return 1
-    fi
-    
-    # Store the PID
-    echo "$APP_PID" > "$PID_FILE"
-    log "INFO" "Application started with PID $APP_PID"
-    
-    # Wait a moment to ensure the app is starting correctly
-    sleep 3
-    
-    # Check if the application is running
-    if ps -p "$APP_PID" > /dev/null; then
-        log "INFO" "Application successfully started on port $PORT"
-        
-        # Check if port is actually in use
-        if command -v netstat &> /dev/null; then
-            if netstat -tuln | grep -q ":$PORT "; then
-                log "INFO" "Confirmed: Port $PORT is now active"
-                return 0
-            else
-                log "WARNING" "Application started but port $PORT is not yet active"
-                return 1
-            fi
-        elif command -v lsof &> /dev/null; then
-            if lsof -i:"$PORT" > /dev/null; then
-                log "INFO" "Confirmed: Port $PORT is now active"
-                return 0
-            else
-                log "WARNING" "Application started but port $PORT is not yet active"
-                return 1
-            fi
+    log "INFO" "Starting streamlit on port $PORT..."
+
+    nohup "${VENV_PATH}/bin/streamlit" run "$APP_PATH" \
+        --server.port "$PORT" \
+        --server.headless true \
+        --server.address 0.0.0.0 \
+        >> "$LOG_FILE" 2>&1 &
+
+    local app_pid=$!
+    echo "$app_pid" > "$PID_FILE"
+    log "INFO" "Launched with PID $app_pid (pid file: $PID_FILE)"
+
+    local waited=0
+    while [ $waited -lt 15 ]; do
+        if port_in_use; then
+            log "INFO" "Port $PORT is active — application running"
+            return 0
         fi
-    else
-        log "ERROR" "Application failed to start. Check logs for details."
-        return 1
+        if ! kill -0 "$app_pid" 2>/dev/null; then
+            log "ERROR" "Process $app_pid exited prematurely. Last log lines:"
+            tail -10 "$LOG_FILE" | while IFS= read -r line; do log "ERROR" "  $line"; done
+            rm -f "$PID_FILE"
+            return 1
+        fi
+        sleep 1
+        waited=$((waited + 1))
+    done
+
+    if kill -0 "$app_pid" 2>/dev/null; then
+        log "WARNING" "Port $PORT not confirmed after 15s but process $app_pid is alive"
+        return 0
     fi
+
+    log "ERROR" "Application failed to start"
+    rm -f "$PID_FILE"
+    return 1
 }
 
-# Print the configuration
-log "INFO" "Configuration:"
-log "INFO" "  Directory: $DIRECTORY"
-log "INFO" "  Port: $PORT"
-log "INFO" "  Application file: $APP_PATH"
-log "INFO" "  Application name: $APP_NAME"
-log "INFO" "  Requirements file: $REQUIREMENTS_PATH"
-log "INFO" "  Log file: $LOG_FILE"
-if [ -n "$APP_USER" ]; then
-    log "INFO" "  Running as user: $APP_USER"
-else
-    log "INFO" "  Running as current user: $(whoami)"
-fi
+# ============================================================
+# Main
+# ============================================================
+log "INFO" "=== Setup starting ==="
+log "INFO" "Directory: $DIRECTORY"
+log "INFO" "Port: $PORT"
+log "INFO" "App: $APP_FILE"
+log "INFO" "Log: $LOG_FILE"
+log "INFO" "PID file: $PID_FILE"
 
-# Main workflow
+cd "$DIRECTORY" || { log "ERROR" "Cannot cd to $DIRECTORY"; exit 1; }
 
-# 1. Check if port in use, if yes kill the process
-check_port_and_kill
+stop_existing
+setup_venv || exit 1
+start_app || exit 1
 
-# Check if previous app is running based on PID file
-check_previous_app
-
-# Ensure proper ownership of directories if running as root and APP_USER is specified
-if [ "$(id -u)" -eq 0 ] && [ -n "$APP_USER" ]; then
-    chown -R "$APP_USER" "$DIRECTORY" || { log "ERROR" "Failed to change ownership of directory"; exit 1; }
-fi
-
-# 2. Setup or update the venv
-if [ -d "$VENV_PATH" ]; then
-    # 3. Update existing venv
-    if ! update_venv; then
-        # 4. Rebuild if update fails
-        log "WARNING" "Virtual environment update failed. Rebuilding..."
-        rebuild_venv || { log "ERROR" "Failed to rebuild virtual environment"; exit 1; }
-    fi
-else
-    # Fresh setup
-    setup_venv || { log "ERROR" "Failed to setup virtual environment"; exit 1; }
-fi
-
-# Start the application
-if ! start_app; then
-    # 4. If application fails to start, rebuild the venv
-    log "WARNING" "Application failed to start. Rebuilding virtual environment..."
-    rebuild_venv || { log "ERROR" "Failed to rebuild virtual environment"; exit 1; }
-    
-    # Try starting the app again
-    start_app || { log "ERROR" "Application failed to start even after rebuilding venv"; exit 1; }
-fi
-
-# 5. Final check if application is running
-if [ -f "$PID_FILE" ]; then
-    CURR_PID=$(cat "$PID_FILE")
-    if ps -p "$CURR_PID" > /dev/null; then
-        log "INFO" "Application is running successfully with PID $CURR_PID"
-    else
-        log "ERROR" "Application is not running!"
-        exit 1
-    fi
-else
-    log "ERROR" "PID file not found!"
-    exit 1
-fi
-
-# Deactivate the virtual environment
-deactivate
-
+log "INFO" "=== Setup complete ==="

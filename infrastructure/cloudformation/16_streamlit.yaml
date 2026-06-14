@@ -389,9 +389,11 @@ Resources:
       VpcId: !Ref VpcId
       TargetGroupAttributes:
         - Key: stickiness.enabled
-          Value: true
+          Value: "true"
         - Key: stickiness.type
           Value: lb_cookie
+        - Key: stickiness.lb_cookie.duration_seconds
+          Value: "3600"
 
   TargetGroup8087:
     Type: AWS::ElasticLoadBalancingV2::TargetGroup
@@ -406,9 +408,11 @@ Resources:
       VpcId: !Ref VpcId
       TargetGroupAttributes:
         - Key: stickiness.enabled
-          Value: true
+          Value: "true"
         - Key: stickiness.type
           Value: lb_cookie
+        - Key: stickiness.lb_cookie.duration_seconds
+          Value: "3600"
 
   TargetGroup8088:
     Type: AWS::ElasticLoadBalancingV2::TargetGroup
@@ -423,9 +427,11 @@ Resources:
       VpcId: !Ref VpcId
       TargetGroupAttributes:
         - Key: stickiness.enabled
-          Value: true
+          Value: "true"
         - Key: stickiness.type
           Value: lb_cookie
+        - Key: stickiness.lb_cookie.duration_seconds
+          Value: "3600"
 
   TargetGroup8089:
     Type: AWS::ElasticLoadBalancingV2::TargetGroup
@@ -440,9 +446,11 @@ Resources:
       VpcId: !Ref VpcId
       TargetGroupAttributes:
         - Key: stickiness.enabled
-          Value: true
+          Value: "true"
         - Key: stickiness.type
           Value: lb_cookie
+        - Key: stickiness.lb_cookie.duration_seconds
+          Value: "3600"
 
   TargetGroup8090:
     Type: AWS::ElasticLoadBalancingV2::TargetGroup
@@ -457,9 +465,11 @@ Resources:
       VpcId: !Ref VpcId
       TargetGroupAttributes:
         - Key: stickiness.enabled
-          Value: true
+          Value: "true"
         - Key: stickiness.type
           Value: lb_cookie
+        - Key: stickiness.lb_cookie.duration_seconds
+          Value: "3600"
 
   # ================================
   # HTTPS Listeners (Ports 8086-8090)

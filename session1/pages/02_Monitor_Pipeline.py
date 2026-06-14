@@ -13,6 +13,8 @@ import time
 import pandas as pd
 import plotly.graph_objects as go
 import plotly.express as px
+
+boto3.setup_default_session(region_name="ap-southeast-1")
 from datetime import datetime, timedelta, timezone
 
 st.set_page_config(page_title="Monitor Pipeline", page_icon="📈", layout="wide")

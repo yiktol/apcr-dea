@@ -17,9 +17,9 @@ Parameters:
 
   # Parameters for domain configuration
   CognitoUserEmail:
-    Type: String
+    Type: AWS::SSM::Parameter::Value<String>
     Description: Email for Cognito user
-    Default: '{{resolve:ssm:/genai/cognito/CognitoUserEmail}}'
+    Default: /genai/cognito/CognitoUserEmail
 
   DomainName:
     Type: String
@@ -52,7 +52,7 @@ Parameters:
   DeployCognitoStack:
     Type: String
     Description: Deploy Cognito user pool
-    Default: 'true'
+    Default: 'false'
     AllowedValues: ['true', 'false']
 
   DeployAuroraStack:
@@ -64,13 +64,13 @@ Parameters:
   DeployServerlessStack:
     Type: String
     Description: Deploy serverless API stack
-    Default: 'true'
+    Default: 'false'
     AllowedValues: ['true', 'false']
 
   DeployContainerStack:
     Type: String
     Description: Deploy ECS container stack (Singapore only, requires Serverless stack)
-    Default: 'true'
+    Default: 'false'
     AllowedValues: ['true', 'false']
 
   DeployStressToolStack:
@@ -102,7 +102,7 @@ Parameters:
   DeploySecurityStack:
     Type: String
     Description: Deploy security stack (VPC Flow Logs, AWS Config, CloudTrail)
-    Default: 'true'
+    Default: 'false'
     AllowedValues: ['true', 'false']
 
   DeployStreamlitStack:

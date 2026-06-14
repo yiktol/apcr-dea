@@ -204,6 +204,53 @@ usage() {
     exit 0
 }
 
+# Function to delete all VPC endpoints in the region
+delete_vpc_endpoints() {
+    print_info "Checking for VPC endpoints to delete..."
+
+    local vpc_endpoint_ids
+    vpc_endpoint_ids=$(aws ec2 describe-vpc-endpoints \
+        --region "$AWS_REGION" \
+        --query 'VpcEndpoints[?State!=`deleted`].VpcEndpointId' \
+        --output text 2>/dev/null)
+
+    if [[ -z "$vpc_endpoint_ids" || "$vpc_endpoint_ids" == "None" ]]; then
+        print_info "No VPC endpoints found in region $AWS_REGION"
+        return 0
+    fi
+
+    local endpoint_array=($vpc_endpoint_ids)
+    print_info "Found ${#endpoint_array[@]} VPC endpoint(s) to delete"
+
+    for endpoint_id in "${endpoint_array[@]}"; do
+        print_info "Deleting VPC endpoint: $endpoint_id"
+        if aws ec2 delete-vpc-endpoints --region "$AWS_REGION" --vpc-endpoint-ids "$endpoint_id" 2>/dev/null; then
+            print_success "Deleted VPC endpoint: $endpoint_id"
+        else
+            print_warning "Failed to delete VPC endpoint: $endpoint_id (may already be deleting)"
+        fi
+    done
+
+    # Wait briefly for endpoints to start deleting
+    print_info "Waiting for VPC endpoints to be deleted..."
+    sleep 10
+
+    # Verify deletion
+    local remaining
+    remaining=$(aws ec2 describe-vpc-endpoints \
+        --region "$AWS_REGION" \
+        --query 'VpcEndpoints[?State!=`deleted` && State!=`deleting`].VpcEndpointId' \
+        --output text 2>/dev/null)
+
+    if [[ -z "$remaining" || "$remaining" == "None" ]]; then
+        print_success "All VPC endpoints deleted or deleting"
+    else
+        print_warning "Some VPC endpoints still active: $remaining"
+    fi
+
+    return 0
+}
+
 # Main function
 main() {
     # Parse command line arguments
@@ -279,6 +326,10 @@ main() {
     
     echo ""
     
+    # Delete all VPC endpoints before deleting stacks
+    delete_vpc_endpoints
+    echo ""
+
     # Delete stacks sequentially
     local success_count=0
     local failed_stacks=()

@@ -7,6 +7,8 @@ import streamlit as st
 import boto3
 import json
 
+boto3.setup_default_session(region_name="ap-southeast-1")
+
 st.set_page_config(
     page_title="Data Pipeline - 5 V's of Big Data",
     page_icon="🔄",

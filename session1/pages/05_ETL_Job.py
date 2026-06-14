@@ -14,6 +14,8 @@ import time
 import pandas as pd
 from datetime import datetime, timezone
 
+boto3.setup_default_session(region_name="ap-southeast-1")
+
 st.set_page_config(page_title="ETL Job", page_icon="🔧", layout="wide")
 
 st.markdown("# 🔧 Glue ETL: Raw → Curated")

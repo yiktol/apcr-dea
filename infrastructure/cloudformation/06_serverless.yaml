@@ -4,8 +4,8 @@ Description: "DEA - Serverless API with DynamoDB, SQS, and EventBridge"
 
 Parameters:
   LambdaCodeS3Bucket:
-    Type: String
-    Default: "{{resolve:ssm:/genai/cognito/BucketName}}"
+    Type: AWS::SSM::Parameter::Value<String>
+    Default: /genai/cognito/BucketName
     Description: "S3 bucket containing Lambda function code packages"
   
   ApiGatewayStage:

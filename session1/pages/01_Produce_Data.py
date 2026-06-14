@@ -13,6 +13,8 @@ import json
 import uuid
 import time
 import random
+
+boto3.setup_default_session(region_name="ap-southeast-1")
 from datetime import datetime, timezone
 
 st.set_page_config(page_title="Produce Data", page_icon="⚡", layout="wide")

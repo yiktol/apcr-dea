@@ -13,6 +13,8 @@ import boto3
 import json
 import re
 import hashlib
+
+boto3.setup_default_session(region_name="ap-southeast-1")
 import pandas as pd
 from datetime import datetime, timezone
 
