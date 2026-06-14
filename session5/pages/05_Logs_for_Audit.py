@@ -1561,7 +1561,7 @@ def cloudwatch_tab():
     fig.update_layout(height=600, showlegend=True, 
                      title_text="CloudWatch Metrics Dashboard")
     
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width="stretch")
     
     # CloudWatch code examples
     st.markdown("#### 💻 CloudWatch Implementation Examples")

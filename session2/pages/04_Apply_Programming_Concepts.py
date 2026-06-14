@@ -328,7 +328,7 @@ def programming_concepts_tab():
             "Slower deployments", "Manual testing only", "Automated testing & deployment", "Larger team size"
         ])
     
-    if st.button("🔍 Check Answers", use_container_width=True):
+    if st.button("🔍 Check Answers", width="stretch"):
         score = 0
         feedback = []
         
@@ -490,7 +490,7 @@ def cicd_tab():
         approval_required = st.checkbox("Manual approval for production", value=True)
         rollback_enabled = st.checkbox("Enable automatic rollback", value=True)
     
-    if st.button("🚀 Create Pipeline (Simulation)", use_container_width=True):
+    if st.button("🚀 Create Pipeline (Simulation)", width="stretch"):
         st.markdown('<div class="highlight-box">', unsafe_allow_html=True)
         st.markdown(f"""
         ### ✅ CI/CD Pipeline Created Successfully!
@@ -526,7 +526,7 @@ def cicd_tab():
     
     fig.update_layout(barmode='group', title='CI/CD Impact on Development Process', 
                      yaxis_title='Effectiveness Score (1-10)')
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width="stretch")
     
     # AWS Glue CI/CD Example
     st.markdown("## 💻 Code Example: AWS Glue Job CI/CD with CodePipeline")
@@ -610,7 +610,7 @@ def lambda_optimization_tab():
     cold_start_delay = 200 if memory_mb < 512 else 100  # Simplified calculation
     avg_with_cold_start = duration_ms + (cold_starts / 100 * cold_start_delay)
     
-    if st.button("📊 Calculate Performance & Cost", use_container_width=True):
+    if st.button("📊 Calculate Performance & Cost", width="stretch"):
         col1, col2, col3, col4 = st.columns(4)
         
         with col1:
@@ -654,7 +654,7 @@ def lambda_optimization_tab():
     
     # Lambda Execution Models
     st.markdown("## 🔄 Lambda Execution Models")
-    st.plotly_chart(create_lambda_execution_comparison(), use_container_width=True)
+    st.plotly_chart(create_lambda_execution_comparison(), width="stretch")
     
     # Best Practices
     st.markdown("## 💡 Lambda Optimization Best Practices")
@@ -821,7 +821,7 @@ def infrastructure_code_tab():
         enable_encryption = st.checkbox("Enable encryption", value=True)
         enable_versioning = st.checkbox("Enable versioning", value=True)
     
-    if st.button("🏗️ Generate CloudFormation Template", use_container_width=True):
+    if st.button("🏗️ Generate CloudFormation Template", width="stretch"):
         template = generate_cloudformation_template(resources, project_name, environment, 
                                                   enable_encryption, enable_versioning)
         
@@ -859,7 +859,7 @@ def infrastructure_code_tab():
                  barmode='group',
                  color_discrete_sequence=[AWS_COLORS['warning'], AWS_COLORS['primary']])
     
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width="stretch")
     
     # AWS SAM Example
     st.markdown("## 🚀 AWS Serverless Application Model (SAM)")
@@ -1042,7 +1042,7 @@ def analytics_pipeline_tab():
             "S3 Data Lake", "Redshift", "DynamoDB", "Hybrid (S3 + Redshift)"
         ])
     
-    if st.button("🚀 Generate Pipeline Architecture", use_container_width=True):
+    if st.button("🚀 Generate Pipeline Architecture", width="stretch"):
         # Calculate estimated costs
         base_cost = 100  # Base monthly cost
         volume_multiplier = {"Low (< 1GB/day)": 1, "Medium (1-10GB/day)": 3, 
@@ -1107,7 +1107,7 @@ def analytics_pipeline_tab():
         title="Impact of Analytics Pipeline"
     )
     
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width="stretch")
     
     # Code Example
     st.markdown("## 💻 Code Example: Game Analytics Pipeline")
@@ -1332,7 +1332,7 @@ ORDER BY s.order_date;""",
             "Row-based (JSON)", "Columnar (Parquet)", "Mixed Format"
         ])
     
-    if st.button("🚀 Analyze Query Performance", use_container_width=True):
+    if st.button("🚀 Analyze Query Performance", width="stretch"):
         # Simulate query analysis
         performance_score, recommendations = analyze_query_performance(
             user_query, table_size, data_format, query_type
@@ -1412,7 +1412,7 @@ ORDER BY s.order_date;""",
         title="Data Format Performance Comparison"
     )
     
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width="stretch")
     
     # Best Practices
     st.markdown("## 💻 Code Example: Redshift Query Optimization")

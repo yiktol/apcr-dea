@@ -438,7 +438,7 @@ def quicksight_tab():
             plot_bgcolor='rgba(0,0,0,0)',
             paper_bgcolor='rgba(0,0,0,0)',
         )
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, width="stretch")
     
     # Analytics insights simulation
     st.markdown('<div class="highlight-box">', unsafe_allow_html=True)
@@ -1458,12 +1458,12 @@ def accessing_data_quicksight_tab():
     with col1:
         st.markdown("##### ☁️ AWS Native Sources")
         aws_sources = data_sources_info[data_sources_info['Category'] == 'AWS']
-        st.dataframe(aws_sources[['Source', 'SPICE Support', 'Real-time']], hide_index=True, use_container_width=True)
+        st.dataframe(aws_sources[['Source', 'SPICE Support', 'Real-time']], hide_index=True, width="stretch")
     
     with col2:
         st.markdown("##### 🏢 External Sources") 
         external_sources = data_sources_info[data_sources_info['Category'] == 'External']
-        st.dataframe(external_sources[['Source', 'SPICE Support', 'Real-time']], hide_index=True, use_container_width=True)
+        st.dataframe(external_sources[['Source', 'SPICE Support', 'Real-time']], hide_index=True, width="stretch")
     
     # SPICE refresh strategies
     st.markdown("#### 🔄 SPICE Refresh Strategies")

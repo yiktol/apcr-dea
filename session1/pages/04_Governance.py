@@ -31,7 +31,7 @@ import os
 _diagram = os.path.join(os.path.dirname(__file__), "..", "diagrams", "06_governance_layer.png")
 if os.path.exists(_diagram):
     with st.expander("📐 Architecture Diagram — Governance Layer", expanded=False):
-        st.image(_diagram, caption="Governance: S3 → Macie → EventBridge → Lambda Masker → Clean Bucket", use_column_width=True)
+        st.image(_diagram, caption="Governance: S3 → Macie → EventBridge → Lambda Masker → Clean Bucket", width="stretch")
 
 
 def get_config():
@@ -113,7 +113,7 @@ with tab1:
 
             if findings:
                 df = pd.DataFrame(findings)
-                st.dataframe(df, use_container_width=True)
+                st.dataframe(df, width="stretch")
 
                 # Summary
                 summary = df.groupby("type").size().reset_index(name="count")
@@ -149,7 +149,7 @@ with tab2:
         if findings:
             st.warning(f"⚠️ Detected **{len(findings)} PII instances** in this file!")
             df = pd.DataFrame(findings)
-            st.dataframe(df.head(20), use_container_width=True)
+            st.dataframe(df.head(20), width="stretch")
 
         if st.button("📤 Upload to Data Lake", type="primary"):
             try:

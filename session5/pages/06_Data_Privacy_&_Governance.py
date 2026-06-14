@@ -430,7 +430,7 @@ def aws_config_tab():
             }
         )
         fig_pie.update_layout(height=400)
-        st.plotly_chart(fig_pie, use_container_width=True)
+        st.plotly_chart(fig_pie, width="stretch")
     
     with col2:
         # Compliance trends over time
@@ -443,7 +443,7 @@ def aws_config_tab():
         )
         fig_trend.update_traces(line_color=AWS_COLORS['primary'])
         fig_trend.update_layout(height=400)
-        st.plotly_chart(fig_trend, use_container_width=True)
+        st.plotly_chart(fig_trend, width="stretch")
     
     # Code examples
     st.markdown("#### 💻 AWS Config Implementation Examples")
@@ -1166,7 +1166,7 @@ def amazon_macie_tab():
             }
         )
         fig_severity.update_layout(height=400)
-        st.plotly_chart(fig_severity, use_container_width=True)
+        st.plotly_chart(fig_severity, width="stretch")
     
     with col2:
         # Data types found
@@ -1177,12 +1177,12 @@ def amazon_macie_tab():
             title="Sensitive Data Types Discovered"
         )
         fig_types.update_layout(height=400)
-        st.plotly_chart(fig_types, use_container_width=True)
+        st.plotly_chart(fig_types, width="stretch")
     
     # Detailed findings table
     st.markdown("#### 📋 Detailed Security Findings")
     findings_df = create_findings_dataframe(discovery_results)
-    st.dataframe(findings_df, use_container_width=True)
+    st.dataframe(findings_df, width="stretch")
     
     # Macie features breakdown
     st.markdown("#### ⭐ Amazon Macie Key Features")
@@ -2399,7 +2399,7 @@ def data_sharing_redshift_tab():
         )
         fig_usage.update_traces(line_color=AWS_COLORS['primary'])
         fig_usage.update_layout(height=400)
-        st.plotly_chart(fig_usage, use_container_width=True)
+        st.plotly_chart(fig_usage, width="stretch")
     
     with col2:
         # Consumer activity
@@ -2411,13 +2411,13 @@ def data_sharing_redshift_tab():
             color_continuous_scale=['lightblue', AWS_COLORS['primary']]
         )
         fig_consumers.update_layout(height=400, showlegend=False)
-        st.plotly_chart(fig_consumers, use_container_width=True)
+        st.plotly_chart(fig_consumers, width="stretch")
     
     # Sharing permissions matrix
     st.markdown("#### 🔐 Data Sharing Permissions Matrix")
     
     permissions_df = create_sharing_permissions_matrix()
-    st.dataframe(permissions_df, use_container_width=True)
+    st.dataframe(permissions_df, width="stretch")
     
     # Code examples
     st.markdown("#### 💻 Redshift Data Sharing Implementation")

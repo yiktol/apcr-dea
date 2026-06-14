@@ -28,7 +28,7 @@ import os
 _diagram = os.path.join(os.path.dirname(__file__), "..", "diagrams", "04_storage_layer.png")
 if os.path.exists(_diagram):
     with st.expander("📐 Architecture Diagram — Storage & ETL Layer", expanded=False):
-        st.image(_diagram, caption="Storage Layer: Raw → Glue ETL → Curated (Parquet) + Lake Formation", use_column_width=True)
+        st.image(_diagram, caption="Storage Layer: Raw → Glue ETL → Curated (Parquet) + Lake Formation", width="stretch")
 
 
 def get_config():
@@ -99,7 +99,7 @@ st.markdown(f"**Job name:** `{glue_job_name}`")
 col1, col2 = st.columns([1, 2])
 
 with col1:
-    if st.button("▶️ Start Glue Job", type="primary", use_container_width=True):
+    if st.button("▶️ Start Glue Job", type="primary", width="stretch"):
         try:
             glue_client = boto3.client("glue")
             response = glue_client.start_job_run(
@@ -201,7 +201,7 @@ try:
                 "Duration (s)": run.get("ExecutionTime", "-"),
                 "Workers": run.get("NumberOfWorkers", "-"),
             })
-        st.dataframe(pd.DataFrame(history), use_container_width=True)
+        st.dataframe(pd.DataFrame(history), width="stretch")
     else:
         st.info("No previous runs.")
 except Exception as e:

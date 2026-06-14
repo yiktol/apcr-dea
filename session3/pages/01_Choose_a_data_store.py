@@ -455,7 +455,7 @@ def s3_tab():
     
     # Interactive cost comparison
     st.markdown("#### 💰 Storage Cost Analysis")
-    st.plotly_chart(create_storage_cost_chart(), use_container_width=True)
+    st.plotly_chart(create_storage_cost_chart(), width="stretch")
     
     # Storage classes details
     st.markdown("#### 📊 Storage Classes Comparison")
@@ -472,7 +472,7 @@ def s3_tab():
     }
     
     df_storage = pd.DataFrame(storage_classes_data)
-    st.dataframe(df_storage, use_container_width=True)
+    st.dataframe(df_storage, width="stretch")
     
     # Interactive lifecycle simulation
     create_lifecycle_simulation()
@@ -873,7 +873,7 @@ def ebs_tab():
     }
     
     df_volumes = pd.DataFrame(volume_data)
-    st.dataframe(df_volumes, use_container_width=True)
+    st.dataframe(df_volumes, width="stretch")
     
     # Interactive volume calculator
     st.markdown("#### 🧮 EBS Volume Calculator")

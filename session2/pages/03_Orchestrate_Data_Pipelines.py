@@ -469,7 +469,7 @@ def orchestration_fundamentals_tab():
         
         monitoring = st.checkbox("Enable Monitoring & Alerts", value=True, key="monitoring")
     
-    if st.button("🚀 Generate Pipeline Configuration", use_container_width=True):
+    if st.button("🚀 Generate Pipeline Configuration", width="stretch"):
         
         # Generate estimated metrics
         complexity_score = len(processing_steps) * 2 + len(output_destinations)
@@ -529,7 +529,7 @@ def orchestration_fundamentals_tab():
     # Create interactive table
     st.dataframe(
         df_patterns,
-        use_container_width=True,
+        width="stretch",
         hide_index=True
     )
     
@@ -844,7 +844,7 @@ def step_functions_orchestration_tab():
         max_retries = st.slider("Max Retry Attempts:", 0, 5, 3)
         timeout_minutes = st.slider("Workflow Timeout (minutes):", 5, 300, 60)
     
-    if st.button("🚀 Generate Step Functions Definition", use_container_width=True):
+    if st.button("🚀 Generate Step Functions Definition", width="stretch"):
         
         # Calculate estimated metrics
         complexity_score = len(data_services) * 2 + len(error_handling)
@@ -1444,7 +1444,7 @@ def etl_orchestration_tab():
         
         monitoring_alerts = st.checkbox("Enable Monitoring & Alerts", value=True)
     
-    if st.button("🚀 Generate ETL Pipeline Orchestration", use_container_width=True):
+    if st.button("🚀 Generate ETL Pipeline Orchestration", width="stretch"):
         
         # Calculate pipeline metrics
         complexity_score = (len(source_systems) * 2 + len(transformations) * 1.5 + 
@@ -1530,7 +1530,7 @@ def etl_orchestration_tab():
         title="ETL Best Practices Hierarchy"
     )
     
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width="stretch")
     
     # Common ETL Patterns
     st.markdown("## 🔄 Common ETL Orchestration Patterns")
@@ -2168,7 +2168,7 @@ def serverless_event_driven_tab():
         
         enable_tracing = st.checkbox("Enable X-Ray Tracing", value=False)
     
-    if st.button("🚀 Deploy Event-driven Pipeline", use_container_width=True):
+    if st.button("🚀 Deploy Event-driven Pipeline", width="stretch"):
         
         # Calculate pipeline characteristics
         latency_score = {
@@ -2811,7 +2811,7 @@ def data_pipelines_comparison_tab():
     
     # Service Comparison Chart
     st.markdown("## 📊 Service Comparison Overview")
-    st.plotly_chart(create_orchestration_services_comparison(), use_container_width=True)
+    st.plotly_chart(create_orchestration_services_comparison(), width="stretch")
     
     # Detailed Service Comparison
     st.markdown("## 🔍 Detailed Service Comparison")
@@ -3146,7 +3146,7 @@ eventbridge.put_targets(
                                 AWS_COLORS['success'], AWS_COLORS['warning']]
     )
     
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width="stretch")
     
     # Interactive Decision Helper
     st.markdown("## 🎯 Interactive Service Selector")
@@ -3185,7 +3185,7 @@ eventbridge.put_targets(
             "High-frequency events", "Enterprise scale"
         ])
     
-    if st.button("🔍 Get Service Recommendation", use_container_width=True):
+    if st.button("🔍 Get Service Recommendation", width="stretch"):
         
         # Simple recommendation logic
         score_sf = 0  # Step Functions

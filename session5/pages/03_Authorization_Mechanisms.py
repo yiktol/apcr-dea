@@ -518,7 +518,7 @@ def secrets_manager_tab():
     if st.session_state.secrets_created:
         st.markdown("#### 📝 Created Secrets")
         secrets_df = pd.DataFrame(st.session_state.secrets_created)
-        st.dataframe(secrets_df, use_container_width=True)
+        st.dataframe(secrets_df, width="stretch")
     
     # Best practices
     st.markdown("#### 🏆 Best Practices")
@@ -1017,7 +1017,7 @@ def parameter_store_tab():
     if st.session_state.parameters_created:
         st.markdown("#### 📋 Created Parameters")
         params_df = pd.DataFrame(st.session_state.parameters_created)
-        st.dataframe(params_df, use_container_width=True)
+        st.dataframe(params_df, width="stretch")
     
     # Parameter types comparison
     st.markdown("#### 📊 Parameter Types Comparison")
@@ -2760,7 +2760,7 @@ def create_firehose_stream():
             'Access Pattern': ['Write-heavy', 'Read/Write', 'Read-heavy', 'Rare access']
         }
         
-        st.dataframe(pd.DataFrame(storage_zones_data), use_container_width=True)
+        st.dataframe(pd.DataFrame(storage_zones_data), width="stretch")
         
         st.markdown('<div class="code-container">', unsafe_allow_html=True)
         st.code('''
@@ -2839,7 +2839,7 @@ Resources:
             'Max Runtime': ['48 hours', 'Unlimited', '15 minutes', '30 minutes']
         }
         
-        st.dataframe(pd.DataFrame(processing_comparison), use_container_width=True)
+        st.dataframe(pd.DataFrame(processing_comparison), width="stretch")
         
         st.markdown('<div class="code-container">', unsafe_allow_html=True)
         st.code('''
@@ -2933,7 +2933,7 @@ job.commit()
             ]
         }
         
-        st.dataframe(pd.DataFrame(security_layers), use_container_width=True)
+        st.dataframe(pd.DataFrame(security_layers), width="stretch")
         
         st.markdown('<div class="code-container">', unsafe_allow_html=True)
         st.code('''
@@ -3165,7 +3165,7 @@ def lake_formation_tab():
     }
     
     comparison_df = pd.DataFrame(comparison_data)
-    st.dataframe(comparison_df, use_container_width=True)
+    st.dataframe(comparison_df, width="stretch")
     
     # Lake Formation features
     st.markdown("#### ⭐ Key Features Deep Dive")
@@ -3637,7 +3637,7 @@ if __name__ == "__main__":
             ]
         }
         
-        st.dataframe(pd.DataFrame(integration_services), use_container_width=True)
+        st.dataframe(pd.DataFrame(integration_services), width="stretch")
         
         st.markdown('<div class="code-container">', unsafe_allow_html=True)
         st.code('''

@@ -29,7 +29,7 @@ import os
 _diagram = os.path.join(os.path.dirname(__file__), "..", "diagrams", "02_ingestion_layer.png")
 if os.path.exists(_diagram):
     with st.expander("📐 Architecture Diagram — Ingestion Layer", expanded=False):
-        st.image(_diagram, caption="Ingestion Layer: Producers → Kinesis Shards → Consumers", use_column_width=True)
+        st.image(_diagram, caption="Ingestion Layer: Producers → Kinesis Shards → Consumers", width="stretch")
 
 
 def get_kinesis_client():
@@ -164,7 +164,7 @@ with col2:
 st.markdown("---")
 
 # Send button
-if st.button(f"🚀 Send {batch_size * num_batches} Records to Kinesis", type="primary", use_container_width=True):
+if st.button(f"🚀 Send {batch_size * num_batches} Records to Kinesis", type="primary", width="stretch"):
     kinesis = get_kinesis_client()
     progress = st.progress(0)
     status = st.empty()

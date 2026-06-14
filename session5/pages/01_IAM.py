@@ -902,7 +902,7 @@ def iam_users_and_groups_tab():
         plot_bgcolor='rgba(0,0,0,0)',
         paper_bgcolor='rgba(0,0,0,0)'
     )
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width="stretch")
     
     # Best Practices for Users and Groups
     st.markdown("#### ⭐ Best Practices for Users and Groups")

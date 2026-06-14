@@ -445,7 +445,7 @@ def data_pipelines_tab():
             color_discrete_sequence=['#FF9900', '#4B9EDB', '#3FB34F', '#FFC107']
         )
         fig.update_layout(height=300)
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, width="stretch")
     
     # Code examples
     st.markdown("#### 💻 Pipeline Implementation Examples")
@@ -1489,7 +1489,7 @@ def glue_workflow_tab():
             }
         )
         fig.update_layout(height=300)
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, width="stretch")
     
     # Workflow components
     st.markdown("#### ⚙️ Workflow Components")
@@ -1600,7 +1600,7 @@ def glue_workflow_tab():
     # Workflow status table
     st.markdown("##### Current Workflow Status")
     workflow_df = pd.DataFrame(status['workflows'])
-    st.dataframe(workflow_df, use_container_width=True)
+    st.dataframe(workflow_df, width="stretch")
     
     # Code examples
     st.markdown("#### 💻 Glue Workflow Implementation")
@@ -2842,7 +2842,7 @@ def monitoring_tab():
             color_discrete_sequence=[AWS_COLORS['primary']]
         )
         fig1.update_layout(height=300)
-        st.plotly_chart(fig1, use_container_width=True)
+        st.plotly_chart(fig1, width="stretch")
     
     with col2:
         # Pipeline success/failure distribution
@@ -2853,7 +2853,7 @@ def monitoring_tab():
             color_discrete_sequence=[AWS_COLORS['success'], AWS_COLORS['error'], AWS_COLORS['warning']]
         )
         fig2.update_layout(height=300)
-        st.plotly_chart(fig2, use_container_width=True)
+        st.plotly_chart(fig2, width="stretch")
     
     # Service health status
     st.markdown("#### 🏥 Service Health Status")
@@ -2870,7 +2870,7 @@ def monitoring_tab():
         return color_map.get(val, '')
     
     styled_df = service_health.style.applymap(color_status, subset=['Status'])
-    st.dataframe(styled_df, use_container_width=True)
+    st.dataframe(styled_df, width="stretch")
     
     # Monitoring tools comparison
     st.markdown("#### 🛠️ Monitoring Tools & Services")
@@ -2979,7 +2979,7 @@ def monitoring_tab():
             color_discrete_sequence=[AWS_COLORS['light_blue']]
         )
         fig.update_layout(height=250)
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, width="stretch")
     
     # Code examples
     st.markdown("#### 💻 Monitoring Implementation Examples")

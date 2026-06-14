@@ -1,7 +1,7 @@
 #!/usr/bin/bash
 
 # Default values for parameters
-DEFAULT_DIRECTORY="/home/ubuntu/environment/session1"
+DEFAULT_DIRECTORY="/home/ubuntu/apcr-dea/session1"
 DEFAULT_PORT=8086
 DEFAULT_APP_FILE="Home.py"
 DEFAULT_REQUIREMENTS_FILE="requirements.txt"

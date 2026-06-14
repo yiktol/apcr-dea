@@ -344,7 +344,7 @@ def data_ingestion_fundamentals_tab():
     with col3:
         data_volume = st.slider("Data Volume (GB/hour):", 0.1, 1000.0, 10.0, step=0.1)
     
-    if st.button("🚀 Simulate Data Ingestion", use_container_width=True):
+    if st.button("🚀 Simulate Data Ingestion", width="stretch"):
         
         # Generate realistic metrics based on inputs
         latency = {
@@ -627,7 +627,7 @@ def aws_analytics_overview_tab():
             "🔄 Multi-stage pipelines"  
         ])
     
-    if st.button("🎯 Get Service Recommendations", use_container_width=True):
+    if st.button("🎯 Get Service Recommendations", width="stretch"):
         
         # Service recommendation logic
         recommendations = []
@@ -881,7 +881,7 @@ def batch_stream_processing_tab():
     }
     
     df_comparison = pd.DataFrame(comparison_data)
-    st.dataframe(df_comparison, use_container_width=True)
+    st.dataframe(df_comparison, width="stretch")
     
     # Interactive Processing Type Selector
     st.markdown("## 🎛️ Processing Type Decision Matrix")
@@ -919,7 +919,7 @@ def batch_stream_processing_tab():
             "📈 Scalability"
         ])
     
-    if st.button("🎯 Get Processing Recommendation", use_container_width=True):
+    if st.button("🎯 Get Processing Recommendation", width="stretch"):
         
         # Decision logic
         stream_score = 0
@@ -1069,7 +1069,7 @@ def kinesis_services_tab():
     """)
     st.markdown('</div>', unsafe_allow_html=True)
     
-    if st.button("🚀 Create Kinesis Stream (Simulation)", use_container_width=True):
+    if st.button("🚀 Create Kinesis Stream (Simulation)", width="stretch"):
         st.markdown('<div class="highlight-box">', unsafe_allow_html=True)
         st.markdown(f"""
         ### ✅ Kinesis Stream Created Successfully!
@@ -1112,11 +1112,11 @@ def kinesis_services_tab():
     }
     
     df_service_comparison = pd.DataFrame(service_comparison)
-    st.dataframe(df_service_comparison, use_container_width=True)
+    st.dataframe(df_service_comparison, width="stretch")
     
     # Streaming Services Comparison Chart
     st.markdown("## 📊 AWS Streaming Services Radar Chart")
-    st.plotly_chart(create_streaming_comparison_chart(), use_container_width=True)
+    st.plotly_chart(create_streaming_comparison_chart(), width="stretch")
     
     # Firehose Configuration Simulator
     st.markdown("## 🚀 Kinesis Data Firehose Configuration")
@@ -1144,7 +1144,7 @@ def kinesis_services_tab():
             "AWS Lambda Function", "Convert Record Format", "Both"
         ])
     
-    if st.button("🚀 Create Firehose Stream (Simulation)", use_container_width=True):
+    if st.button("🚀 Create Firehose Stream (Simulation)", width="stretch"):
         
         delivery_frequency = f"Every {buffer_interval} seconds or {buffer_size} MB"
         
@@ -1315,7 +1315,7 @@ def lambda_kinesis_integration_tab():
         ])
         bisect_batch_on_error = st.checkbox("Bisect Batch on Function Error", value=True)
     
-    if st.button("🚀 Deploy Lambda Function (Simulation)", use_container_width=True):
+    if st.button("🚀 Deploy Lambda Function (Simulation)", width="stretch"):
         
         # Calculate processing capacity
         records_per_second = batch_size * parallel_factor / 5  # Assuming 5 second processing time
@@ -1399,7 +1399,7 @@ def lambda_kinesis_integration_tab():
             "10 seconds", "1 minute", "5 minutes", "15 minutes"
         ])
     
-    if st.button("📊 Start IoT Monitoring Simulation", use_container_width=True):
+    if st.button("📊 Start IoT Monitoring Simulation", width="stretch"):
         
         # Generate simulated sensor data
         np.random.seed(42)  # For consistent results
@@ -1481,7 +1481,7 @@ def lambda_kinesis_integration_tab():
             xaxis_title="Sensor Index"
         )
         
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, width="stretch")
     
     # Stream Processing Architecture Example
     st.markdown("## 🌊 Complete Stream Processing Architecture")

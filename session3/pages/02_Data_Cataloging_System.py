@@ -720,7 +720,7 @@ def data_catalog_tab():
             'Data Type': ['string', 'bigint', 'timestamp', 'decimal(10,2)'][:len(table_info['columns'])],
             'Nullable': ['Yes'] * len(table_info['columns'])
         })
-        st.dataframe(schema_df, use_container_width=True)
+        st.dataframe(schema_df, width="stretch")
     
     # Catalog benefits
     st.markdown("#### ✅ Key Benefits")
@@ -1666,7 +1666,7 @@ def crawlers_tab():
                              file_format.lower() if data_source.startswith("s3://") else 'relational',
                              file_format.lower() if data_source.startswith("s3://") else 'relational']
         })
-        st.dataframe(discovered_tables, use_container_width=True)
+        st.dataframe(discovered_tables, width="stretch")
     
     # Crawler types and classifiers
     st.markdown("#### 🔍 Built-in Classifiers")

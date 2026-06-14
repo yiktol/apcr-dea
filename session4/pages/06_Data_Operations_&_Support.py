@@ -471,7 +471,7 @@ def glue_databrew_tab():
         
         # Display options
         display_rows = st.selectbox("Rows to display", [10, 25, 50, 100], index=1)
-        st.dataframe(sample_data.head(display_rows), use_container_width=True)
+        st.dataframe(sample_data.head(display_rows), width="stretch")
         
     with col2:
         st.markdown("##### Quality Metrics")
@@ -506,7 +506,7 @@ def glue_databrew_tab():
                 })
         
         issue_df = pd.DataFrame(issue_data)
-        st.dataframe(issue_df, use_container_width=True)
+        st.dataframe(issue_df, width="stretch")
         
         # Visualize issues
         fig = px.bar(
@@ -518,7 +518,7 @@ def glue_databrew_tab():
             color_continuous_scale='Reds'
         )
         fig.update_layout(showlegend=False)
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, width="stretch")
     
     # Recipe builder simulator
     st.markdown("#### 🍳 Recipe Builder Simulator")
@@ -1692,7 +1692,7 @@ def sagemaker_data_wrangler_tab():
     }
     
     comparison_df = pd.DataFrame(comparison_data)
-    st.dataframe(comparison_df, use_container_width=True)
+    st.dataframe(comparison_df, width="stretch")
     
     # Interactive feature engineering simulator
     st.markdown("#### 🛠️ Feature Engineering Simulator")
@@ -1704,7 +1704,7 @@ def sagemaker_data_wrangler_tab():
     
     with col1:
         st.markdown("##### ML Dataset Sample")
-        st.dataframe(ml_sample_data.head(20), use_container_width=True)
+        st.dataframe(ml_sample_data.head(20), width="stretch")
     
     with col2:
         st.markdown("##### Feature Engineering Options")
@@ -1744,7 +1744,7 @@ def sagemaker_data_wrangler_tab():
             
             # Show sample of engineered data
             st.markdown("##### Sample of Engineered Features")
-            st.dataframe(engineered_features.head(10), use_container_width=True)
+            st.dataframe(engineered_features.head(10), width="stretch")
     
     # Data quality workflow
     st.markdown("#### 📊 Data Quality Workflow")
@@ -3108,7 +3108,7 @@ def create_sample_analysis_charts(df):
             color_discrete_sequence=[AWS_COLORS['primary']]
         )
         fig1.update_layout(showlegend=False)
-        st.plotly_chart(fig1, use_container_width=True)
+        st.plotly_chart(fig1, width="stretch")
         
         # Income vs Credit Score
         fig3 = px.scatter(
@@ -3116,7 +3116,7 @@ def create_sample_analysis_charts(df):
             title='Income vs Credit Score by Churn',
             color_discrete_map={0: AWS_COLORS['light_blue'], 1: AWS_COLORS['error']}
         )
-        st.plotly_chart(fig3, use_container_width=True)
+        st.plotly_chart(fig3, width="stretch")
     
     with col2:
         # Churn by Education Level
@@ -3128,7 +3128,7 @@ def create_sample_analysis_charts(df):
             color_continuous_scale='Reds'
         )
         fig2.update_layout(showlegend=False)
-        st.plotly_chart(fig2, use_container_width=True)
+        st.plotly_chart(fig2, width="stretch")
         
         # Correlation heatmap
         numeric_cols = df.select_dtypes(include=[np.number]).columns
@@ -3140,7 +3140,7 @@ def create_sample_analysis_charts(df):
             color_continuous_scale='RdBu',
             aspect='auto'
         )
-        st.plotly_chart(fig4, use_container_width=True)
+        st.plotly_chart(fig4, width="stretch")
 
 def main():
     """Main application function"""

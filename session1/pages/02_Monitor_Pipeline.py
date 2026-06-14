@@ -125,11 +125,8 @@ bucket = config.get("DataLakeBucket", "")
 # Time range selector
 minutes = st.sidebar.slider("Time window (minutes)", 5, 120, 30)
 
-# Auto-refresh
-auto_refresh = st.sidebar.checkbox("Auto-refresh (30s)", value=False)
-if auto_refresh:
-    st.sidebar.markdown("🔄 Refreshing every 30 seconds...")
-    time.sleep(30)
+# Manual refresh
+if st.sidebar.button("🔄 Refresh Now"):
     st.rerun()
 
 st.markdown("---")
@@ -173,7 +170,7 @@ with col1:
         )
         fig.update_traces(fill="tozeroy", line_color="#FF9900")
         fig.update_layout(height=300)
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, width="stretch")
     else:
         st.info("No incoming records data yet. Produce some data first!")
 
@@ -189,7 +186,7 @@ with col2:
             color_discrete_sequence=["#c62828"],
         )
         fig.update_layout(height=300)
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, width="stretch")
     else:
         st.success("✅ No throttling detected")
 
@@ -239,7 +236,7 @@ if invocations:
         color_discrete_sequence=["#1565c0"],
     )
     fig.update_layout(height=250)
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width="stretch")
 
 # Pipeline flow visualization
 st.markdown("---")
@@ -250,9 +247,9 @@ col1, col2 = st.columns(2)
 with col1:
     _diagram = os.path.join(os.path.dirname(__file__), "..", "diagrams", "03_processing_layer.png")
     if os.path.exists(_diagram):
-        st.image(_diagram, caption="Processing: Kinesis → Lambda → S3", use_column_width=True)
+        st.image(_diagram, caption="Processing: Kinesis → Lambda → S3", width="stretch")
 
 with col2:
     _diagram2 = os.path.join(os.path.dirname(__file__), "..", "diagrams", "07_networking_layer.png")
     if os.path.exists(_diagram2):
-        st.image(_diagram2, caption="Networking: VPC + Private Subnets", use_column_width=True)
+        st.image(_diagram2, caption="Networking: VPC + Private Subnets", width="stretch")

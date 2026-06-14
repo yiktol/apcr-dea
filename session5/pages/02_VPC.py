@@ -480,7 +480,7 @@ def vpc_tab():
         })
     
     df_subnets = pd.DataFrame(subnet_data)
-    st.dataframe(df_subnets, use_container_width=True)
+    st.dataframe(df_subnets, width="stretch")
     
     # VPC Components
     st.markdown("#### 🔧 VPC Components")
@@ -1305,7 +1305,7 @@ def security_groups_nacl_tab():
             })
         
         df_inbound = pd.DataFrame(inbound_data)
-        st.dataframe(df_inbound, use_container_width=True)
+        st.dataframe(df_inbound, width="stretch")
         
         # Security group evaluation
         st.markdown("##### Security Group Evaluation")
@@ -1325,7 +1325,7 @@ def security_groups_nacl_tab():
             })
         
         df_nacl = pd.DataFrame(nacl_data)
-        st.dataframe(df_nacl, use_container_width=True)
+        st.dataframe(df_nacl, width="stretch")
         
         # NACL evaluation
         st.markdown("##### Network ACL Evaluation")
@@ -2163,7 +2163,7 @@ def vpc_endpoints_tab():
     else:
         filtered_services = services_data[services_data['Endpoint Type'] == 'Interface']
     
-    st.dataframe(filtered_services, use_container_width=True)
+    st.dataframe(filtered_services, width="stretch")
     
     # Benefits section
     st.markdown("#### 🎯 VPC Endpoints Benefits")
@@ -3141,12 +3141,12 @@ def vpc_peering_tab():
         with col1:
             st.markdown("**Routes for Source VPC**")
             source_routes = pd.DataFrame(route_data['source_routes'])
-            st.dataframe(source_routes, use_container_width=True)
+            st.dataframe(source_routes, width="stretch")
         
         with col2:
             st.markdown("**Routes for Target VPC**")
             target_routes = pd.DataFrame(route_data['target_routes'])
-            st.dataframe(target_routes, use_container_width=True)
+            st.dataframe(target_routes, width="stretch")
     
     # Peering alternatives
     st.markdown("#### 🔄 VPC Connectivity Alternatives")

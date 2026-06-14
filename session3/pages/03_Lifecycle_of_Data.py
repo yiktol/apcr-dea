@@ -803,7 +803,7 @@ def s3_lifecycle_tab():
         font_color=AWS_COLORS['secondary']
     )
     
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width="stretch")
     
     # Lifecycle policy examples
     st.markdown("###  📋 Lifecycle Policy Examples")
@@ -1992,7 +1992,7 @@ def glacier_cost_tab():
                  color_discrete_sequence=[AWS_COLORS['primary'], AWS_COLORS['light_blue'], 
                                         AWS_COLORS['success'], AWS_COLORS['secondary']])
     
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width="stretch")
     
     # Optimization recommendations
     st.markdown("###  🎯 Optimization Recommendations")
@@ -2573,7 +2573,7 @@ def s3_versioning_tab():
         font_color=AWS_COLORS['secondary']
     )
     
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width="stretch")
     
     # Code examples
     st.markdown("###  💻 Versioning Management Code")
@@ -3325,7 +3325,7 @@ def dynamodb_ttl_tab():
     }
     
     df_patterns = pd.DataFrame(patterns_data)
-    st.dataframe(df_patterns, use_container_width=True)
+    st.dataframe(df_patterns, width="stretch")
     
     # Code examples
     st.markdown("###  💻 DynamoDB TTL Implementation")

@@ -595,7 +595,7 @@ def emr_storage_options_tab():
     }
     
     df_comparison = pd.DataFrame(comparison_data)
-    st.dataframe(df_comparison, use_container_width=True)
+    st.dataframe(df_comparison, width="stretch")
     
     # Performance metrics visualization
     st.markdown("#### 📈 Performance Characteristics")
@@ -631,7 +631,7 @@ def emr_storage_options_tab():
         title="HDFS vs EMRFS Performance Comparison"
     )
     
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width="stretch")
     
     # Configuration examples
     st.markdown("#### 💻 Storage Configuration Examples")
@@ -1184,7 +1184,7 @@ def node_configuration_tab():
     }
     
     df_comparison = pd.DataFrame(comparison_data)
-    st.dataframe(df_comparison, use_container_width=True)
+    st.dataframe(df_comparison, width="stretch")
     
     # Spot instance strategies
     st.markdown("#### 💸 Spot Instance Strategies")
@@ -2954,7 +2954,7 @@ def emr_vs_glue_tab():
         barmode='group'
     )
     
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width="stretch")
     
     # Migration considerations
     st.markdown("#### 🔄 Migration Considerations")

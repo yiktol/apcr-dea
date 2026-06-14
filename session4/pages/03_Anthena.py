@@ -407,7 +407,7 @@ def athena_tab():
     st.markdown('</div>', unsafe_allow_html=True)
     
     # Execute query simulation
-    if st.button("🚀 Execute Query Simulation", use_container_width=True):
+    if st.button("🚀 Execute Query Simulation", width="stretch"):
         simulate_query_execution(query_example, file_format)
     
     # Performance optimization tips
@@ -1142,7 +1142,7 @@ def federated_query_tab():
     if performance_filter != 'All':
         filtered_df = filtered_df[filtered_df['Performance'] == performance_filter]
     
-    st.dataframe(filtered_df, use_container_width=True)
+    st.dataframe(filtered_df, width="stretch")
     
     # Interactive query builder
     st.markdown("#### 🎮 Federated Query Builder")
@@ -1193,7 +1193,7 @@ def federated_query_tab():
     st.markdown('</div>', unsafe_allow_html=True)
     
     # Execute federated query simulation
-    if st.button("🚀 Execute Federated Query Simulation", use_container_width=True):
+    if st.button("🚀 Execute Federated Query Simulation", width="stretch"):
         simulate_federated_query_execution(primary_source, secondary_source)
     
     # Performance considerations
@@ -2212,7 +2212,7 @@ def workgroups_tab():
     st.markdown('</div>', unsafe_allow_html=True)
     
     # Create workgroup simulation
-    if st.button("🚀 Create Workgroup Simulation", use_container_width=True):
+    if st.button("🚀 Create Workgroup Simulation", width="stretch"):
         simulate_workgroup_creation(workgroup_config)
     
     # Workgroup comparison
@@ -2330,7 +2330,7 @@ def workgroups_tab():
         paper_bgcolor='white',
         font=dict(color=AWS_COLORS['secondary'])
     )
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width="stretch")
     
     # Code examples
     st.markdown("#### 💻 Workgroup Management Examples")
@@ -3654,7 +3654,7 @@ def simulate_query_execution(query, file_format):
             'value': [100, 200, 300]
         })
     
-    st.dataframe(sample_data, use_container_width=True)
+    st.dataframe(sample_data, width="stretch")
 
 def generate_federated_query(primary_source, secondary_source, join_type, optimization):
     """Generate federated query example"""
@@ -3736,7 +3736,7 @@ def simulate_federated_query_execution(primary_source, secondary_source):
         'source_combination': [f'{primary_source} + {secondary_source}'] * 3
     })
     
-    st.dataframe(federated_data, use_container_width=True)
+    st.dataframe(federated_data, width="stretch")
 
 def generate_workgroup_config(name, wg_type, per_query_limit, workgroup_limit, encryption, enforce_config, bucket, prefix):
     """Generate workgroup configuration"""

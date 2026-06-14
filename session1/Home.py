@@ -121,7 +121,7 @@ def main():
     import os
     diagram_path = os.path.join(os.path.dirname(__file__), "diagrams", "01_overall_pipeline.png")
     if os.path.exists(diagram_path):
-        st.image(diagram_path, caption="End-to-End Pipeline Architecture", use_column_width=True)
+        st.image(diagram_path, caption="End-to-End Pipeline Architecture", width="stretch")
     else:
         st.info("Run `create_diagrams.py` in `diagrams/` to generate the architecture diagram.")
 

@@ -27,7 +27,7 @@ import os
 _diagram = os.path.join(os.path.dirname(__file__), "..", "diagrams", "05_analytics_layer.png")
 if os.path.exists(_diagram):
     with st.expander("📐 Architecture Diagram — Analytics Layer", expanded=False):
-        st.image(_diagram, caption="Analytics Layer: S3 → Athena / Redshift / OpenSearch → BI", use_column_width=True)
+        st.image(_diagram, caption="Analytics Layer: S3 → Athena / Redshift / OpenSearch → BI", width="stretch")
 
 
 def get_config():
@@ -151,7 +151,7 @@ query = st.text_area(
 # Execute
 col1, col2 = st.columns([1, 4])
 with col1:
-    run_button = st.button("▶️ Run Query", type="primary", use_container_width=True)
+    run_button = st.button("▶️ Run Query", type="primary", width="stretch")
 
 if run_button:
     with st.spinner("Executing query..."):
@@ -171,7 +171,7 @@ if run_button:
 
             # Show results
             st.markdown("### Results")
-            st.dataframe(df, use_container_width=True)
+            st.dataframe(df, width="stretch")
 
             # Auto-visualize if appropriate
             if len(df.columns) >= 2 and len(df) > 1:
@@ -198,7 +198,7 @@ if run_button:
                         color_discrete_sequence=px.colors.qualitative.Set2,
                     )
                     fig.update_layout(height=350)
-                    st.plotly_chart(fig, use_container_width=True)
+                    st.plotly_chart(fig, width="stretch")
 
         except Exception as e:
             st.error(f"Query failed: {e}")

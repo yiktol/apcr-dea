@@ -1084,7 +1084,7 @@ def redshift_data_api_tab():
     }
     
     comparison_df = pd.DataFrame(comparison_data)
-    st.dataframe(comparison_df, use_container_width=True)
+    st.dataframe(comparison_df, width="stretch")
     
     # Authentication methods
     st.markdown("#### 🔐 Authentication Methods")

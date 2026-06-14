@@ -1,0 +1,666 @@
+AWSTemplateFormatVersion: "2010-09-09"
+
+Description: |
+  DEA Streamlit Server Infrastructure - Deploys an Auto Scaling Group of EC2 instances
+  running Streamlit applications (Sessions 1-5) behind an Application Load Balancer
+  with HTTPS listeners on ports 8086-8090.
+
+Parameters:
+  LatestAWSLinuxAmiId:
+    Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
+    Default: '/aws/service/cloud9/amis/ubuntu-22.04-x86_64'
+    Description: AMI ID for Ubuntu 22.04 LTS
+
+  Domain:
+    Type: String
+    Description: Root domain name for the application
+
+  AlbName:
+    Type: String
+    Default: lbdea
+    Description: Name for the Application Load Balancer
+
+  CertId:
+    Type: String
+    Description: ACM Certificate ID for HTTPS listeners
+
+  TargetGroupName:
+    Type: String
+    Default: dea
+    Description: Base name for target groups
+
+  InstanceType:
+    Type: String
+    Description: EC2 instance type
+    Default: t3.medium
+    AllowedValues:
+      - t3.small
+      - t3.medium
+      - t3.large
+      - t3.xlarge
+      - t3a.medium
+      - t3a.large
+
+  VpcId:
+    Type: AWS::EC2::VPC::Id
+    Description: VPC ID where resources will be deployed
+
+  PrivateSubnetId:
+    Type: AWS::EC2::Subnet::Id
+    Description: Private subnet ID for EC2 instances
+
+  PublicSubnetId:
+    Type: AWS::EC2::Subnet::Id
+    Description: First public subnet ID for the load balancer
+
+  PublicSubnetTwoId:
+    Type: AWS::EC2::Subnet::Id
+    Description: Second public subnet ID for the load balancer (different AZ)
+
+  SourcePrefixListId:
+    Type: String
+    Description: Source prefix list ID for network access control (CloudFront)
+
+  CloudFrontALBSecretName:
+    Type: String
+    Default: cloudfront/alb-handshake
+    Description: Secret name for CloudFront-ALB origin verification header
+
+  GitRepoUrl:
+    Type: String
+    Default: https://github.com/yiktol/apcr-dea.git
+    Description: Git repository URL for the application code
+
+Resources:
+  # ================================
+  # IAM Resources
+  # ================================
+  InstanceRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: ec2.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore
+      Policies:
+        - PolicyName: DEAStreamlitPolicy
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Sid: KinesisAccess
+                Effect: Allow
+                Action:
+                  - kinesis:PutRecord
+                  - kinesis:PutRecords
+                  - kinesis:GetRecords
+                  - kinesis:GetShardIterator
+                  - kinesis:DescribeStream
+                  - kinesis:ListStreams
+                  - kinesis:ListShards
+                Resource: "*"
+              - Sid: GlueAccess
+                Effect: Allow
+                Action:
+                  - glue:GetDatabase
+                  - glue:GetDatabases
+                  - glue:GetTable
+                  - glue:GetTables
+                  - glue:GetPartitions
+                  - glue:StartJobRun
+                  - glue:GetJobRun
+                  - glue:GetJob
+                Resource: "*"
+              - Sid: AthenaAccess
+                Effect: Allow
+                Action:
+                  - athena:StartQueryExecution
+                  - athena:GetQueryExecution
+                  - athena:GetQueryResults
+                  - athena:ListWorkGroups
+                Resource: "*"
+              - Sid: S3Access
+                Effect: Allow
+                Action:
+                  - s3:GetObject
+                  - s3:PutObject
+                  - s3:ListBucket
+                  - s3:GetBucketLocation
+                Resource: "*"
+              - Sid: LambdaAccess
+                Effect: Allow
+                Action:
+                  - lambda:ListFunctions
+                  - lambda:GetFunction
+                  - lambda:InvokeFunction
+                Resource: "*"
+              - Sid: CloudWatchAccess
+                Effect: Allow
+                Action:
+                  - cloudwatch:GetMetricData
+                  - cloudwatch:ListMetrics
+                  - logs:DescribeLogGroups
+                  - logs:DescribeLogStreams
+                  - logs:GetLogEvents
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource: "*"
+              - Sid: CloudFormationAccess
+                Effect: Allow
+                Action:
+                  - cloudformation:DescribeStacks
+                  - cloudformation:ListStacks
+                Resource: "*"
+              - Sid: MacieAccess
+                Effect: Allow
+                Action:
+                  - macie2:ListFindings
+                  - macie2:GetFindings
+                  - macie2:CreateClassificationJob
+                  - macie2:DescribeClassificationJob
+                Resource: "*"
+              - Sid: GetSecret
+                Effect: Allow
+                Action:
+                  - secretsmanager:GetSecretValue
+                Resource: "*"
+
+  InstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Path: /
+      Roles:
+        - !Ref InstanceRole
+
+  # ================================
+  # Security Groups
+  # ================================
+  LoadBalancerSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: ALB security group - allows CloudFront HTTPS access on ports 8086-8090
+      VpcId: !Ref VpcId
+      SecurityGroupIngress:
+        - SourcePrefixListId: !Ref SourcePrefixListId
+          IpProtocol: tcp
+          FromPort: 8086
+          ToPort: 8090
+          Description: Allow CloudFront access to Streamlit ports
+
+  InstanceSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: EC2 security group - allows ALB access to application ports
+      VpcId: !Ref VpcId
+      SecurityGroupIngress:
+        - SourceSecurityGroupId: !GetAtt LoadBalancerSecurityGroup.GroupId
+          IpProtocol: tcp
+          FromPort: 8086
+          ToPort: 8090
+          Description: Allow ALB access to Streamlit ports
+
+  # ================================
+  # Launch Template & Auto Scaling
+  # ================================
+  DEALaunchTemplate:
+    Type: AWS::EC2::LaunchTemplate
+    Properties:
+      LaunchTemplateName: DEAStreamlitLaunchTemplate
+      LaunchTemplateData:
+        IamInstanceProfile:
+          Arn: !GetAtt InstanceProfile.Arn
+        ImageId: !Ref LatestAWSLinuxAmiId
+        InstanceType: !Ref InstanceType
+        BlockDeviceMappings:
+          - DeviceName: /dev/sda1
+            Ebs:
+              VolumeType: gp3
+              DeleteOnTermination: true
+              VolumeSize: 30
+        SecurityGroupIds:
+          - !Ref InstanceSecurityGroup
+        TagSpecifications:
+          - ResourceType: instance
+            Tags:
+              - Key: Name
+                Value: DEA-StreamlitServer
+        UserData:
+          Fn::Base64: !Sub |
+            #cloud-config
+            package_update: true
+            package_upgrade: true
+
+            packages:
+            - git
+            - python3-pip
+            - python3-venv
+
+            write_files:
+            - content: |
+                @reboot /bin/bash /home/ubuntu/environment/apcr-dea/session1/setup.sh
+                @reboot /bin/bash /home/ubuntu/environment/apcr-dea/session2/setup.sh
+                @reboot /bin/bash /home/ubuntu/environment/apcr-dea/session3/setup.sh
+                @reboot /bin/bash /home/ubuntu/environment/apcr-dea/session4/setup.sh
+                @reboot /bin/bash /home/ubuntu/environment/apcr-dea/session5/setup.sh
+              owner: ubuntu:root
+              path: /home/ubuntu/environment/mycrontab
+              permissions: '0600'
+
+            runcmd:
+            - mkdir -p /home/ubuntu/environment
+            - cd /home/ubuntu/environment
+            - git clone ${GitRepoUrl}
+            - chown -R ubuntu:root /home/ubuntu/environment
+            - su - ubuntu -c "crontab /home/ubuntu/environment/mycrontab"
+            - su - ubuntu -c "/bin/bash /home/ubuntu/environment/apcr-dea/session1/setup.sh"
+            - su - ubuntu -c "/bin/bash /home/ubuntu/environment/apcr-dea/session2/setup.sh"
+            - su - ubuntu -c "/bin/bash /home/ubuntu/environment/apcr-dea/session3/setup.sh"
+            - su - ubuntu -c "/bin/bash /home/ubuntu/environment/apcr-dea/session4/setup.sh"
+            - su - ubuntu -c "/bin/bash /home/ubuntu/environment/apcr-dea/session5/setup.sh"
+
+  DEAServerGroup:
+    Type: AWS::AutoScaling::AutoScalingGroup
+    Properties:
+      AutoScalingGroupName: DEAServerGroup
+      VPCZoneIdentifier:
+        - !Ref PrivateSubnetId
+      MinSize: 1
+      MaxSize: 2
+      DesiredCapacity: 1
+      TargetGroupARNs:
+        - !Ref TargetGroup8086
+        - !Ref TargetGroup8087
+        - !Ref TargetGroup8088
+        - !Ref TargetGroup8089
+        - !Ref TargetGroup8090
+      MixedInstancesPolicy:
+        LaunchTemplate:
+          LaunchTemplateSpecification:
+            LaunchTemplateId: !Ref DEALaunchTemplate
+            Version: !GetAtt DEALaunchTemplate.LatestVersionNumber
+          Overrides:
+            - InstanceType: t3.medium
+            - InstanceType: t3a.medium
+            - InstanceType: t3.large
+            - InstanceType: t3a.large
+        InstancesDistribution:
+          OnDemandBaseCapacity: 1
+          OnDemandPercentageAboveBaseCapacity: 0
+          SpotAllocationStrategy: capacity-optimized-prioritized
+
+  # Auto Scaling Policies
+  ScaleOutPolicy:
+    Type: AWS::AutoScaling::ScalingPolicy
+    Properties:
+      AdjustmentType: ChangeInCapacity
+      AutoScalingGroupName: !Ref DEAServerGroup
+      Cooldown: 60
+      ScalingAdjustment: 1
+
+  ScaleInPolicy:
+    Type: AWS::AutoScaling::ScalingPolicy
+    Properties:
+      AdjustmentType: ChangeInCapacity
+      AutoScalingGroupName: !Ref DEAServerGroup
+      Cooldown: 60
+      ScalingAdjustment: -1
+
+  CPUAlarmHigh:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: !Sub "${TargetGroupName}-scale-out"
+      AlarmDescription: Scale out if CPU >= 60% for 1 minute
+      MetricName: CPUUtilization
+      Namespace: AWS/EC2
+      Statistic: Average
+      Period: 60
+      EvaluationPeriods: 1
+      Threshold: 60
+      AlarmActions:
+        - !Ref ScaleOutPolicy
+      Dimensions:
+        - Name: AutoScalingGroupName
+          Value: !Ref DEAServerGroup
+      ComparisonOperator: GreaterThanThreshold
+
+  CPUAlarmLow:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: !Sub "${TargetGroupName}-scale-in"
+      AlarmDescription: Scale in if CPU <= 40% for 1 minute
+      MetricName: CPUUtilization
+      Namespace: AWS/EC2
+      Statistic: Average
+      Period: 60
+      EvaluationPeriods: 1
+      Threshold: 40
+      AlarmActions:
+        - !Ref ScaleInPolicy
+      Dimensions:
+        - Name: AutoScalingGroupName
+          Value: !Ref DEAServerGroup
+      ComparisonOperator: LessThanThreshold
+
+  # ================================
+  # Load Balancer
+  # ================================
+  LoadBalancer:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+      Name: !Ref AlbName
+      Scheme: internet-facing
+      IpAddressType: dualstack
+      LoadBalancerAttributes:
+        - Key: idle_timeout.timeout_seconds
+          Value: "30"
+      Subnets:
+        - !Ref PublicSubnetId
+        - !Ref PublicSubnetTwoId
+      SecurityGroups:
+        - !Ref LoadBalancerSecurityGroup
+
+  LoadBalancerDNSRecord:
+    Type: AWS::Route53::RecordSet
+    Properties:
+      HostedZoneName: !Sub ${Domain}.
+      Name: !Sub ${AlbName}.${Domain}
+      Type: A
+      AliasTarget:
+        HostedZoneId: !GetAtt LoadBalancer.CanonicalHostedZoneID
+        DNSName: !GetAtt LoadBalancer.DNSName
+        EvaluateTargetHealth: true
+
+  # ================================
+  # Target Groups (Ports 8086-8090)
+  # ================================
+  TargetGroup8086:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      Name: !Sub "${TargetGroupName}-tg-8086"
+      HealthCheckIntervalSeconds: 30
+      HealthCheckTimeoutSeconds: 5
+      HealthyThresholdCount: 3
+      Port: 8086
+      Protocol: HTTP
+      UnhealthyThresholdCount: 5
+      VpcId: !Ref VpcId
+      TargetGroupAttributes:
+        - Key: stickiness.enabled
+          Value: true
+        - Key: stickiness.type
+          Value: lb_cookie
+
+  TargetGroup8087:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      Name: !Sub "${TargetGroupName}-tg-8087"
+      HealthCheckIntervalSeconds: 30
+      HealthCheckTimeoutSeconds: 5
+      HealthyThresholdCount: 3
+      Port: 8087
+      Protocol: HTTP
+      UnhealthyThresholdCount: 5
+      VpcId: !Ref VpcId
+      TargetGroupAttributes:
+        - Key: stickiness.enabled
+          Value: true
+        - Key: stickiness.type
+          Value: lb_cookie
+
+  TargetGroup8088:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      Name: !Sub "${TargetGroupName}-tg-8088"
+      HealthCheckIntervalSeconds: 30
+      HealthCheckTimeoutSeconds: 5
+      HealthyThresholdCount: 3
+      Port: 8088
+      Protocol: HTTP
+      UnhealthyThresholdCount: 5
+      VpcId: !Ref VpcId
+      TargetGroupAttributes:
+        - Key: stickiness.enabled
+          Value: true
+        - Key: stickiness.type
+          Value: lb_cookie
+
+  TargetGroup8089:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      Name: !Sub "${TargetGroupName}-tg-8089"
+      HealthCheckIntervalSeconds: 30
+      HealthCheckTimeoutSeconds: 5
+      HealthyThresholdCount: 3
+      Port: 8089
+      Protocol: HTTP
+      UnhealthyThresholdCount: 5
+      VpcId: !Ref VpcId
+      TargetGroupAttributes:
+        - Key: stickiness.enabled
+          Value: true
+        - Key: stickiness.type
+          Value: lb_cookie
+
+  TargetGroup8090:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      Name: !Sub "${TargetGroupName}-tg-8090"
+      HealthCheckIntervalSeconds: 30
+      HealthCheckTimeoutSeconds: 5
+      HealthyThresholdCount: 3
+      Port: 8090
+      Protocol: HTTP
+      UnhealthyThresholdCount: 5
+      VpcId: !Ref VpcId
+      TargetGroupAttributes:
+        - Key: stickiness.enabled
+          Value: true
+        - Key: stickiness.type
+          Value: lb_cookie
+
+  # ================================
+  # HTTPS Listeners (Ports 8086-8090)
+  # ================================
+  Listener8086:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      DefaultActions:
+        - Type: fixed-response
+          FixedResponseConfig:
+            ContentType: text/html
+            MessageBody: Not Found
+            StatusCode: 404
+      LoadBalancerArn: !Ref LoadBalancer
+      Certificates:
+        - CertificateArn: !Sub arn:aws:acm:${AWS::Region}:${AWS::AccountId}:certificate/${CertId}
+      Port: 8086
+      Protocol: HTTPS
+      SslPolicy: ELBSecurityPolicy-TLS-1-2-2017-01
+
+  Listener8087:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      DefaultActions:
+        - Type: fixed-response
+          FixedResponseConfig:
+            ContentType: text/html
+            MessageBody: Not Found
+            StatusCode: 404
+      LoadBalancerArn: !Ref LoadBalancer
+      Certificates:
+        - CertificateArn: !Sub arn:aws:acm:${AWS::Region}:${AWS::AccountId}:certificate/${CertId}
+      Port: 8087
+      Protocol: HTTPS
+      SslPolicy: ELBSecurityPolicy-TLS-1-2-2017-01
+
+  Listener8088:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      DefaultActions:
+        - Type: fixed-response
+          FixedResponseConfig:
+            ContentType: text/html
+            MessageBody: Not Found
+            StatusCode: 404
+      LoadBalancerArn: !Ref LoadBalancer
+      Certificates:
+        - CertificateArn: !Sub arn:aws:acm:${AWS::Region}:${AWS::AccountId}:certificate/${CertId}
+      Port: 8088
+      Protocol: HTTPS
+      SslPolicy: ELBSecurityPolicy-TLS-1-2-2017-01
+
+  Listener8089:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      DefaultActions:
+        - Type: fixed-response
+          FixedResponseConfig:
+            ContentType: text/html
+            MessageBody: Not Found
+            StatusCode: 404
+      LoadBalancerArn: !Ref LoadBalancer
+      Certificates:
+        - CertificateArn: !Sub arn:aws:acm:${AWS::Region}:${AWS::AccountId}:certificate/${CertId}
+      Port: 8089
+      Protocol: HTTPS
+      SslPolicy: ELBSecurityPolicy-TLS-1-2-2017-01
+
+  Listener8090:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      DefaultActions:
+        - Type: fixed-response
+          FixedResponseConfig:
+            ContentType: text/html
+            MessageBody: Not Found
+            StatusCode: 404
+      LoadBalancerArn: !Ref LoadBalancer
+      Certificates:
+        - CertificateArn: !Sub arn:aws:acm:${AWS::Region}:${AWS::AccountId}:certificate/${CertId}
+      Port: 8090
+      Protocol: HTTPS
+      SslPolicy: ELBSecurityPolicy-TLS-1-2-2017-01
+
+  # ================================
+  # Listener Rules (CloudFront header verification)
+  # ================================
+  ListenerRule8086:
+    Type: AWS::ElasticLoadBalancingV2::ListenerRule
+    Properties:
+      Actions:
+        - Type: forward
+          TargetGroupArn: !Ref TargetGroup8086
+      Conditions:
+        - Field: http-header
+          HttpHeaderConfig:
+            HttpHeaderName: !Join ['', ['{{resolve:secretsmanager:', !Ref CloudFrontALBSecretName, ':SecretString:HEADER_NAME}}']]
+            Values:
+              - !Join ['', ['{{resolve:secretsmanager:', !Ref CloudFrontALBSecretName, ':SecretString:HEADER_VALUE}}']]
+      ListenerArn: !Ref Listener8086
+      Priority: 1
+
+  ListenerRule8087:
+    Type: AWS::ElasticLoadBalancingV2::ListenerRule
+    Properties:
+      Actions:
+        - Type: forward
+          TargetGroupArn: !Ref TargetGroup8087
+      Conditions:
+        - Field: http-header
+          HttpHeaderConfig:
+            HttpHeaderName: !Join ['', ['{{resolve:secretsmanager:', !Ref CloudFrontALBSecretName, ':SecretString:HEADER_NAME}}']]
+            Values:
+              - !Join ['', ['{{resolve:secretsmanager:', !Ref CloudFrontALBSecretName, ':SecretString:HEADER_VALUE}}']]
+      ListenerArn: !Ref Listener8087
+      Priority: 1
+
+  ListenerRule8088:
+    Type: AWS::ElasticLoadBalancingV2::ListenerRule
+    Properties:
+      Actions:
+        - Type: forward
+          TargetGroupArn: !Ref TargetGroup8088
+      Conditions:
+        - Field: http-header
+          HttpHeaderConfig:
+            HttpHeaderName: !Join ['', ['{{resolve:secretsmanager:', !Ref CloudFrontALBSecretName, ':SecretString:HEADER_NAME}}']]
+            Values:
+              - !Join ['', ['{{resolve:secretsmanager:', !Ref CloudFrontALBSecretName, ':SecretString:HEADER_VALUE}}']]
+      ListenerArn: !Ref Listener8088
+      Priority: 1
+
+  ListenerRule8089:
+    Type: AWS::ElasticLoadBalancingV2::ListenerRule
+    Properties:
+      Actions:
+        - Type: forward
+          TargetGroupArn: !Ref TargetGroup8089
+      Conditions:
+        - Field: http-header
+          HttpHeaderConfig:
+            HttpHeaderName: !Join ['', ['{{resolve:secretsmanager:', !Ref CloudFrontALBSecretName, ':SecretString:HEADER_NAME}}']]
+            Values:
+              - !Join ['', ['{{resolve:secretsmanager:', !Ref CloudFrontALBSecretName, ':SecretString:HEADER_VALUE}}']]
+      ListenerArn: !Ref Listener8089
+      Priority: 1
+
+  ListenerRule8090:
+    Type: AWS::ElasticLoadBalancingV2::ListenerRule
+    Properties:
+      Actions:
+        - Type: forward
+          TargetGroupArn: !Ref TargetGroup8090
+      Conditions:
+        - Field: http-header
+          HttpHeaderConfig:
+            HttpHeaderName: !Join ['', ['{{resolve:secretsmanager:', !Ref CloudFrontALBSecretName, ':SecretString:HEADER_NAME}}']]
+            Values:
+              - !Join ['', ['{{resolve:secretsmanager:', !Ref CloudFrontALBSecretName, ':SecretString:HEADER_VALUE}}']]
+      ListenerArn: !Ref Listener8090
+      Priority: 1
+
+Outputs:
+  LoadBalancerDNS:
+    Description: DNS name of the Application Load Balancer
+    Value: !GetAtt LoadBalancer.DNSName
+
+  CustomDomainURL:
+    Description: Custom domain URL for the application
+    Value: !Sub "https://${AlbName}.${Domain}"
+
+  AutoScalingGroupName:
+    Description: Name of the Auto Scaling Group
+    Value: !Ref DEAServerGroup
+
+  InstanceSecurityGroupId:
+    Description: Security Group ID for EC2 instances
+    Value: !Ref InstanceSecurityGroup
+
+  LoadBalancerSecurityGroupId:
+    Description: Security Group ID for the Load Balancer
+    Value: !Ref LoadBalancerSecurityGroup
+
+  Session1URL:
+    Description: Session 1 - Data Pipeline (Port 8086)
+    Value: !Sub "https://${AlbName}.${Domain}:8086"
+
+  Session2URL:
+    Description: Session 2 (Port 8087)
+    Value: !Sub "https://${AlbName}.${Domain}:8087"
+
+  Session3URL:
+    Description: Session 3 (Port 8088)
+    Value: !Sub "https://${AlbName}.${Domain}:8088"
+
+  Session4URL:
+    Description: Session 4 (Port 8089)
+    Value: !Sub "https://${AlbName}.${Domain}:8089"
+
+  Session5URL:
+    Description: Session 5 (Port 8090)
+    Value: !Sub "https://${AlbName}.${Domain}:8090"

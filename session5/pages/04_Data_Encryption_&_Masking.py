@@ -557,7 +557,7 @@ def kms_tab():
     }
     
     df_key_types = pd.DataFrame(key_types_data)
-    st.dataframe(df_key_types, use_container_width=True)
+    st.dataframe(df_key_types, width="stretch")
     
     # Code examples
     st.markdown("#### 💻 KMS Implementation Examples")
@@ -1349,7 +1349,7 @@ def redshift_encryption_tab():
                  color_discrete_map={'Without Encryption': AWS_COLORS['light_blue'], 
                                    'With Encryption': AWS_COLORS['primary']})
     fig.update_layout(yaxis_title="Performance (%)", showlegend=True)
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width="stretch")
     
     # Encryption best practices
     st.markdown("#### 📋 Redshift Encryption Best Practices")
@@ -3818,7 +3818,7 @@ def emr_encryption_tab():
     }
     
     df_app_encryption = pd.DataFrame(app_encryption_data)
-    st.dataframe(df_app_encryption, use_container_width=True)
+    st.dataframe(df_app_encryption, width="stretch")
     
     # Performance impact analysis
     st.markdown("#### ⚡ Encryption Performance Impact")
@@ -3838,7 +3838,7 @@ def emr_encryption_tab():
                  color_discrete_map={'No Encryption': AWS_COLORS['light_blue'], 
                                    'With Encryption': AWS_COLORS['primary']})
     fig.update_layout(yaxis_title="Performance (%)", showlegend=True)
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width="stretch")
     
     # Code examples
     st.markdown("#### 💻 EMR Encryption Implementation")

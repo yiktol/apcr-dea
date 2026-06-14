@@ -786,7 +786,7 @@ def dms_tab():
             endpoints_data[key].append('')
     
     df_endpoints = pd.DataFrame(endpoints_data)
-    st.dataframe(df_endpoints, use_container_width=True)
+    st.dataframe(df_endpoints, width="stretch")
     
     # Code examples
     st.markdown("#### 💻 DMS Implementation Examples")
@@ -1302,7 +1302,7 @@ def dms_schema_conversion_tab():
     st.markdown("#### 🔄 Database Conversion Compatibility")
     
     compatibility_data = create_compatibility_matrix()
-    st.dataframe(compatibility_data, use_container_width=True)
+    st.dataframe(compatibility_data, width="stretch")
     
     # Common conversion challenges
     st.markdown("#### ⚠️ Common Conversion Challenges")

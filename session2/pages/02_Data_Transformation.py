@@ -359,7 +359,7 @@ def transform_process_data_tab():
         
         target_format = st.selectbox("Target Format:", ["Parquet", "ORC", "JSON", "CSV", "Database"])
     
-    if st.button("🚀 Execute Transformation (Simulation)", use_container_width=True):
+    if st.button("🚀 Execute Transformation (Simulation)", width="stretch"):
         
         # Simulate processing time based on volume and transformations
         base_time = {"Small (< 1GB)": 5, "Medium (1-10GB)": 25, "Large (10-100GB)": 120, "Very Large (> 100GB)": 600}
@@ -438,7 +438,7 @@ def transform_process_data_tab():
                         marker_color=AWS_COLORS['success']))
     
     fig.update_layout(title='Data Transformation Performance Comparison', barmode='group')
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width="stretch")
     
     # Code Example
     st.markdown("## 💻 Code Example: Data Transformation")
@@ -578,7 +578,7 @@ def etl_concepts_tab():
             "Full Load", "Incremental Load", "Upsert", "Delta Load"
         ])
     
-    if st.button("🚀 Generate ETL Pipeline (Simulation)", use_container_width=True, key="sim1"):
+    if st.button("🚀 Generate ETL Pipeline (Simulation)", width="stretch", key="sim1"):
         
         # Calculate estimated metrics
         complexity_factor = {"Simple": 1, "Moderate": 2, "Complex": 3, "Very Complex": 4}[transform_complexity]
@@ -690,7 +690,7 @@ def etl_concepts_tab():
         height=500
     )
     
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width="stretch")
     
     # Code Example
     st.markdown("## 💻 Code Example: Complete ETL Pipeline")
@@ -949,7 +949,7 @@ def data_extraction_tab():
             "High (> 1 Gbps)", "Medium (100 Mbps - 1 Gbps)", "Low (< 100 Mbps)"
         ])
     
-    if st.button("🎯 Recommend Extraction Strategy", use_container_width=True):
+    if st.button("🎯 Recommend Extraction Strategy", width="stretch"):
         
         # Logic to recommend strategy
         if change_frequency in ["Real-time", "Every few minutes"] and latency_requirement == "Real-time (< 1 minute)":
@@ -1022,7 +1022,7 @@ def data_extraction_tab():
                         marker_color=colors, name='Complexity'), row=2, col=2)
     
     fig.update_layout(height=600, showlegend=False, title_text="Data Extraction Method Comparison")
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width="stretch")
     
     # Code Example
     st.markdown("## 💻 Code Example: Data Extraction Strategies")
@@ -1308,7 +1308,7 @@ def data_transformation_tab():
     
     # Data Format Comparison
     st.markdown("## 📋 Data Format Optimization")
-    st.plotly_chart(create_data_formats_comparison(), use_container_width=True)
+    st.plotly_chart(create_data_formats_comparison(), width="stretch")
     
     # Interactive Transformation Workshop
     st.markdown("## 🛠️ Interactive Data Transformation Workshop")
@@ -1327,7 +1327,7 @@ def data_transformation_tab():
     df_sample = pd.DataFrame(sample_data)
     
     st.markdown("### 📊 Sample Raw Data")
-    st.dataframe(df_sample, use_container_width=True)
+    st.dataframe(df_sample, width="stretch")
     
     # Transformation options
     col1, col2 = st.columns(2)
@@ -1350,7 +1350,7 @@ def data_transformation_tab():
         phone_format = st.selectbox("Phone Format:", ["(555) 123-4567", "555-123-4567", "5551234567"])
         mask_emails = st.checkbox("Mask email domains", value=False)
         
-    if st.button("🚀 Apply Transformations", use_container_width=True):
+    if st.button("🚀 Apply Transformations", width="stretch"):
         
         # Create transformed dataframe
         df_transformed = df_sample.copy()
@@ -1399,7 +1399,7 @@ def data_transformation_tab():
             df_transformed['data_quality_score'] = df_transformed.apply(calculate_quality_score, axis=1)
         
         st.markdown("### ✨ Transformed Data")
-        st.dataframe(df_transformed, use_container_width=True)
+        st.dataframe(df_transformed, width="stretch")
         
         # Show transformation summary
         st.markdown('<div class="highlight-box">', unsafe_allow_html=True)
@@ -1452,7 +1452,7 @@ def data_transformation_tab():
                         marker_color=AWS_COLORS['success'], name='Error Reduction'), row=2, col=2)
     
     fig.update_layout(height=600, showlegend=False, title_text="Data Transformation Performance Metrics")
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width="stretch")
     
     # Code Example
     st.markdown("## 💻 Code Example: Advanced Data Transformations")
@@ -1909,7 +1909,7 @@ def data_loading_tab():
             "Strong (ACID compliance)", "Eventual consistency", "Best effort"
         ])
     
-    if st.button("🎯 Recommend Loading Strategy", use_container_width=True):
+    if st.button("🎯 Recommend Loading Strategy", width="stretch"):
         
         # Strategy recommendation logic
         if data_volume in ["Large (1GB - 10GB)", "Very Large (> 10GB)"] and data_volatility == "Low (< 10% change)":
@@ -1998,7 +1998,7 @@ def data_loading_tab():
     
     fig.update_layout(height=600, showlegend=False, title_text="Data Loading Performance Comparison")
     fig.update_xaxes(tickangle=45)
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width="stretch")
     
     # Loading Best Practices
     st.markdown("## 💡 Data Loading Best Practices")
@@ -2543,7 +2543,7 @@ def aws_glue_tab():
             "GZIP", "Snappy", "BZIP2", "LZ4", "None"
         ])
     
-    if st.button("🚀 Generate Glue Job (Simulation)", use_container_width=True):
+    if st.button("🚀 Generate Glue Job (Simulation)", width="stretch"):
         
         # Calculate estimated metrics
         job_complexity = len(transformations) * 2 + (5 if job_type == "🔥 Spark ETL" else 3)
@@ -2638,7 +2638,7 @@ def aws_glue_tab():
         barmode='group'
     )
     
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width="stretch")
     
     # Supported Data Sources
     st.markdown("## 🔗 Supported Data Sources")
@@ -2662,7 +2662,7 @@ def aws_glue_tab():
                  color_discrete_sequence=[AWS_COLORS['primary'], AWS_COLORS['light_blue'], 
                                         AWS_COLORS['success'], AWS_COLORS['warning'], AWS_COLORS['purple']])
     
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width="stretch")
     
     # Code Example
     st.markdown("## 💻 Code Example: AWS Glue ETL Job")
@@ -3116,7 +3116,7 @@ def glue_data_sources_tab():
             
             connection_timeout = st.number_input("Connection Timeout (seconds):", 1, 300, 30)
     
-    if st.button("🔗 Create Glue Connection (Simulation)", use_container_width=True):
+    if st.button("🔗 Create Glue Connection (Simulation)", width="stretch"):
         
         st.markdown('<div class="highlight-box">', unsafe_allow_html=True)
         st.markdown(f"""
@@ -3167,7 +3167,7 @@ def glue_data_sources_tab():
             return 'background-color: #FF6B35; color: white'
         return ''
     
-    st.dataframe(df_capabilities.style.applymap(highlight_capabilities), use_container_width=True)
+    st.dataframe(df_capabilities.style.applymap(highlight_capabilities), width="stretch")
     
     st.markdown("""
     **Legend:** ✅ Full Support | 🔶 Partial Support | ❌ Not Supported
@@ -3234,7 +3234,7 @@ def glue_data_sources_tab():
     }
     
     df_streaming = pd.DataFrame(streaming_data)
-    st.dataframe(df_streaming, use_container_width=True)
+    st.dataframe(df_streaming, width="stretch")
     
     # Performance Optimization Tips
     st.markdown("## ⚡ Connection Performance Optimization")
@@ -3724,7 +3724,7 @@ def etl_pipeline_s3_glue_tab():
             timeout_minutes = st.number_input("Timeout (minutes):", 5, 480, 60)
             max_concurrent_runs = st.number_input("Max Concurrent Runs:", 1, 10, 1)
     
-    if st.button("🚀 Generate ETL Pipeline (Simulation)", use_container_width=True):
+    if st.button("🚀 Generate ETL Pipeline (Simulation)", width="stretch"):
         
         # Calculate pipeline metrics
         complexity_score = len(transformations) * 2 + len(data_quality_checks) * 1.5
@@ -3837,7 +3837,7 @@ def etl_pipeline_s3_glue_tab():
         height=500
     )
     
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width="stretch")
     
     # Cost Analysis
     st.markdown("## 💰 ETL Pipeline Cost Analysis")
@@ -3884,7 +3884,7 @@ def etl_pipeline_s3_glue_tab():
                          title=f'Monthly Cost Breakdown (${total_cost:.2f})',
                          color_discrete_sequence=[AWS_COLORS['primary'], AWS_COLORS['light_blue'], AWS_COLORS['warning']])
         
-        st.plotly_chart(fig_cost, use_container_width=True)
+        st.plotly_chart(fig_cost, width="stretch")
     
     # Display cost summary
     st.markdown('<div class="metric-card">', unsafe_allow_html=True)
