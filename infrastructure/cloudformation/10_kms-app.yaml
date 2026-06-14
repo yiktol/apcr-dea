@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: '2010-09-09'
-Description: 'Complete KMS App Manager Infrastructure with ECS Fargate Deployment'
+Description: 'DEA - KMS encryption key management application'
 
 Parameters:
   # Application Configuration

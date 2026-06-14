@@ -1,6 +1,6 @@
 
 AWSTemplateFormatVersion: '2010-09-09'
-Description: 'ECS Service for Stress Tool Application using existing ECS Cluster and ALB - Singapore Region'
+Description: 'DEA - Load testing tool on ECS'
 
 Parameters:
   VpcId:
@@ -27,7 +27,7 @@ Parameters:
   ECRRepositoryURI:
     Type: String
     Description: URI of the existing ECR repository (e.g., 123456789012.dkr.ecr.ap-southeast-1.amazonaws.com/my-app:latest)
-    Default: 875692608981.dkr.ecr.ap-southeast-1.amazonaws.com/aws/ec2-stress-tool
+    Default: ""
 
   ContainerCpu:
     Type: Number

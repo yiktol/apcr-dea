@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: '2010-09-09'
-Description: 'Deploy EC2 instance with EFS file system in existing VPC'
+Description: 'DEA - EC2 with EFS file system'
 
 Parameters:
   VpcId:

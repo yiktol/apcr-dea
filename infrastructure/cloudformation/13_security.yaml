@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: '2010-09-09'
-Description: 'Security resources - VPC Flow Logs, AWS Config, and CloudTrail'
+Description: 'DEA - Security stack with VPC Flow Logs, Config, and CloudTrail'
 
 Parameters:
   VpcId:

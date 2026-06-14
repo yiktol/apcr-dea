@@ -11,10 +11,10 @@ BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
 # Configuration
-export Bucket='yikyakyuk-ap-southeast-1-875692608981'
+export Bucket=$(aws ssm get-parameter --name '/genai/cognito/BucketName' --query 'Parameter.Value' --output text --region ap-southeast-1)
 export Prefix='infrastructure/cloudformation'
 export BucketRegion='ap-southeast-1'
-STACK_NAME='saa'
+STACK_NAME='dea'
 REGION='ap-southeast-1'
 
 # Determine the correct template directory based on where script is run from

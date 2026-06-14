@@ -26,15 +26,15 @@
 # ============================================================================
 
 # Delete Storage Stack
-./infrastructure/scripts/delete_stack.sh --force --region ap-southeast-1 master-storage
+./infrastructure/scripts/delete_stack.sh --force --region ap-southeast-1 dea-storage
 
 # Delete Cross-Region Stack
-./infrastructure/scripts/delete_stack.sh --force --region ap-southeast-1 master-cross-region
+./infrastructure/scripts/delete_stack.sh --force --region ap-southeast-1 dea-cross-region
 
 # Delete Regional Stacks (parallel execution)
-./infrastructure/scripts/delete_stack.sh --force --region ap-south-1 master &
-./infrastructure/scripts/delete_stack.sh --force --region ap-southeast-2 master & 
-./infrastructure/scripts/delete_stack.sh --force --region ap-southeast-1 master &
+./infrastructure/scripts/delete_stack.sh --force --region ap-south-1 dea &
+./infrastructure/scripts/delete_stack.sh --force --region ap-southeast-2 dea & 
+./infrastructure/scripts/delete_stack.sh --force --region ap-southeast-1 dea &
 
 # Wait for all background jobs to complete
 wait

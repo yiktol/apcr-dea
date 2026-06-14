@@ -1,6 +1,6 @@
 AWSTemplateFormatVersion: "2010-09-09"
 Description: >-
-  Network Infrastructure with VPC, Multi-AZ Subnets, Security Groups, and Web Application Stack
+  DEA - Master stack orchestrating VPC, compute, networking, containers, serverless, and security
 
 Parameters:
   Bucket:
@@ -16,6 +16,11 @@ Parameters:
     Description: Region where S3 Bucket for CloudFormation Template exists
 
   # Parameters for domain configuration
+  CognitoUserEmail:
+    Type: String
+    Description: Email for Cognito user
+    Default: '{{resolve:ssm:/genai/cognito/CognitoUserEmail}}'
+
   DomainName:
     Type: String
     Description: Base domain name for all coffee shop applications
@@ -24,7 +29,7 @@ Parameters:
   WebApplicationFirewallACLArn:
     Type: String
     Description: ARN of the WAF Web ACL to protect CloudFront distribution
-    Default: arn:aws:wafv2:us-east-1:875692608981:global/webacl/TrainingWebACL/c1a632aa-32f6-49fe-b2cd-63927eb3131e
+    Default: ''
   
   CertificateId:
     Type: String
@@ -71,20 +76,20 @@ Parameters:
   DeployStressToolStack:
     Type: String
     Description: Deploy stress testing tool (Singapore only, requires Container and Cognito stacks)
-    Default: 'true'
+    Default: 'false'
     AllowedValues: ['true', 'false']
 
   DeploySalesGeneratorStack:
     Type: String
     Description: Deploy sales generator (Singapore only, requires Container and Cognito stacks)
-    Default: 'true'
+    Default: 'false'
     AllowedValues: ['true', 'false']
 
 
   DeployKMSAppStack:
     Type: String
     Description: Deploy KMS application stack
-    Default: 'true'
+    Default: 'false'
     AllowedValues: ['true', 'false']
 
 
@@ -92,12 +97,6 @@ Parameters:
     Type: String
     Description: Deploy DynamoDB Global Table Monitor (Singapore only, requires Container and Cognito stacks)
     Default: 'false'
-    AllowedValues: ['true', 'false']
-
-  DeployServerlessMicroserviceStack:
-    Type: String
-    Description: Deploy Serverless Microservice Inventory API Client (Singapore only, requires Container and Cognito stacks)
-    Default: 'true'
     AllowedValues: ['true', 'false']
 
   DeploySecurityStack:
@@ -158,10 +157,6 @@ Conditions:
     - !Condition DeployContainers
     - !Condition DeployCognito
 
-  DeployServerlessMicroservice: !And
-    - !Equals [!Ref DeployServerlessMicroserviceStack, 'true']
-    - !Condition DeployContainers
-
   DeploySecurity: !Equals [!Ref DeploySecurityStack, 'true']
 
   DeployStreamlit: !Equals [!Ref DeployStreamlitStack, 'true']
@@ -175,9 +170,9 @@ Resources:
     Properties:
       TemplateURL: !Sub https://${Bucket}.s3.${BucketRegion}.amazonaws.com/${Prefix}/01_cognito.yaml
       Parameters:
-        CognitoUserEmail: erictole@amazon.com  
+        CognitoUserEmail: !Ref CognitoUserEmail
         CloudfrontDomainName: demo.aws.yikyakyuk.com
-        UserPoolName: saa-user-pool
+        UserPoolName: dea-user-pool
 
   VPCStack:
     Type: AWS::CloudFormation::Stack
@@ -345,20 +340,6 @@ Resources:
         UserPoolClientId: !GetAtt CognitoStack.Outputs.UserPoolClientId
         UserPoolDomain: !GetAtt CognitoStack.Outputs.UserPoolDomain
         DynamoDBTableName: !GetAtt ServerlessStack.Outputs.CoffeeOrdersTableName
-
-  ServerlessMicroserviceStack:
-    Type: AWS::CloudFormation::Stack
-    Condition: DeployServerlessMicroservice
-    Properties:
-      TemplateURL: !Sub https://${Bucket}.s3.${BucketRegion}.amazonaws.com/${Prefix}/12_serverless_microservice.yaml
-      Parameters:
-        VpcId: !GetAtt VPCStack.Outputs.VpcId
-        PrivateSubnetIds: !Join [",",[!GetAtt VPCStack.Outputs.PrivateSubnetOne,!GetAtt VPCStack.Outputs.PrivateSubnetTwo]]
-        ExistingECSCluster: !GetAtt ContainerStack.Outputs.ECSClusterName
-        ExistingALBArn: !GetAtt ContainerStack.Outputs.ApplicationLoadBalancerArn
-        ExistingALBSecurityGroupId: !GetAtt ContainerStack.Outputs.ALBSecurityGroupId
-        CloudFrontALBHandshakeSecretName: cloudfront/alb-handshake
-        ALBHTTPSListener: !GetAtt ContainerStack.Outputs.ALBHTTPSListener
 
   SecurityStack:
     Condition: DeploySecurity

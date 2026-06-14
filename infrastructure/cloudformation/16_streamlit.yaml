@@ -1,9 +1,7 @@
 AWSTemplateFormatVersion: "2010-09-09"
 
 Description: |
-  DEA Streamlit Server Infrastructure - Deploys an Auto Scaling Group of EC2 instances
-  running Streamlit applications (Sessions 1-5) behind an Application Load Balancer
-  with HTTPS listeners on ports 8086-8090.
+  DEA - Web application server with Auto Scaling Group behind ALB  with HTTPS listeners on ports 8086-8090.
 
 Parameters:
   LatestAWSLinuxAmiId:
@@ -243,10 +241,10 @@ Resources:
             write_files:
             - content: |
                 @reboot /bin/bash /home/ubuntu/environment/apcr-dea/session1/setup.sh
-                @reboot /bin/bash /home/ubuntu/environment/apcr-dea/session2/setup.sh
-                @reboot /bin/bash /home/ubuntu/environment/apcr-dea/session3/setup.sh
-                @reboot /bin/bash /home/ubuntu/environment/apcr-dea/session4/setup.sh
-                @reboot /bin/bash /home/ubuntu/environment/apcr-dea/session5/setup.sh
+                # @reboot /bin/bash /home/ubuntu/environment/apcr-dea/session2/setup.sh
+                # @reboot /bin/bash /home/ubuntu/environment/apcr-dea/session3/setup.sh
+                # @reboot /bin/bash /home/ubuntu/environment/apcr-dea/session4/setup.sh
+                # @reboot /bin/bash /home/ubuntu/environment/apcr-dea/session5/setup.sh
               owner: ubuntu:root
               path: /home/ubuntu/environment/mycrontab
               permissions: '0600'
@@ -258,10 +256,10 @@ Resources:
             - chown -R ubuntu:root /home/ubuntu/environment
             - su - ubuntu -c "crontab /home/ubuntu/environment/mycrontab"
             - su - ubuntu -c "/bin/bash /home/ubuntu/environment/apcr-dea/session1/setup.sh"
-            - su - ubuntu -c "/bin/bash /home/ubuntu/environment/apcr-dea/session2/setup.sh"
-            - su - ubuntu -c "/bin/bash /home/ubuntu/environment/apcr-dea/session3/setup.sh"
-            - su - ubuntu -c "/bin/bash /home/ubuntu/environment/apcr-dea/session4/setup.sh"
-            - su - ubuntu -c "/bin/bash /home/ubuntu/environment/apcr-dea/session5/setup.sh"
+            # - su - ubuntu -c "/bin/bash /home/ubuntu/environment/apcr-dea/session2/setup.sh"
+            # - su - ubuntu -c "/bin/bash /home/ubuntu/environment/apcr-dea/session3/setup.sh"
+            # - su - ubuntu -c "/bin/bash /home/ubuntu/environment/apcr-dea/session4/setup.sh"
+            # - su - ubuntu -c "/bin/bash /home/ubuntu/environment/apcr-dea/session5/setup.sh"
 
   DEAServerGroup:
     Type: AWS::AutoScaling::AutoScalingGroup

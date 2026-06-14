@@ -47,7 +47,7 @@ fi
 
 # Check 4: S3 Bucket
 echo -e "\n${BLUE}4. Checking S3 bucket access...${NC}"
-BUCKET='yikyakyuk-ap-southeast-1-875692608981'
+BUCKET=$(aws ssm get-parameter --name '/genai/cognito/BucketName' --query 'Parameter.Value' --output text --region ap-southeast-1)
 if aws s3 ls "s3://$BUCKET" --region ap-southeast-1 &> /dev/null; then
     echo -e "   ${GREEN}✓ S3 bucket accessible: $BUCKET${NC}"
 else

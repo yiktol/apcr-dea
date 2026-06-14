@@ -1,7 +1,6 @@
 AWSTemplateFormatVersion: 2010-09-09
 Description: >-
-   Route 53 failover, weighted, latency, and geolocation routing configurations.
-
+  DEA - Route 53 DNS records and routing policies
 Parameters:
   PublicDomainName:
     Description: Domain name for the public hosted zone

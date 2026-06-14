@@ -1,6 +1,6 @@
 
 AWSTemplateFormatVersion: '2010-09-09'
-Description: 'ECS Service for DynamoDB Global Table Monitor using existing ECS Cluster and ALB - Singapore Region'
+Description: 'DEA - DynamoDB Global Table monitor on ECS'
 
 Parameters:
   VpcId:
@@ -26,7 +26,7 @@ Parameters:
   ECRRepositoryURI:
     Type: String
     Description: URI of the existing ECR repository
-    Default: 875692608981.dkr.ecr.ap-southeast-1.amazonaws.com/aws/global-ddb-monitor
+    Default: ""
 
   ContainerCpu:
     Type: Number

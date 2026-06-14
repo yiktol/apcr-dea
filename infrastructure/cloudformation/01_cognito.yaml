@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: '2010-09-09'
-Description: AWS Cognito configuration with multiple social identity providers
+Description: DEA - Cognito User Pool for application authentication
 
 Parameters:
   CognitoUserEmail:
@@ -11,7 +11,7 @@ Parameters:
 
   UserPoolName:
     Type: String
-    Default: saa-user-pool
+    Default: dea-user-pool
 
 
 Resources:
@@ -38,7 +38,7 @@ Resources:
   UserPoolDomain:
     Type: AWS::Cognito::UserPoolDomain
     Properties:
-      Domain: apcr-saa-auth
+      Domain: dea-auth
       UserPoolId: !Ref UserPool
       ManagedLoginVersion: "2"
 
@@ -63,12 +63,10 @@ Resources:
       CallbackURLs:
         - !Sub https://${CloudfrontDomainName}/stress-tool/
         - !Sub https://${CloudfrontDomainName}/sales-generator/
-        - !Sub https://${CloudfrontDomainName}/serverless-microservice/
         - !Sub https://${CloudfrontDomainName}/oauth2/idpresponse
       LogoutURLs:
         - !Sub https://${CloudfrontDomainName}/stress-tool/
         - !Sub https://${CloudfrontDomainName}/sales-generator/
-        - !Sub https://${CloudfrontDomainName}/serverless-microservice/
       SupportedIdentityProviders:
         - COGNITO
       GenerateSecret: true
@@ -102,7 +100,7 @@ Resources:
     Type: AWS::SecretsManager::Secret
     DependsOn: UserPoolClient
     Properties:
-      Name: apcr/saa/secrets
+      Name: dea/secrets
       Description: "Amazon Cognito configuration information"
       SecretString: !Sub |
         {

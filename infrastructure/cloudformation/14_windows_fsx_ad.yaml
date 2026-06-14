@@ -1,6 +1,6 @@
 
 AWSTemplateFormatVersion: '2010-09-09'
-Description: 'Deploy EC2 Windows 2022, FSx for Windows, and AWS Managed Microsoft AD'
+Description: 'DEA - Windows EC2 with FSx and Managed AD'
 
 Parameters:
   VpcId:

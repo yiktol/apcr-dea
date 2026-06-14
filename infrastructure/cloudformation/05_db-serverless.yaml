@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: '2010-09-09'
-Description: 'Multi-region Global Aurora MySQL Cluster with primary in Singapore and secondary in Sydney'
+Description: 'DEA - Aurora Serverless MySQL cluster'
 
 Parameters:
   GlobalClusterIdentifier:

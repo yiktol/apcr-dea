@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: '2010-09-09'
-Description: 'Amazon ECS - Fargate with CI/CD Pipeline and Auto Scaling'
+Description: 'DEA - ECS Fargate containers with ALB and Auto Scaling'
 
 Parameters:
   AppName:
@@ -11,7 +11,7 @@ Parameters:
   
   SourceCodeBucket:
     Type: String
-    Default: yikyakyuk-ap-southeast-1-875692608981
+    Default: "{{resolve:ssm:/genai/cognito/BucketName}}"
     Description: "S3 bucket containing application source code"
   
   SourceCodeKey:

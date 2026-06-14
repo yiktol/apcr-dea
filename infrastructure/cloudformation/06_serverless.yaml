@@ -1,11 +1,11 @@
 AWSTemplateFormatVersion: "2010-09-09"
 
-Description: "Serverless Coffee Shop Application Infrastructure with API, Queuing, and Event Processing"
+Description: "DEA - Serverless API with DynamoDB, SQS, and EventBridge"
 
 Parameters:
   LambdaCodeS3Bucket:
     Type: String
-    Default: yikyakyuk-ap-southeast-1-875692608981
+    Default: "{{resolve:ssm:/genai/cognito/BucketName}}"
     Description: "S3 bucket containing Lambda function code packages"
   
   ApiGatewayStage:
@@ -15,7 +15,7 @@ Parameters:
   
   ApiCertificateArn:
     Type: String
-    Default: "arn:aws:acm:ap-southeast-1:875692608981:certificate/8186a3c2-b2cb-4c40-9210-86f79070d7ba"
+    Default: ""
     Description: "ARN of ACM certificate for API domain"
 
   DomainName:
