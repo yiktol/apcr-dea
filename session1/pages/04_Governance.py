@@ -84,7 +84,7 @@ data_lake_bucket = config.get("DataLakeBucket", "")
 masked_bucket = config.get("MaskedBucket", "")
 
 # Tabs
-tab1, tab2, tab3 = st.tabs(["🔍 PII Scanner", "📤 Upload & Detect", "📊 Findings Dashboard"])
+tab1, tab2, tab3, tab4 = st.tabs(["🔍 PII Scanner", "📤 Upload & Detect", "📊 Findings Dashboard", "⚡ Manual Trigger"])
 
 with tab1:
     st.markdown("### Interactive PII Detection & Masking")
@@ -233,23 +233,83 @@ with tab3:
         else:
             st.warning("Pipeline not deployed.")
 
-# Exam reference
-st.markdown("---")
-st.markdown("## 📝 Exam Connection")
-st.markdown("""
-**Question:** A company wants automated PII detection with least operational overhead. 
-The masking application already exists. Which solution?
+with tab4:
+    st.markdown("### ⚡ Manual Trigger — Full Masking Flow")
+    st.markdown("""
+    Bypasses Macie's scan delay and directly invokes the masking Lambda on an S3 object.
+    Use this to instantly show the end-to-end governance flow:
+    
+    **Flow:** Upload PII file → Invoke masking Lambda → View masked output
+    """)
 
-**Answer:** Enable Amazon Macie → Create EventBridge rule for Macie findings → 
-Set the masking application as the target.
+    if data_lake_bucket and masked_bucket:
+        # Step 1: Upload sample PII data
+        st.markdown("#### Step 1: Upload PII data to S3")
 
-**Why this is correct:**
-- Macie provides ML-powered PII discovery (no custom detection logic)
-- EventBridge enables real-time, event-driven invocation (no polling)
-- Minimal operational overhead (fully managed services)
+        sample_data = '{"name": "John Smith", "email": "john.smith@example.com", "ssn": "123-45-6789", "phone": "555-123-4567"}\n{"name": "Jane Doe", "email": "jane.doe@company.org", "ssn": "987-65-4321", "phone": "555-987-6543", "card": "4532-1234-5678-9012"}\n{"name": "Alice Johnson", "email": "alice.j@startup.io", "ssn": "456-78-9012", "phone": "555-456-7890"}'
 
-**Why others are wrong:**
-- Lambda + S3 notifications: You'd have to build PII detection logic yourself
-- EventBridge for S3 uploads (no Macie): Triggers on all uploads, not just PII
-- Macie + polling Lambda: Higher overhead than EventBridge (scheduled, not real-time)
-""")
+        pii_content = st.text_area("PII data to upload:", value=sample_data, height=120)
+
+        if st.button("📤 Upload & Mask", type="primary"):
+            try:
+                s3_client = boto3.client("s3")
+                lambda_client = boto3.client("lambda")
+                now = datetime.now(timezone.utc)
+                key = f"raw/{now.year}/{now.month:02d}/{now.day:02d}/manual_pii_{now.strftime('%H%M%S')}.json"
+
+                # Upload to S3
+                s3_client.put_object(
+                    Bucket=data_lake_bucket,
+                    Key=key,
+                    Body=pii_content.encode("utf-8"),
+                    ContentType="application/x-ndjson",
+                )
+                st.success(f"✅ Uploaded to `s3://{data_lake_bucket}/{key}`")
+
+                # Invoke masking Lambda directly with a simulated Macie event
+                import json as json_module
+                simulated_event = {
+                    "detail": {
+                        "type": "SensitiveData:S3Object/Personal",
+                        "resourcesAffected": {
+                            "s3Bucket": {"name": data_lake_bucket},
+                            "s3Object": {"key": key},
+                        },
+                    }
+                }
+
+                st.markdown("#### Step 2: Invoking masking Lambda...")
+                masker_fn_name = config.get("MaskerFunctionName", "dea-pii-masker")
+                response = lambda_client.invoke(
+                    FunctionName=masker_fn_name,
+                    InvocationType="RequestResponse",
+                    Payload=json_module.dumps(simulated_event).encode(),
+                )
+
+                payload = json_module.loads(response["Payload"].read())
+                status_code = payload.get("statusCode", response.get("StatusCode"))
+
+                if status_code == 200:
+                    body = json_module.loads(payload.get("body", "{}"))
+                    masks_applied = body.get("masks_applied", 0)
+                    output_path = body.get("output", "")
+
+                    st.success(f"✅ Masking complete! **{masks_applied} PII instances** masked.")
+                    st.markdown(f"**Output:** `{output_path}`")
+
+                    # Show the masked content
+                    st.markdown("#### Step 3: Masked output")
+                    masked_key = f"masked/{key}"
+                    try:
+                        obj = s3_client.get_object(Bucket=masked_bucket, Key=masked_key)
+                        masked_content = obj["Body"].read().decode("utf-8")
+                        st.code(masked_content, language="json")
+                    except Exception:
+                        st.info(f"Masked file at `{masked_key}` — check the Findings Dashboard tab.")
+                else:
+                    st.error(f"Lambda returned status {status_code}: {payload}")
+
+            except Exception as e:
+                st.error(f"Error: {e}")
+    else:
+        st.warning("Pipeline not deployed. Run `cdk deploy` first.")

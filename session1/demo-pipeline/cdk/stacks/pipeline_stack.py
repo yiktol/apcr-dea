@@ -361,6 +361,16 @@ class DataPipelineStack(Stack):
         )
         macie_rule.add_target(targets.LambdaFunction(masker_fn))
 
+        # Macie session - enables Macie in the account
+        macie_session = cdk.CfnResource(
+            self,
+            "MacieSession",
+            type="AWS::Macie::Session",
+            properties={
+                "Status": "ENABLED",
+            },
+        )
+
         # ============================================================
         # IAM - Pipeline execution role for the web app
         # ============================================================

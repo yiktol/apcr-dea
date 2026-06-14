@@ -1,0 +1,2382 @@
+{
+ "Description": "Session 1: 5 V's of Big Data Pipeline",
+ "Resources": {
+  "PipelineVpc0543904A": {
+   "Type": "AWS::EC2::VPC",
+   "Properties": {
+    "CidrBlock": "10.0.0.0/16",
+    "EnableDnsHostnames": true,
+    "EnableDnsSupport": true,
+    "InstanceTenancy": "default",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "DataEngineerPipeline/PipelineVpc"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "DataEngineerPipeline/PipelineVpc/Resource"
+   }
+  },
+  "PipelineVpcPublicSubnet1Subnet26FF83E2": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": {
+     "Fn::Select": [
+      0,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.0.0/24",
+    "MapPublicIpOnLaunch": true,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Public"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Public"
+     },
+     {
+      "Key": "Name",
+      "Value": "DataEngineerPipeline/PipelineVpc/PublicSubnet1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "PipelineVpc0543904A"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "DataEngineerPipeline/PipelineVpc/PublicSubnet1/Subnet"
+   }
+  },
+  "PipelineVpcPublicSubnet1RouteTableE9A67515": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "DataEngineerPipeline/PipelineVpc/PublicSubnet1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "PipelineVpc0543904A"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "DataEngineerPipeline/PipelineVpc/PublicSubnet1/RouteTable"
+   }
+  },
+  "PipelineVpcPublicSubnet1RouteTableAssociation6D13736B": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "PipelineVpcPublicSubnet1RouteTableE9A67515"
+    },
+    "SubnetId": {
+     "Ref": "PipelineVpcPublicSubnet1Subnet26FF83E2"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "DataEngineerPipeline/PipelineVpc/PublicSubnet1/RouteTableAssociation"
+   }
+  },
+  "PipelineVpcPublicSubnet1DefaultRoute44F3E91D": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "GatewayId": {
+     "Ref": "PipelineVpcIGW3FA4A524"
+    },
+    "RouteTableId": {
+     "Ref": "PipelineVpcPublicSubnet1RouteTableE9A67515"
+    }
+   },
+   "DependsOn": [
+    "PipelineVpcVPCGW3256101F"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "DataEngineerPipeline/PipelineVpc/PublicSubnet1/DefaultRoute"
+   }
+  },
+  "PipelineVpcPublicSubnet1EIPBD0800F9": {
+   "Type": "AWS::EC2::EIP",
+   "Properties": {
+    "Domain": "vpc",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "DataEngineerPipeline/PipelineVpc/PublicSubnet1"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "DataEngineerPipeline/PipelineVpc/PublicSubnet1/EIP"
+   }
+  },
+  "PipelineVpcPublicSubnet1NATGatewayA4388274": {
+   "Type": "AWS::EC2::NatGateway",
+   "Properties": {
+    "AllocationId": {
+     "Fn::GetAtt": [
+      "PipelineVpcPublicSubnet1EIPBD0800F9",
+      "AllocationId"
+     ]
+    },
+    "SubnetId": {
+     "Ref": "PipelineVpcPublicSubnet1Subnet26FF83E2"
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "DataEngineerPipeline/PipelineVpc/PublicSubnet1"
+     }
+    ]
+   },
+   "DependsOn": [
+    "PipelineVpcPublicSubnet1DefaultRoute44F3E91D",
+    "PipelineVpcPublicSubnet1RouteTableAssociation6D13736B"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "DataEngineerPipeline/PipelineVpc/PublicSubnet1/NATGateway"
+   }
+  },
+  "PipelineVpcPublicSubnet2Subnet64F58E18": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": {
+     "Fn::Select": [
+      1,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.1.0/24",
+    "MapPublicIpOnLaunch": true,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Public"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Public"
+     },
+     {
+      "Key": "Name",
+      "Value": "DataEngineerPipeline/PipelineVpc/PublicSubnet2"
+     }
+    ],
+    "VpcId": {
+     "Ref": "PipelineVpc0543904A"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "DataEngineerPipeline/PipelineVpc/PublicSubnet2/Subnet"
+   }
+  },
+  "PipelineVpcPublicSubnet2RouteTable5219ED4D": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "DataEngineerPipeline/PipelineVpc/PublicSubnet2"
+     }
+    ],
+    "VpcId": {
+     "Ref": "PipelineVpc0543904A"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "DataEngineerPipeline/PipelineVpc/PublicSubnet2/RouteTable"
+   }
+  },
+  "PipelineVpcPublicSubnet2RouteTableAssociation54D39738": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "PipelineVpcPublicSubnet2RouteTable5219ED4D"
+    },
+    "SubnetId": {
+     "Ref": "PipelineVpcPublicSubnet2Subnet64F58E18"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "DataEngineerPipeline/PipelineVpc/PublicSubnet2/RouteTableAssociation"
+   }
+  },
+  "PipelineVpcPublicSubnet2DefaultRoute04C861A0": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "GatewayId": {
+     "Ref": "PipelineVpcIGW3FA4A524"
+    },
+    "RouteTableId": {
+     "Ref": "PipelineVpcPublicSubnet2RouteTable5219ED4D"
+    }
+   },
+   "DependsOn": [
+    "PipelineVpcVPCGW3256101F"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "DataEngineerPipeline/PipelineVpc/PublicSubnet2/DefaultRoute"
+   }
+  },
+  "PipelineVpcPrivateSubnet1Subnet442DCECC": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": {
+     "Fn::Select": [
+      0,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.2.0/24",
+    "MapPublicIpOnLaunch": false,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Private"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Private"
+     },
+     {
+      "Key": "Name",
+      "Value": "DataEngineerPipeline/PipelineVpc/PrivateSubnet1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "PipelineVpc0543904A"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "DataEngineerPipeline/PipelineVpc/PrivateSubnet1/Subnet"
+   }
+  },
+  "PipelineVpcPrivateSubnet1RouteTable6D8B603D": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "DataEngineerPipeline/PipelineVpc/PrivateSubnet1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "PipelineVpc0543904A"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "DataEngineerPipeline/PipelineVpc/PrivateSubnet1/RouteTable"
+   }
+  },
+  "PipelineVpcPrivateSubnet1RouteTableAssociation791F1EF2": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "PipelineVpcPrivateSubnet1RouteTable6D8B603D"
+    },
+    "SubnetId": {
+     "Ref": "PipelineVpcPrivateSubnet1Subnet442DCECC"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "DataEngineerPipeline/PipelineVpc/PrivateSubnet1/RouteTableAssociation"
+   }
+  },
+  "PipelineVpcPrivateSubnet1DefaultRouteC225ACC6": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "NatGatewayId": {
+     "Ref": "PipelineVpcPublicSubnet1NATGatewayA4388274"
+    },
+    "RouteTableId": {
+     "Ref": "PipelineVpcPrivateSubnet1RouteTable6D8B603D"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "DataEngineerPipeline/PipelineVpc/PrivateSubnet1/DefaultRoute"
+   }
+  },
+  "PipelineVpcPrivateSubnet2SubnetE21FED10": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": {
+     "Fn::Select": [
+      1,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.3.0/24",
+    "MapPublicIpOnLaunch": false,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Private"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Private"
+     },
+     {
+      "Key": "Name",
+      "Value": "DataEngineerPipeline/PipelineVpc/PrivateSubnet2"
+     }
+    ],
+    "VpcId": {
+     "Ref": "PipelineVpc0543904A"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "DataEngineerPipeline/PipelineVpc/PrivateSubnet2/Subnet"
+   }
+  },
+  "PipelineVpcPrivateSubnet2RouteTable9A31913F": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "DataEngineerPipeline/PipelineVpc/PrivateSubnet2"
+     }
+    ],
+    "VpcId": {
+     "Ref": "PipelineVpc0543904A"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "DataEngineerPipeline/PipelineVpc/PrivateSubnet2/RouteTable"
+   }
+  },
+  "PipelineVpcPrivateSubnet2RouteTableAssociationC502A5A4": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "PipelineVpcPrivateSubnet2RouteTable9A31913F"
+    },
+    "SubnetId": {
+     "Ref": "PipelineVpcPrivateSubnet2SubnetE21FED10"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "DataEngineerPipeline/PipelineVpc/PrivateSubnet2/RouteTableAssociation"
+   }
+  },
+  "PipelineVpcPrivateSubnet2DefaultRouteF3A9A6B9": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "NatGatewayId": {
+     "Ref": "PipelineVpcPublicSubnet1NATGatewayA4388274"
+    },
+    "RouteTableId": {
+     "Ref": "PipelineVpcPrivateSubnet2RouteTable9A31913F"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "DataEngineerPipeline/PipelineVpc/PrivateSubnet2/DefaultRoute"
+   }
+  },
+  "PipelineVpcIGW3FA4A524": {
+   "Type": "AWS::EC2::InternetGateway",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "DataEngineerPipeline/PipelineVpc"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "DataEngineerPipeline/PipelineVpc/IGW"
+   }
+  },
+  "PipelineVpcVPCGW3256101F": {
+   "Type": "AWS::EC2::VPCGatewayAttachment",
+   "Properties": {
+    "InternetGatewayId": {
+     "Ref": "PipelineVpcIGW3FA4A524"
+    },
+    "VpcId": {
+     "Ref": "PipelineVpc0543904A"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "DataEngineerPipeline/PipelineVpc/VPCGW"
+   }
+  },
+  "PipelineVpcS3Endpoint91B2DD4A": {
+   "Type": "AWS::EC2::VPCEndpoint",
+   "Properties": {
+    "RouteTableIds": [
+     {
+      "Ref": "PipelineVpcPrivateSubnet1RouteTable6D8B603D"
+     },
+     {
+      "Ref": "PipelineVpcPrivateSubnet2RouteTable9A31913F"
+     },
+     {
+      "Ref": "PipelineVpcPublicSubnet1RouteTableE9A67515"
+     },
+     {
+      "Ref": "PipelineVpcPublicSubnet2RouteTable5219ED4D"
+     }
+    ],
+    "ServiceName": {
+     "Fn::Join": [
+      "",
+      [
+       "com.amazonaws.",
+       {
+        "Ref": "AWS::Region"
+       },
+       ".s3"
+      ]
+     ]
+    },
+    "VpcEndpointType": "Gateway",
+    "VpcId": {
+     "Ref": "PipelineVpc0543904A"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "DataEngineerPipeline/PipelineVpc/S3Endpoint/Resource"
+   }
+  },
+  "IngestionStream56E76A34": {
+   "Type": "AWS::Kinesis::Stream",
+   "Properties": {
+    "Name": "dea-ingestion-stream",
+    "RetentionPeriodHours": 24,
+    "ShardCount": 2,
+    "StreamEncryption": {
+     "Fn::If": [
+      "AwsCdkKinesisEncryptedStreamsUnsupportedRegions",
+      {
+       "Ref": "AWS::NoValue"
+      },
+      {
+       "EncryptionType": "KMS",
+       "KeyId": "alias/aws/kinesis"
+      }
+     ]
+    },
+    "StreamModeDetails": {
+     "StreamMode": "PROVISIONED"
+    }
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain",
+   "Metadata": {
+    "aws:cdk:path": "DataEngineerPipeline/IngestionStream/Resource"
+   }
+  },
+  "DataLakeBucket0256EA8E": {
+   "Type": "AWS::S3::Bucket",
+   "Properties": {
+    "BucketEncryption": {
+     "ServerSideEncryptionConfiguration": [
+      {
+       "ServerSideEncryptionByDefault": {
+        "SSEAlgorithm": "AES256"
+       }
+      }
+     ]
+    },
+    "LifecycleConfiguration": {
+     "Rules": [
+      {
+       "ExpirationInDays": 30,
+       "Id": "ExpireRawAfter30Days",
+       "Prefix": "raw/",
+       "Status": "Enabled"
+      }
+     ]
+    },
+    "PublicAccessBlockConfiguration": {
+     "BlockPublicAcls": true,
+     "BlockPublicPolicy": true,
+     "IgnorePublicAcls": true,
+     "RestrictPublicBuckets": true
+    },
+    "Tags": [
+     {
+      "Key": "aws-cdk:auto-delete-objects",
+      "Value": "true"
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "DataEngineerPipeline/DataLakeBucket/Resource"
+   }
+  },
+  "DataLakeBucketPolicy52869FB4": {
+   "Type": "AWS::S3::BucketPolicy",
+   "Properties": {
+    "Bucket": {
+     "Ref": "DataLakeBucket0256EA8E"
+    },
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "s3:PutBucketPolicy",
+        "s3:GetBucket*",
+        "s3:List*",
+        "s3:DeleteObject*"
+       ],
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": {
+         "Fn::GetAtt": [
+          "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
+          "Arn"
+         ]
+        }
+       },
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "DataLakeBucket0256EA8E",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "DataLakeBucket0256EA8E",
+             "Arn"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "DataEngineerPipeline/DataLakeBucket/Policy/Resource"
+   }
+  },
+  "DataLakeBucketAutoDeleteObjectsCustomResourceBA68F53A": {
+   "Type": "Custom::S3AutoDeleteObjects",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F",
+      "Arn"
+     ]
+    },
+    "BucketName": {
+     "Ref": "DataLakeBucket0256EA8E"
+    }
+   },
+   "DependsOn": [
+    "DataLakeBucketPolicy52869FB4"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "DataEngineerPipeline/DataLakeBucket/AutoDeleteObjectsCustomResource/Default"
+   }
+  },
+  "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "DataEngineerPipeline/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role"
+   }
+  },
+  "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "faa95a81ae7d7373f3e1f242268f904eb748d8d0fdd306e8a6fe515a1905a7d6.zip"
+    },
+    "Timeout": 900,
+    "MemorySize": 128,
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
+      "Arn"
+     ]
+    },
+    "Runtime": {
+     "Fn::FindInMap": [
+      "LatestNodeRuntimeMap",
+      {
+       "Ref": "AWS::Region"
+      },
+      "value"
+     ]
+    },
+    "Description": {
+     "Fn::Join": [
+      "",
+      [
+       "Lambda function for auto-deleting objects in ",
+       {
+        "Ref": "DataLakeBucket0256EA8E"
+       },
+       " S3 bucket."
+      ]
+     ]
+    }
+   },
+   "DependsOn": [
+    "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "DataEngineerPipeline/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler",
+    "aws:asset:path": "asset.faa95a81ae7d7373f3e1f242268f904eb748d8d0fdd306e8a6fe515a1905a7d6",
+    "aws:asset:property": "Code"
+   }
+  },
+  "MaskedBucket1BD361FA": {
+   "Type": "AWS::S3::Bucket",
+   "Properties": {
+    "BucketEncryption": {
+     "ServerSideEncryptionConfiguration": [
+      {
+       "ServerSideEncryptionByDefault": {
+        "SSEAlgorithm": "AES256"
+       }
+      }
+     ]
+    },
+    "PublicAccessBlockConfiguration": {
+     "BlockPublicAcls": true,
+     "BlockPublicPolicy": true,
+     "IgnorePublicAcls": true,
+     "RestrictPublicBuckets": true
+    },
+    "Tags": [
+     {
+      "Key": "aws-cdk:auto-delete-objects",
+      "Value": "true"
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "DataEngineerPipeline/MaskedBucket/Resource"
+   }
+  },
+  "MaskedBucketPolicy20D53C40": {
+   "Type": "AWS::S3::BucketPolicy",
+   "Properties": {
+    "Bucket": {
+     "Ref": "MaskedBucket1BD361FA"
+    },
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "s3:PutBucketPolicy",
+        "s3:GetBucket*",
+        "s3:List*",
+        "s3:DeleteObject*"
+       ],
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": {
+         "Fn::GetAtt": [
+          "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
+          "Arn"
+         ]
+        }
+       },
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "MaskedBucket1BD361FA",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "MaskedBucket1BD361FA",
+             "Arn"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "DataEngineerPipeline/MaskedBucket/Policy/Resource"
+   }
+  },
+  "MaskedBucketAutoDeleteObjectsCustomResourceFBD8A00C": {
+   "Type": "Custom::S3AutoDeleteObjects",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F",
+      "Arn"
+     ]
+    },
+    "BucketName": {
+     "Ref": "MaskedBucket1BD361FA"
+    }
+   },
+   "DependsOn": [
+    "MaskedBucketPolicy20D53C40"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "DataEngineerPipeline/MaskedBucket/AutoDeleteObjectsCustomResource/Default"
+   }
+  },
+  "AthenaResultsBucket879938FA": {
+   "Type": "AWS::S3::Bucket",
+   "Properties": {
+    "LifecycleConfiguration": {
+     "Rules": [
+      {
+       "ExpirationInDays": 7,
+       "Status": "Enabled"
+      }
+     ]
+    },
+    "Tags": [
+     {
+      "Key": "aws-cdk:auto-delete-objects",
+      "Value": "true"
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "DataEngineerPipeline/AthenaResultsBucket/Resource"
+   }
+  },
+  "AthenaResultsBucketPolicyD63DEF63": {
+   "Type": "AWS::S3::BucketPolicy",
+   "Properties": {
+    "Bucket": {
+     "Ref": "AthenaResultsBucket879938FA"
+    },
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "s3:PutBucketPolicy",
+        "s3:GetBucket*",
+        "s3:List*",
+        "s3:DeleteObject*"
+       ],
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": {
+         "Fn::GetAtt": [
+          "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
+          "Arn"
+         ]
+        }
+       },
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "AthenaResultsBucket879938FA",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "AthenaResultsBucket879938FA",
+             "Arn"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "DataEngineerPipeline/AthenaResultsBucket/Policy/Resource"
+   }
+  },
+  "AthenaResultsBucketAutoDeleteObjectsCustomResourceD2206C34": {
+   "Type": "Custom::S3AutoDeleteObjects",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F",
+      "Arn"
+     ]
+    },
+    "BucketName": {
+     "Ref": "AthenaResultsBucket879938FA"
+    }
+   },
+   "DependsOn": [
+    "AthenaResultsBucketPolicyD63DEF63"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "DataEngineerPipeline/AthenaResultsBucket/AutoDeleteObjectsCustomResource/Default"
+   }
+  },
+  "TransformLogGroup8FD9233D": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "RetentionInDays": 7
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "DataEngineerPipeline/TransformLogGroup/Resource"
+   }
+  },
+  "TransformFunctionServiceRole76670A51": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "DataEngineerPipeline/TransformFunction/ServiceRole/Resource"
+   }
+  },
+  "TransformFunctionServiceRoleDefaultPolicyFA5249B1": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "s3:GetObject*",
+        "s3:GetBucket*",
+        "s3:List*",
+        "s3:DeleteObject*",
+        "s3:PutObject",
+        "s3:PutObjectLegalHold",
+        "s3:PutObjectRetention",
+        "s3:PutObjectTagging",
+        "s3:PutObjectVersionTagging",
+        "s3:Abort*"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "DataLakeBucket0256EA8E",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "DataLakeBucket0256EA8E",
+             "Arn"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "kinesis:DescribeStreamSummary",
+        "kinesis:GetRecords",
+        "kinesis:GetShardIterator",
+        "kinesis:ListShards",
+        "kinesis:SubscribeToShard",
+        "kinesis:DescribeStream",
+        "kinesis:ListStreams",
+        "kinesis:DescribeStreamConsumer"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "IngestionStream56E76A34",
+         "Arn"
+        ]
+       }
+      },
+      {
+       "Action": "kinesis:DescribeStream",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "IngestionStream56E76A34",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "TransformFunctionServiceRoleDefaultPolicyFA5249B1",
+    "Roles": [
+     {
+      "Ref": "TransformFunctionServiceRole76670A51"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "DataEngineerPipeline/TransformFunction/ServiceRole/DefaultPolicy/Resource"
+   }
+  },
+  "TransformFunction387E2620": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "e7a933c1de3ce51985d2fdd0865241735985dd8cdeffda817c4adac14b4b80fd.zip"
+    },
+    "Environment": {
+     "Variables": {
+      "DATA_LAKE_BUCKET": {
+       "Ref": "DataLakeBucket0256EA8E"
+      },
+      "RAW_PREFIX": "raw/",
+      "CURATED_PREFIX": "curated/",
+      "ERRORS_PREFIX": "errors/"
+     }
+    },
+    "FunctionName": "dea-stream-transform",
+    "Handler": "index.handler",
+    "LoggingConfig": {
+     "LogGroup": {
+      "Ref": "TransformLogGroup8FD9233D"
+     }
+    },
+    "MemorySize": 256,
+    "Role": {
+     "Fn::GetAtt": [
+      "TransformFunctionServiceRole76670A51",
+      "Arn"
+     ]
+    },
+    "Runtime": "python3.12",
+    "Timeout": 120
+   },
+   "DependsOn": [
+    "TransformFunctionServiceRoleDefaultPolicyFA5249B1",
+    "TransformFunctionServiceRole76670A51"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "DataEngineerPipeline/TransformFunction/Resource",
+    "aws:asset:path": "asset.e7a933c1de3ce51985d2fdd0865241735985dd8cdeffda817c4adac14b4b80fd",
+    "aws:asset:is-bundled": false,
+    "aws:asset:property": "Code"
+   }
+  },
+  "TransformFunctionKinesisEventSourceDataEngineerPipelineIngestionStreamE567084C54F22655": {
+   "Type": "AWS::Lambda::EventSourceMapping",
+   "Properties": {
+    "BatchSize": 100,
+    "EventSourceArn": {
+     "Fn::GetAtt": [
+      "IngestionStream56E76A34",
+      "Arn"
+     ]
+    },
+    "FunctionName": {
+     "Ref": "TransformFunction387E2620"
+    },
+    "MaximumBatchingWindowInSeconds": 60,
+    "MaximumRetryAttempts": 3,
+    "ParallelizationFactor": 1,
+    "StartingPosition": "LATEST"
+   },
+   "Metadata": {
+    "aws:cdk:path": "DataEngineerPipeline/TransformFunction/KinesisEventSource:DataEngineerPipelineIngestionStreamE567084C/Resource"
+   }
+  },
+  "GlueDatabase": {
+   "Type": "AWS::Glue::Database",
+   "Properties": {
+    "CatalogId": {
+     "Ref": "AWS::AccountId"
+    },
+    "DatabaseInput": {
+     "Description": "Data Engineer Associate - Data Lake",
+     "Name": "dea_data_lake"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "DataEngineerPipeline/GlueDatabase"
+   }
+  },
+  "CuratedTable": {
+   "Type": "AWS::Glue::Table",
+   "Properties": {
+    "CatalogId": {
+     "Ref": "AWS::AccountId"
+    },
+    "DatabaseName": "dea_data_lake",
+    "TableInput": {
+     "Description": "Curated event data in Parquet format",
+     "Name": "events_curated",
+     "Parameters": {
+      "classification": "parquet",
+      "compressionType": "none"
+     },
+     "PartitionKeys": [
+      {
+       "Name": "year",
+       "Type": "string"
+      },
+      {
+       "Name": "month",
+       "Type": "string"
+      },
+      {
+       "Name": "day",
+       "Type": "string"
+      }
+     ],
+     "StorageDescriptor": {
+      "Columns": [
+       {
+        "Name": "event_id",
+        "Type": "string"
+       },
+       {
+        "Name": "event_type",
+        "Type": "string"
+       },
+       {
+        "Name": "source",
+        "Type": "string"
+       },
+       {
+        "Name": "timestamp",
+        "Type": "string"
+       },
+       {
+        "Name": "user_id",
+        "Type": "string"
+       },
+       {
+        "Name": "device_id",
+        "Type": "string"
+       },
+       {
+        "Name": "payload",
+        "Type": "string"
+       }
+      ],
+      "InputFormat": "org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat",
+      "Location": {
+       "Fn::Join": [
+        "",
+        [
+         "s3://",
+         {
+          "Ref": "DataLakeBucket0256EA8E"
+         },
+         "/curated/"
+        ]
+       ]
+      },
+      "OutputFormat": "org.apache.hadoop.hive.ql.io.parquet.MapredParquetOutputFormat",
+      "SerdeInfo": {
+       "SerializationLibrary": "org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe"
+      }
+     },
+     "TableType": "EXTERNAL_TABLE"
+    }
+   },
+   "DependsOn": [
+    "GlueDatabase"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "DataEngineerPipeline/CuratedTable"
+   }
+  },
+  "RawTable": {
+   "Type": "AWS::Glue::Table",
+   "Properties": {
+    "CatalogId": {
+     "Ref": "AWS::AccountId"
+    },
+    "DatabaseName": "dea_data_lake",
+    "TableInput": {
+     "Description": "Raw event data in JSON format",
+     "Name": "events_raw",
+     "Parameters": {
+      "classification": "json"
+     },
+     "StorageDescriptor": {
+      "Columns": [
+       {
+        "Name": "event_id",
+        "Type": "string"
+       },
+       {
+        "Name": "event_type",
+        "Type": "string"
+       },
+       {
+        "Name": "source",
+        "Type": "string"
+       },
+       {
+        "Name": "timestamp",
+        "Type": "string"
+       },
+       {
+        "Name": "user_id",
+        "Type": "string"
+       },
+       {
+        "Name": "device_id",
+        "Type": "string"
+       },
+       {
+        "Name": "payload",
+        "Type": "string"
+       }
+      ],
+      "InputFormat": "org.apache.hadoop.mapred.TextInputFormat",
+      "Location": {
+       "Fn::Join": [
+        "",
+        [
+         "s3://",
+         {
+          "Ref": "DataLakeBucket0256EA8E"
+         },
+         "/raw/"
+        ]
+       ]
+      },
+      "OutputFormat": "org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat",
+      "SerdeInfo": {
+       "SerializationLibrary": "org.openx.data.jsonserde.JsonSerDe"
+      }
+     },
+     "TableType": "EXTERNAL_TABLE"
+    }
+   },
+   "DependsOn": [
+    "GlueDatabase"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "DataEngineerPipeline/RawTable"
+   }
+  },
+  "AthenaWorkgroup": {
+   "Type": "AWS::Athena::WorkGroup",
+   "Properties": {
+    "Description": "Data Pipeline Analytics Workgroup",
+    "Name": "dea-pipeline",
+    "RecursiveDeleteOption": true,
+    "State": "ENABLED",
+    "WorkGroupConfiguration": {
+     "EnforceWorkGroupConfiguration": true,
+     "PublishCloudWatchMetricsEnabled": true,
+     "ResultConfiguration": {
+      "OutputLocation": {
+       "Fn::Join": [
+        "",
+        [
+         "s3://",
+         {
+          "Ref": "AthenaResultsBucket879938FA"
+         },
+         "/results/"
+        ]
+       ]
+      }
+     }
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "DataEngineerPipeline/AthenaWorkgroup"
+   }
+  },
+  "GlueJobRoleF1B69418": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "glue.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSGlueServiceRole"
+       ]
+      ]
+     }
+    ],
+    "RoleName": "dea-glue-etl-role"
+   },
+   "Metadata": {
+    "aws:cdk:path": "DataEngineerPipeline/GlueJobRole/Resource"
+   }
+  },
+  "GlueJobRoleDefaultPolicy94EFA0CF": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "s3:GetObject*",
+        "s3:GetBucket*",
+        "s3:List*",
+        "s3:DeleteObject*",
+        "s3:PutObject",
+        "s3:PutObjectLegalHold",
+        "s3:PutObjectRetention",
+        "s3:PutObjectTagging",
+        "s3:PutObjectVersionTagging",
+        "s3:Abort*"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "DataLakeBucket0256EA8E",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "DataLakeBucket0256EA8E",
+             "Arn"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "s3:GetObject*",
+        "s3:GetBucket*",
+        "s3:List*"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":s3:::",
+           {
+            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+           }
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":s3:::",
+           {
+            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "GlueJobRoleDefaultPolicy94EFA0CF",
+    "Roles": [
+     {
+      "Ref": "GlueJobRoleF1B69418"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "DataEngineerPipeline/GlueJobRole/DefaultPolicy/Resource"
+   }
+  },
+  "RawToCuratedJob": {
+   "Type": "AWS::Glue::Job",
+   "Properties": {
+    "Command": {
+     "Name": "glueetl",
+     "PythonVersion": "3",
+     "ScriptLocation": {
+      "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/448cede7abea73019c8d51a2350c007a85da550a684f028acb7d74c08d6073c9.py"
+     }
+    },
+    "DefaultArguments": {
+     "--job-language": "python",
+     "--DATA_LAKE_BUCKET": {
+      "Ref": "DataLakeBucket0256EA8E"
+     },
+     "--enable-metrics": "true",
+     "--enable-continuous-cloudwatch-log": "true"
+    },
+    "Description": "Converts raw JSON to curated Parquet (partitioned, deduplicated)",
+    "GlueVersion": "4.0",
+    "MaxRetries": 0,
+    "Name": "dea-raw-to-curated",
+    "NumberOfWorkers": 2,
+    "Role": {
+     "Fn::GetAtt": [
+      "GlueJobRoleF1B69418",
+      "Arn"
+     ]
+    },
+    "Timeout": 10,
+    "WorkerType": "G.1X"
+   },
+   "Metadata": {
+    "aws:cdk:path": "DataEngineerPipeline/RawToCuratedJob"
+   }
+  },
+  "MaskerLogGroup0FD65FC3": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "RetentionInDays": 7
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "DataEngineerPipeline/MaskerLogGroup/Resource"
+   }
+  },
+  "MaskerFunctionServiceRoleB72826D2": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "DataEngineerPipeline/MaskerFunction/ServiceRole/Resource"
+   }
+  },
+  "MaskerFunctionServiceRoleDefaultPolicy305C5A6D": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "s3:GetObject*",
+        "s3:GetBucket*",
+        "s3:List*"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "DataLakeBucket0256EA8E",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "DataLakeBucket0256EA8E",
+             "Arn"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "s3:DeleteObject*",
+        "s3:PutObject",
+        "s3:PutObjectLegalHold",
+        "s3:PutObjectRetention",
+        "s3:PutObjectTagging",
+        "s3:PutObjectVersionTagging",
+        "s3:Abort*"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "MaskedBucket1BD361FA",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "MaskedBucket1BD361FA",
+             "Arn"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "MaskerFunctionServiceRoleDefaultPolicy305C5A6D",
+    "Roles": [
+     {
+      "Ref": "MaskerFunctionServiceRoleB72826D2"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "DataEngineerPipeline/MaskerFunction/ServiceRole/DefaultPolicy/Resource"
+   }
+  },
+  "MaskerFunction552EAC27": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "86a30e88ab5cf143bc1cdef979f7f9acd6d2de6cdd2b84e2c50d10027f8a35b1.zip"
+    },
+    "Environment": {
+     "Variables": {
+      "SOURCE_BUCKET": {
+       "Ref": "DataLakeBucket0256EA8E"
+      },
+      "MASKED_BUCKET": {
+       "Ref": "MaskedBucket1BD361FA"
+      }
+     }
+    },
+    "FunctionName": "dea-pii-masker",
+    "Handler": "index.handler",
+    "LoggingConfig": {
+     "LogGroup": {
+      "Ref": "MaskerLogGroup0FD65FC3"
+     }
+    },
+    "MemorySize": 512,
+    "Role": {
+     "Fn::GetAtt": [
+      "MaskerFunctionServiceRoleB72826D2",
+      "Arn"
+     ]
+    },
+    "Runtime": "python3.12",
+    "Timeout": 300
+   },
+   "DependsOn": [
+    "MaskerFunctionServiceRoleDefaultPolicy305C5A6D",
+    "MaskerFunctionServiceRoleB72826D2"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "DataEngineerPipeline/MaskerFunction/Resource",
+    "aws:asset:path": "asset.86a30e88ab5cf143bc1cdef979f7f9acd6d2de6cdd2b84e2c50d10027f8a35b1",
+    "aws:asset:is-bundled": false,
+    "aws:asset:property": "Code"
+   }
+  },
+  "MacieFindingRule8E99FF08": {
+   "Type": "AWS::Events::Rule",
+   "Properties": {
+    "Description": "Triggers PII masking when Macie detects sensitive data",
+    "EventPattern": {
+     "detail": {
+      "type": [
+       {
+        "prefix": "SensitiveData"
+       }
+      ]
+     },
+     "detail-type": [
+      "Macie Finding"
+     ],
+     "source": [
+      "aws.macie"
+     ]
+    },
+    "Name": "dea-macie-pii-detected",
+    "State": "ENABLED",
+    "Targets": [
+     {
+      "Arn": {
+       "Fn::GetAtt": [
+        "MaskerFunction552EAC27",
+        "Arn"
+       ]
+      },
+      "Id": "Target0"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "DataEngineerPipeline/MacieFindingRule/Resource"
+   }
+  },
+  "MacieFindingRuleAllowEventRuleDataEngineerPipelineMaskerFunctionF6B4FC42E38AC81D": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "MaskerFunction552EAC27",
+      "Arn"
+     ]
+    },
+    "Principal": "events.amazonaws.com",
+    "SourceArn": {
+     "Fn::GetAtt": [
+      "MacieFindingRule8E99FF08",
+      "Arn"
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "DataEngineerPipeline/MacieFindingRule/AllowEventRuleDataEngineerPipelineMaskerFunctionF6B4FC42"
+   }
+  },
+  "MacieSession": {
+   "Type": "AWS::Macie::Session",
+   "Properties": {
+    "Status": "ENABLED"
+   },
+   "Metadata": {
+    "aws:cdk:path": "DataEngineerPipeline/MacieSession"
+   }
+  },
+  "PipelineAppRole84D234FB": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":iam::",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":root"
+          ]
+         ]
+        }
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Description": "Role for the pipeline web application",
+    "RoleName": "dea-pipeline-pipeline-role"
+   },
+   "Metadata": {
+    "aws:cdk:path": "DataEngineerPipeline/PipelineAppRole/Resource"
+   }
+  },
+  "PipelineAppRoleDefaultPolicy0F0B6A11": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "kinesis:DescribeStreamSummary",
+        "kinesis:GetRecords",
+        "kinesis:GetShardIterator",
+        "kinesis:ListShards",
+        "kinesis:SubscribeToShard",
+        "kinesis:DescribeStream",
+        "kinesis:ListStreams",
+        "kinesis:DescribeStreamConsumer",
+        "kinesis:PutRecord",
+        "kinesis:PutRecords"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "IngestionStream56E76A34",
+         "Arn"
+        ]
+       }
+      },
+      {
+       "Action": [
+        "s3:GetObject*",
+        "s3:GetBucket*",
+        "s3:List*",
+        "s3:DeleteObject*",
+        "s3:PutObject",
+        "s3:PutObjectLegalHold",
+        "s3:PutObjectRetention",
+        "s3:PutObjectTagging",
+        "s3:PutObjectVersionTagging",
+        "s3:Abort*"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "DataLakeBucket0256EA8E",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "DataLakeBucket0256EA8E",
+             "Arn"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "s3:GetObject*",
+        "s3:GetBucket*",
+        "s3:List*"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "MaskedBucket1BD361FA",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "MaskedBucket1BD361FA",
+             "Arn"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "s3:GetObject*",
+        "s3:GetBucket*",
+        "s3:List*",
+        "s3:DeleteObject*",
+        "s3:PutObject",
+        "s3:PutObjectLegalHold",
+        "s3:PutObjectRetention",
+        "s3:PutObjectTagging",
+        "s3:PutObjectVersionTagging",
+        "s3:Abort*"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "AthenaResultsBucket879938FA",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "AthenaResultsBucket879938FA",
+             "Arn"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "athena:StartQueryExecution",
+        "athena:GetQueryExecution",
+        "athena:GetQueryResults",
+        "athena:StopQueryExecution",
+        "glue:GetTable",
+        "glue:GetDatabase",
+        "glue:GetPartitions",
+        "glue:StartJobRun",
+        "glue:GetJobRun",
+        "glue:GetJobRuns",
+        "glue:BatchStopJobRun"
+       ],
+       "Effect": "Allow",
+       "Resource": "*"
+      },
+      {
+       "Action": [
+        "cloudwatch:GetMetricData",
+        "cloudwatch:GetMetricStatistics",
+        "kinesis:DescribeStream",
+        "kinesis:DescribeStreamSummary",
+        "kinesis:GetShardIterator",
+        "kinesis:GetRecords",
+        "kinesis:ListShards",
+        "lambda:GetFunction",
+        "lambda:ListEventSourceMappings",
+        "logs:GetLogEvents",
+        "logs:DescribeLogStreams"
+       ],
+       "Effect": "Allow",
+       "Resource": "*"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "PipelineAppRoleDefaultPolicy0F0B6A11",
+    "Roles": [
+     {
+      "Ref": "PipelineAppRole84D234FB"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "DataEngineerPipeline/PipelineAppRole/DefaultPolicy/Resource"
+   }
+  },
+  "CDKMetadata": {
+   "Type": "AWS::CDK::Metadata",
+   "Properties": {
+    "Analytics": "v2:deflate64:H4sIAAAAAAAA/21S207rMBD8Ft5dc6n4gFIKAnGJUgSPaOMsqUliR/a6qIry76zjtOFI52lmxxN7xs6VvLy+kBdn8OMXqqwXjS5kvyVQtWDps0d1Jfv3Ton1l3nP1iILRaPVNhQGKWozy20gfIOiwVmftZX3Vmkgbc3JHMnmIYvwAnQPhD9wEJnTe6bzxg+G0DE/GlKSaVoRZ921aEhMCofdmLKz2tBkPY6DqLVBr31s6BDaMejIBuGXsr8Jqk5nTixBZrnyYZanOQ034HEQja141ydb3Tsbumg9cl6DtihB9nfBqGP/E9/sOfrWBqfwGbpOm2q8lf+qGbpWe8+fDUJDK/vcpssecU6ZWKz0Cd4jebmKIKomoOzZcAsEBeeO5tOLPdpiEEA7NCB5/LCuTmUwhuF2eZhOYxwGkaMfA0ZpbU2pU7fgybZ/1/7yU5l/XJmze12ii1cpxqj8A1ZT6ddAXeCnyw60s+Z8KS+Xcnn27bVeuGBItyjzhL/5WB6RywIAAA=="
+   },
+   "Metadata": {
+    "aws:cdk:path": "DataEngineerPipeline/CDKMetadata/Default"
+   },
+   "Condition": "CDKMetadataAvailable"
+  }
+ },
+ "Conditions": {
+  "AwsCdkKinesisEncryptedStreamsUnsupportedRegions": {
+   "Fn::Or": [
+    {
+     "Fn::Equals": [
+      {
+       "Ref": "AWS::Region"
+      },
+      "cn-north-1"
+     ]
+    },
+    {
+     "Fn::Equals": [
+      {
+       "Ref": "AWS::Region"
+      },
+      "cn-northwest-1"
+     ]
+    }
+   ]
+  },
+  "CDKMetadataAvailable": {
+   "Fn::Or": [
+    {
+     "Fn::Or": [
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "af-south-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-east-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-northeast-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-northeast-2"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-south-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-southeast-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-southeast-2"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ca-central-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "cn-north-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "cn-northwest-1"
+       ]
+      }
+     ]
+    },
+    {
+     "Fn::Or": [
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-central-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-north-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-south-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-west-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-west-2"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-west-3"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "il-central-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "me-central-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "me-south-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "sa-east-1"
+       ]
+      }
+     ]
+    },
+    {
+     "Fn::Or": [
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "us-east-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "us-east-2"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "us-west-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "us-west-2"
+       ]
+      }
+     ]
+    }
+   ]
+  }
+ },
+ "Mappings": {
+  "LatestNodeRuntimeMap": {
+   "af-south-1": {
+    "value": "nodejs20.x"
+   },
+   "ap-east-1": {
+    "value": "nodejs20.x"
+   },
+   "ap-northeast-1": {
+    "value": "nodejs20.x"
+   },
+   "ap-northeast-2": {
+    "value": "nodejs20.x"
+   },
+   "ap-northeast-3": {
+    "value": "nodejs20.x"
+   },
+   "ap-south-1": {
+    "value": "nodejs20.x"
+   },
+   "ap-south-2": {
+    "value": "nodejs20.x"
+   },
+   "ap-southeast-1": {
+    "value": "nodejs20.x"
+   },
+   "ap-southeast-2": {
+    "value": "nodejs20.x"
+   },
+   "ap-southeast-3": {
+    "value": "nodejs20.x"
+   },
+   "ap-southeast-4": {
+    "value": "nodejs20.x"
+   },
+   "ap-southeast-5": {
+    "value": "nodejs20.x"
+   },
+   "ap-southeast-7": {
+    "value": "nodejs20.x"
+   },
+   "ca-central-1": {
+    "value": "nodejs20.x"
+   },
+   "ca-west-1": {
+    "value": "nodejs20.x"
+   },
+   "cn-north-1": {
+    "value": "nodejs18.x"
+   },
+   "cn-northwest-1": {
+    "value": "nodejs18.x"
+   },
+   "eu-central-1": {
+    "value": "nodejs20.x"
+   },
+   "eu-central-2": {
+    "value": "nodejs20.x"
+   },
+   "eu-isoe-west-1": {
+    "value": "nodejs18.x"
+   },
+   "eu-north-1": {
+    "value": "nodejs20.x"
+   },
+   "eu-south-1": {
+    "value": "nodejs20.x"
+   },
+   "eu-south-2": {
+    "value": "nodejs20.x"
+   },
+   "eu-west-1": {
+    "value": "nodejs20.x"
+   },
+   "eu-west-2": {
+    "value": "nodejs20.x"
+   },
+   "eu-west-3": {
+    "value": "nodejs20.x"
+   },
+   "il-central-1": {
+    "value": "nodejs20.x"
+   },
+   "me-central-1": {
+    "value": "nodejs20.x"
+   },
+   "me-south-1": {
+    "value": "nodejs20.x"
+   },
+   "mx-central-1": {
+    "value": "nodejs20.x"
+   },
+   "sa-east-1": {
+    "value": "nodejs20.x"
+   },
+   "us-east-1": {
+    "value": "nodejs20.x"
+   },
+   "us-east-2": {
+    "value": "nodejs20.x"
+   },
+   "us-gov-east-1": {
+    "value": "nodejs18.x"
+   },
+   "us-gov-west-1": {
+    "value": "nodejs18.x"
+   },
+   "us-iso-east-1": {
+    "value": "nodejs18.x"
+   },
+   "us-iso-west-1": {
+    "value": "nodejs18.x"
+   },
+   "us-isob-east-1": {
+    "value": "nodejs18.x"
+   },
+   "us-west-1": {
+    "value": "nodejs20.x"
+   },
+   "us-west-2": {
+    "value": "nodejs20.x"
+   }
+  }
+ },
+ "Outputs": {
+  "OutputStreamName": {
+   "Value": {
+    "Ref": "IngestionStream56E76A34"
+   },
+   "Export": {
+    "Name": "StreamName"
+   }
+  },
+  "OutputStreamArn": {
+   "Value": {
+    "Fn::GetAtt": [
+     "IngestionStream56E76A34",
+     "Arn"
+    ]
+   }
+  },
+  "OutputDataLakeBucket": {
+   "Value": {
+    "Ref": "DataLakeBucket0256EA8E"
+   }
+  },
+  "OutputMaskedBucket": {
+   "Value": {
+    "Ref": "MaskedBucket1BD361FA"
+   }
+  },
+  "OutputAthenaResultsBucket": {
+   "Value": {
+    "Ref": "AthenaResultsBucket879938FA"
+   }
+  },
+  "OutputAthenaWorkgroup": {
+   "Value": "dea-pipeline"
+  },
+  "OutputGlueDatabase": {
+   "Value": "dea_data_lake"
+  },
+  "OutputTransformFunctionName": {
+   "Value": {
+    "Ref": "TransformFunction387E2620"
+   }
+  },
+  "OutputMaskerFunctionName": {
+   "Value": {
+    "Ref": "MaskerFunction552EAC27"
+   }
+  },
+  "OutputGlueJobName": {
+   "Value": "dea-raw-to-curated"
+  },
+  "OutputPipelineRoleArn": {
+   "Value": {
+    "Fn::GetAtt": [
+     "PipelineAppRole84D234FB",
+     "Arn"
+    ]
+   }
+  },
+  "OutputVpcId": {
+   "Value": {
+    "Ref": "PipelineVpc0543904A"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

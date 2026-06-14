@@ -1,0 +1,485 @@
+{
+  "version": "36.0.0",
+  "artifacts": {
+    "DataEngineerPipeline.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "DataEngineerPipeline.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "DataEngineerPipeline": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "DataEngineerPipeline.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e935d5b1a40d57c8b8ee67de909815e1fb15e46e3a4f6ccfc6a944511103c44e.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "DataEngineerPipeline.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "DataEngineerPipeline.assets"
+      ],
+      "metadata": {
+        "/DataEngineerPipeline/PipelineVpc/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PipelineVpc0543904A"
+          }
+        ],
+        "/DataEngineerPipeline/PipelineVpc/PublicSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PipelineVpcPublicSubnet1Subnet26FF83E2"
+          }
+        ],
+        "/DataEngineerPipeline/PipelineVpc/PublicSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PipelineVpcPublicSubnet1RouteTableE9A67515"
+          }
+        ],
+        "/DataEngineerPipeline/PipelineVpc/PublicSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PipelineVpcPublicSubnet1RouteTableAssociation6D13736B"
+          }
+        ],
+        "/DataEngineerPipeline/PipelineVpc/PublicSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PipelineVpcPublicSubnet1DefaultRoute44F3E91D"
+          }
+        ],
+        "/DataEngineerPipeline/PipelineVpc/PublicSubnet1/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PipelineVpcPublicSubnet1EIPBD0800F9"
+          }
+        ],
+        "/DataEngineerPipeline/PipelineVpc/PublicSubnet1/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PipelineVpcPublicSubnet1NATGatewayA4388274"
+          }
+        ],
+        "/DataEngineerPipeline/PipelineVpc/PublicSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PipelineVpcPublicSubnet2Subnet64F58E18"
+          }
+        ],
+        "/DataEngineerPipeline/PipelineVpc/PublicSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PipelineVpcPublicSubnet2RouteTable5219ED4D"
+          }
+        ],
+        "/DataEngineerPipeline/PipelineVpc/PublicSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PipelineVpcPublicSubnet2RouteTableAssociation54D39738"
+          }
+        ],
+        "/DataEngineerPipeline/PipelineVpc/PublicSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PipelineVpcPublicSubnet2DefaultRoute04C861A0"
+          }
+        ],
+        "/DataEngineerPipeline/PipelineVpc/PrivateSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PipelineVpcPrivateSubnet1Subnet442DCECC"
+          }
+        ],
+        "/DataEngineerPipeline/PipelineVpc/PrivateSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PipelineVpcPrivateSubnet1RouteTable6D8B603D"
+          }
+        ],
+        "/DataEngineerPipeline/PipelineVpc/PrivateSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PipelineVpcPrivateSubnet1RouteTableAssociation791F1EF2"
+          }
+        ],
+        "/DataEngineerPipeline/PipelineVpc/PrivateSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PipelineVpcPrivateSubnet1DefaultRouteC225ACC6"
+          }
+        ],
+        "/DataEngineerPipeline/PipelineVpc/PrivateSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PipelineVpcPrivateSubnet2SubnetE21FED10"
+          }
+        ],
+        "/DataEngineerPipeline/PipelineVpc/PrivateSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PipelineVpcPrivateSubnet2RouteTable9A31913F"
+          }
+        ],
+        "/DataEngineerPipeline/PipelineVpc/PrivateSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PipelineVpcPrivateSubnet2RouteTableAssociationC502A5A4"
+          }
+        ],
+        "/DataEngineerPipeline/PipelineVpc/PrivateSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PipelineVpcPrivateSubnet2DefaultRouteF3A9A6B9"
+          }
+        ],
+        "/DataEngineerPipeline/PipelineVpc/IGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PipelineVpcIGW3FA4A524"
+          }
+        ],
+        "/DataEngineerPipeline/PipelineVpc/VPCGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PipelineVpcVPCGW3256101F"
+          }
+        ],
+        "/DataEngineerPipeline/PipelineVpc/S3Endpoint/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PipelineVpcS3Endpoint91B2DD4A"
+          }
+        ],
+        "/DataEngineerPipeline/IngestionStream/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IngestionStream56E76A34"
+          }
+        ],
+        "/DataEngineerPipeline/AwsCdkKinesisEncryptedStreamsUnsupportedRegions": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsCdkKinesisEncryptedStreamsUnsupportedRegions"
+          }
+        ],
+        "/DataEngineerPipeline/DataLakeBucket/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DataLakeBucket0256EA8E"
+          }
+        ],
+        "/DataEngineerPipeline/DataLakeBucket/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DataLakeBucketPolicy52869FB4"
+          }
+        ],
+        "/DataEngineerPipeline/DataLakeBucket/AutoDeleteObjectsCustomResource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DataLakeBucketAutoDeleteObjectsCustomResourceBA68F53A"
+          }
+        ],
+        "/DataEngineerPipeline/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
+          }
+        ],
+        "/DataEngineerPipeline/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
+          }
+        ],
+        "/DataEngineerPipeline/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F"
+          }
+        ],
+        "/DataEngineerPipeline/MaskedBucket/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MaskedBucket1BD361FA"
+          }
+        ],
+        "/DataEngineerPipeline/MaskedBucket/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MaskedBucketPolicy20D53C40"
+          }
+        ],
+        "/DataEngineerPipeline/MaskedBucket/AutoDeleteObjectsCustomResource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MaskedBucketAutoDeleteObjectsCustomResourceFBD8A00C"
+          }
+        ],
+        "/DataEngineerPipeline/AthenaResultsBucket/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AthenaResultsBucket879938FA"
+          }
+        ],
+        "/DataEngineerPipeline/AthenaResultsBucket/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AthenaResultsBucketPolicyD63DEF63"
+          }
+        ],
+        "/DataEngineerPipeline/AthenaResultsBucket/AutoDeleteObjectsCustomResource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AthenaResultsBucketAutoDeleteObjectsCustomResourceD2206C34"
+          }
+        ],
+        "/DataEngineerPipeline/TransformLogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TransformLogGroup8FD9233D"
+          }
+        ],
+        "/DataEngineerPipeline/TransformFunction/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TransformFunctionServiceRole76670A51"
+          }
+        ],
+        "/DataEngineerPipeline/TransformFunction/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TransformFunctionServiceRoleDefaultPolicyFA5249B1"
+          }
+        ],
+        "/DataEngineerPipeline/TransformFunction/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TransformFunction387E2620"
+          }
+        ],
+        "/DataEngineerPipeline/TransformFunction/KinesisEventSource:DataEngineerPipelineIngestionStreamE567084C/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TransformFunctionKinesisEventSourceDataEngineerPipelineIngestionStreamE567084C54F22655"
+          }
+        ],
+        "/DataEngineerPipeline/GlueDatabase": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "GlueDatabase"
+          }
+        ],
+        "/DataEngineerPipeline/CuratedTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CuratedTable"
+          }
+        ],
+        "/DataEngineerPipeline/RawTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RawTable"
+          }
+        ],
+        "/DataEngineerPipeline/AthenaWorkgroup": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AthenaWorkgroup"
+          }
+        ],
+        "/DataEngineerPipeline/GlueJobRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "GlueJobRoleF1B69418"
+          }
+        ],
+        "/DataEngineerPipeline/GlueJobRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "GlueJobRoleDefaultPolicy94EFA0CF"
+          }
+        ],
+        "/DataEngineerPipeline/RawToCuratedJob": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RawToCuratedJob"
+          }
+        ],
+        "/DataEngineerPipeline/MaskerLogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MaskerLogGroup0FD65FC3"
+          }
+        ],
+        "/DataEngineerPipeline/MaskerFunction/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MaskerFunctionServiceRoleB72826D2"
+          }
+        ],
+        "/DataEngineerPipeline/MaskerFunction/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MaskerFunctionServiceRoleDefaultPolicy305C5A6D"
+          }
+        ],
+        "/DataEngineerPipeline/MaskerFunction/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MaskerFunction552EAC27"
+          }
+        ],
+        "/DataEngineerPipeline/MacieFindingRule/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MacieFindingRule8E99FF08"
+          }
+        ],
+        "/DataEngineerPipeline/MacieFindingRule/AllowEventRuleDataEngineerPipelineMaskerFunctionF6B4FC42": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MacieFindingRuleAllowEventRuleDataEngineerPipelineMaskerFunctionF6B4FC42E38AC81D"
+          }
+        ],
+        "/DataEngineerPipeline/MacieSession": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MacieSession"
+          }
+        ],
+        "/DataEngineerPipeline/PipelineAppRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PipelineAppRole84D234FB"
+          }
+        ],
+        "/DataEngineerPipeline/PipelineAppRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PipelineAppRoleDefaultPolicy0F0B6A11"
+          }
+        ],
+        "/DataEngineerPipeline/OutputStreamName": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "OutputStreamName"
+          }
+        ],
+        "/DataEngineerPipeline/OutputStreamArn": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "OutputStreamArn"
+          }
+        ],
+        "/DataEngineerPipeline/OutputDataLakeBucket": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "OutputDataLakeBucket"
+          }
+        ],
+        "/DataEngineerPipeline/OutputMaskedBucket": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "OutputMaskedBucket"
+          }
+        ],
+        "/DataEngineerPipeline/OutputAthenaResultsBucket": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "OutputAthenaResultsBucket"
+          }
+        ],
+        "/DataEngineerPipeline/OutputAthenaWorkgroup": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "OutputAthenaWorkgroup"
+          }
+        ],
+        "/DataEngineerPipeline/OutputGlueDatabase": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "OutputGlueDatabase"
+          }
+        ],
+        "/DataEngineerPipeline/OutputTransformFunctionName": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "OutputTransformFunctionName"
+          }
+        ],
+        "/DataEngineerPipeline/OutputMaskerFunctionName": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "OutputMaskerFunctionName"
+          }
+        ],
+        "/DataEngineerPipeline/OutputGlueJobName": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "OutputGlueJobName"
+          }
+        ],
+        "/DataEngineerPipeline/OutputPipelineRoleArn": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "OutputPipelineRoleArn"
+          }
+        ],
+        "/DataEngineerPipeline/OutputVpcId": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "OutputVpcId"
+          }
+        ],
+        "/DataEngineerPipeline/CDKMetadata/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CDKMetadata"
+          }
+        ],
+        "/DataEngineerPipeline/CDKMetadata/Condition": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CDKMetadataAvailable"
+          }
+        ],
+        "/DataEngineerPipeline/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/DataEngineerPipeline/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "DataEngineerPipeline"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}
