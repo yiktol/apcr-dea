@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/0acc00a08accb2aa3031e151fc7aebbeadd7d6ea2e4ca03804262f1f2266c31b.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e2603d5a6277b39f019ef255b16c5ebf69c9e4b46c3ace4a9385d3b7399a6e3f.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -302,6 +302,30 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "AthenaWorkgroup"
+          }
+        ],
+        "/DataEngineerPipeline/RepairCuratedPartitions": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RepairCuratedPartitions"
+          }
+        ],
+        "/DataEngineerPipeline/CountAllEvents": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CountAllEvents"
+          }
+        ],
+        "/DataEngineerPipeline/EventsBySource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EventsBySource"
+          }
+        ],
+        "/DataEngineerPipeline/CuratedEventsByDay": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CuratedEventsByDay"
           }
         ],
         "/DataEngineerPipeline/GlueJobRole/Resource": [

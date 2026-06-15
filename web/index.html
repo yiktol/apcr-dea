@@ -531,19 +531,13 @@
       <div class="tab-container">
         <div class="tab-nav">
           <button class="tab-button active" onclick="openTab(event, 'session1')">
-            <span class="tab-icon">📊</span>Session 1: Data Pipeline
+            <span class="tab-icon">📊</span>Data Pipeline
           </button>
-          <button class="tab-button" onclick="openTab(event, 'regional')">
-            <span class="tab-icon">🌏</span>Regional Deployments
-          </button>
-          <button class="tab-button" onclick="openTab(event, 'routing')">
-            <span class="tab-icon">🔀</span>Traffic Routing
+          <button class="tab-button" onclick="openTab(event, 'networking')">
+            <span class="tab-icon">�</span>Networking & Security
           </button>
           <button class="tab-button" onclick="openTab(event, 'modern')">
             <span class="tab-icon">⚡</span>Modern Architecture
-          </button>
-          <button class="tab-button" onclick="openTab(event, 'security')">
-            <span class="tab-icon">🛡️</span>Security & CDN
           </button>
           <button class="tab-button" onclick="openTab(event, 'storage')">
             <span class="tab-icon">💾</span>Storage Services
@@ -678,8 +672,8 @@
             </div>
           </div>
 
-          <!-- Regional Deployments Tab -->
-          <div id="regional" class="tab-pane">
+          <!-- Networking & Security Tab -->
+          <div id="networking" class="tab-pane">
             <div class="architecture-grid">
               <!-- Singapore Region -->
               <div class="architecture-item">
@@ -702,12 +696,6 @@
                 </div>
               </div>
 
-            </div>
-          </div>
-
-          <!-- Traffic Routing Tab -->
-          <div id="routing" class="tab-pane">
-            <div class="architecture-grid">
               <!-- VPC -->
               <div class="architecture-item">
                 <div class="architecture-header">
@@ -725,7 +713,60 @@
                 </div>
               </div>
 
+              <!-- CloudFront -->
+              <div class="architecture-item">
+                <div class="architecture-header">
+                  <div class="architecture-number">03</div>
+                  <h3 class="architecture-title">CloudFront CDN</h3>
+                </div>
+                <div class="architecture-image">
+                  <img src="img/coffeeshop_cloudfront.png" alt="CloudFront" class="diagram-image" data-full="img/coffeeshop_cloudfront.png">
+                </div>
+                <div class="architecture-content">
+                  <p class="description">Amazon CloudFront content delivery network configuration optimizing global performance by serving static assets from S3 origins and dynamic content through Application Load Balancer origins, with edge caching reducing latency worldwide.</p>
+                  <ul class="demo-links">
+                    <li><a href="https://cdn.aws.yikyakyuk.com" target="_blank" class="demo-button">Homepage</a></li>
+                  </ul>
+                </div>
+              </div>
 
+              <!-- WAF -->
+              <div class="architecture-item">
+                <div class="architecture-header">
+                  <div class="architecture-number">04</div>
+                  <h3 class="architecture-title">WAF Security</h3>
+                </div>
+                <div class="architecture-image">
+                  <img src="img/waf_cf.png" alt="WAF with CloudFront" class="diagram-image" data-full="img/waf_cf.png">
+                </div>
+                <div class="architecture-content">
+                  <p class="description">Comprehensive web application security implementation using AWS WAF integrated with CloudFront and AWS Shield for DDoS protection, featuring custom rules for SQL injection prevention, XSS filtering, and geographic restrictions for enhanced security posture.</p>
+                  <ul class="demo-links">
+                    <li><a href="https://coffeeshop.aws.yikyakyuk.com" target="_blank" class="demo-button">Homepage</a></li>
+                    <li><a href="https://cdn.aws.yikyakyuk.com/honeypot" target="_blank" class="demo-button">Honeypot</a></li>
+                    <li><a href="https://coffeeshop.aws.yikyakyuk.com/?user=%3Cscript%3E%3Calert%3EHello%3E%3C/alert%3E%3C/script%3E" target="_blank" class="demo-button">XSS Test</a></li>
+                    <li><a href="https://coffeeshop.aws.yikyakyuk.com/?user=%27AND%201=1;" target="_blank" class="demo-button">SQLi Test</a></li>
+                  </ul>
+                </div>
+              </div>
+
+              <!-- KMS -->
+              <div class="architecture-item">
+                <div class="architecture-header">
+                  <div class="architecture-number">05</div>
+                  <h3 class="architecture-title">AWS Key Management Service</h3>
+                </div>
+                <div class="architecture-image">
+                  <img src="img/kms.png" alt="Encryption/Decryption using AWS Key Management Service" class="diagram-image" data-full="img/kms.png">
+                </div>
+                <div class="architecture-content">
+                  <p class="description">AWS Key Management Service (KMS) implementation showcasing encryption and decryption operations with customer-managed keys, demonstrating key policies, IAM permissions, and secure data protection patterns for compliance and data sovereignty requirements.</p>
+                  <ul class="demo-links">
+                    <li><a href="https://demo.aws.yikyakyuk.com/kms-app/" target="_blank" class="demo-button">Policy Interpretation</a></li>
+                    <li><a href="https://demo.aws.yikyakyuk.com/kms-app-2/" target="_blank" class="demo-button">Encrypt/Decrypt</a></li>
+                  </ul>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -811,69 +852,6 @@
                 </div>
               </div>
 
-            </div>
-          </div>
-
-
-
-
-          <!-- Security & CDN Tab -->
-          <div id="security" class="tab-pane">
-            <div class="architecture-grid">
-              <!-- CloudFront -->
-              <div class="architecture-item">
-                <div class="architecture-header">
-                  <div class="architecture-number">07</div>
-                  <h3 class="architecture-title">CloudFront CDN</h3>
-                </div>
-                <div class="architecture-image">
-                  <img src="img/coffeeshop_cloudfront.png" alt="CloudFront" class="diagram-image" data-full="img/coffeeshop_cloudfront.png">
-                </div>
-                <div class="architecture-content">
-                  <p class="description">Amazon CloudFront content delivery network configuration optimizing global performance by serving static assets from S3 origins and dynamic content through Application Load Balancer origins, with edge caching reducing latency worldwide.</p>
-                  <ul class="demo-links">
-                    <li><a href="https://cdn.aws.yikyakyuk.com" target="_blank" class="demo-button">Homepage</a></li>
-                  </ul>
-                </div>
-              </div>
-
-              <!-- WAF -->
-              <div class="architecture-item">
-                <div class="architecture-header">
-                  <div class="architecture-number">08</div>
-                  <h3 class="architecture-title">WAF Security</h3>
-                </div>
-                <div class="architecture-image">
-                  <img src="img/waf_cf.png" alt="WAF with CloudFront" class="diagram-image" data-full="img/waf_cf.png">
-                </div>
-                <div class="architecture-content">
-                  <p class="description">Comprehensive web application security implementation using AWS WAF integrated with CloudFront and AWS Shield for DDoS protection, featuring custom rules for SQL injection prevention, XSS filtering, and geographic restrictions for enhanced security posture.</p>
-                  <ul class="demo-links">
-                    <li><a href="https://coffeeshop.aws.yikyakyuk.com" target="_blank" class="demo-button">Homepage</a></li>
-                    <li><a href="https://cdn.aws.yikyakyuk.com/honeypot" target="_blank" class="demo-button">Honeypot</a></li>
-                    <li><a href="https://coffeeshop.aws.yikyakyuk.com/?user=%3Cscript%3E%3Calert%3EHello%3E%3C/alert%3E%3C/script%3E" target="_blank" class="demo-button">XSS Test</a></li>
-                    <li><a href="https://coffeeshop.aws.yikyakyuk.com/?user=%27AND%201=1;" target="_blank" class="demo-button">SQLi Test</a></li>
-                  </ul>
-                </div>
-              </div>
-
-              <!-- KMS -->
-              <div class="architecture-item">
-                <div class="architecture-header">
-                  <div class="architecture-number">09</div>
-                  <h3 class="architecture-title">AWS Key Management Service</h3>
-                </div>
-                <div class="architecture-image">
-                  <img src="img/kms.png" alt="Encryption/Decryption using AWS Key Management Service" class="diagram-image" data-full="img/kms.png">
-                </div>
-                <div class="architecture-content">
-                  <p class="description">AWS Key Management Service (KMS) implementation showcasing encryption and decryption operations with customer-managed keys, demonstrating key policies, IAM permissions, and secure data protection patterns for compliance and data sovereignty requirements.</p>
-                  <ul class="demo-links">
-                    <li><a href="https://demo.aws.yikyakyuk.com/kms-app/" target="_blank" class="demo-button">Policy Interpretation</a></li>
-                    <li><a href="https://demo.aws.yikyakyuk.com/kms-app-2/" target="_blank" class="demo-button">Encrypt/Decrypt</a></li>
-                  </ul>
-                </div>
-              </div>
             </div>
           </div>
 

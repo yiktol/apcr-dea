@@ -237,39 +237,58 @@ if st.button(f"🚀 Send {batch_size * num_batches} Records to Kinesis", type="p
 st.markdown("---")
 st.markdown("### 💥 Throughput Overload")
 st.markdown("""
-Kinesis shards have a **1 MB/sec write** and **2 MB/sec read** limit. 
-Push this button to intentionally overwhelm a shard and see the throttling behavior 
-discussed in the exam (ProvisionedThroughputExceededException).
+Kinesis shards have a **1 MB/sec write** and **1,000 records/sec** limit per shard. 
+Push this button to intentionally overwhelm a shard by exceeding the 1 MB/sec limit
+and see the throttling behavior discussed in the exam (ProvisionedThroughputExceededException).
 """)
 
-if st.button("💥 Flood Stream (500 records, no delay)", type="secondary"):
+if st.button("💥 Flood Single Shard (exceed 1 MB/sec)", type="secondary"):
     kinesis = get_kinesis_client()
     progress = st.progress(0)
+    status = st.empty()
 
-    # Send 500 records as fast as possible to a SINGLE partition key
+    # To exceed 1 MB/sec on a single shard, we need to send >1MB as fast as possible.
+    # Each record is padded to ~10KB, so 500 records × 10KB = ~5MB total.
+    # Sent rapidly in batches of 100 (PutRecords max is 500 records or 5MB per call,
+    # but per-shard limit is 1MB/sec), all to the SAME partition key.
     failed_total = 0
-    for i in range(5):
+    total_sent = 0
+    padding = "X" * 8000  # ~8KB padding to make each record ~10KB
+
+    for i in range(10):  # 10 batches × 50 records × 10KB = ~5MB total, sent rapidly
         records = []
-        for _ in range(100):
-            record = generate_clickstream_record()
-            # Force all to same partition key to overwhelm one shard
+        for _ in range(50):
+            record = {
+                "event_type": "overload_test",
+                "source": "throughput_demo",
+                "device_id": f"device-{random.randint(1,10)}",
+                "timestamp": datetime.now(timezone.utc).isoformat(),
+                "payload": padding,  # ~8KB padding to breach 1MB/sec limit
+            }
             records.append({
                 "Data": json.dumps(record).encode("utf-8"),
-                "PartitionKey": "overload-test",
+                "PartitionKey": "hot-key-overload",  # Force all to same shard
             })
         try:
             response = kinesis.put_records(StreamName=stream_name, Records=records)
-            failed_total += response.get("FailedRecordCount", 0)
+            batch_failed = response.get("FailedRecordCount", 0)
+            failed_total += batch_failed
+            total_sent += 50 - batch_failed
         except Exception as e:
             st.error(f"Error: {e}")
-            failed_total += 100
-        progress.progress((i + 1) / 5)
+            failed_total += 50
+        progress.progress((i + 1) / 10)
+        status.markdown(f"Batch {i+1}/10 | Sent: {total_sent} | Throttled: {failed_total}")
 
     if failed_total > 0:
         st.error(
-            f"🚨 **{failed_total}/500 records throttled!** "
-            "This is the ProvisionedThroughputExceededException in action. "
-            "Solutions: add shards, use exponential backoff, or enable enhanced fan-out for reads."
+            f"🚨 **{failed_total}/{total_sent + failed_total} records throttled!** "
+            "This is `ProvisionedThroughputExceededException` in action.\n\n"
+            "**Solutions:** Add shards, use better partition keys, "
+            "implement exponential backoff, or switch to on-demand mode."
         )
     else:
-        st.success("All records accepted — try increasing the stream load or reducing shard count.")
+        st.success(
+            f"All {total_sent} records accepted. The stream handled the load. "
+            "Try reducing the shard count to 1 to make throttling more likely."
+        )

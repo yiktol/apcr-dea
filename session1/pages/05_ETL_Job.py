@@ -104,15 +104,25 @@ with col1:
     if st.button("▶️ Start Glue Job", type="primary", width="stretch"):
         try:
             glue_client = boto3.client("glue")
-            response = glue_client.start_job_run(
-                JobName=glue_job_name,
-                Arguments={
-                    "--DATA_LAKE_BUCKET": bucket,
-                },
-            )
-            run_id = response["JobRunId"]
-            st.session_state["glue_run_id"] = run_id
-            st.success(f"✅ Job started! Run ID: `{run_id}`")
+            # Check if a run is already active before starting a new one
+            runs_response = glue_client.get_job_runs(JobName=glue_job_name, MaxResults=1)
+            active_states = {"STARTING", "RUNNING", "STOPPING"}
+            recent_runs = runs_response.get("JobRuns", [])
+
+            if recent_runs and recent_runs[0]["JobRunState"] in active_states:
+                existing_id = recent_runs[0]["Id"]
+                st.session_state["glue_run_id"] = existing_id
+                st.info(f"⏳ Job is already running (Run ID: `{existing_id}`). Showing status below.")
+            else:
+                response = glue_client.start_job_run(
+                    JobName=glue_job_name,
+                    Arguments={
+                        "--DATA_LAKE_BUCKET": bucket,
+                    },
+                )
+                run_id = response["JobRunId"]
+                st.session_state["glue_run_id"] = run_id
+                st.success(f"✅ Job started! Run ID: `{run_id}`")
         except Exception as e:
             st.error(f"Failed to start job: {e}")
 

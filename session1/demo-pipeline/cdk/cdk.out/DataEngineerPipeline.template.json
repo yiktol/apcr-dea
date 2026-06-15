@@ -1289,6 +1289,58 @@
     "aws:cdk:path": "DataEngineerPipeline/AthenaWorkgroup"
    }
   },
+  "RepairCuratedPartitions": {
+   "Type": "AWS::Athena::NamedQuery",
+   "Properties": {
+    "Database": "dea_data_lake",
+    "Description": "Run after Glue ETL job to register new partitions in the catalog",
+    "Name": "Repair events_curated partitions",
+    "QueryString": "MSCK REPAIR TABLE dea_data_lake.events_curated;",
+    "WorkGroup": "dea-pipeline"
+   },
+   "Metadata": {
+    "aws:cdk:path": "DataEngineerPipeline/RepairCuratedPartitions"
+   }
+  },
+  "CountAllEvents": {
+   "Type": "AWS::Athena::NamedQuery",
+   "Properties": {
+    "Database": "dea_data_lake",
+    "Description": "Quick count of all records in the raw events table",
+    "Name": "Count all events (raw)",
+    "QueryString": "SELECT COUNT(*) as total_events FROM dea_data_lake.events_raw;",
+    "WorkGroup": "dea-pipeline"
+   },
+   "Metadata": {
+    "aws:cdk:path": "DataEngineerPipeline/CountAllEvents"
+   }
+  },
+  "EventsBySource": {
+   "Type": "AWS::Athena::NamedQuery",
+   "Properties": {
+    "Database": "dea_data_lake",
+    "Description": "Breakdown of events by source type",
+    "Name": "Events by source",
+    "QueryString": "SELECT source, COUNT(*) as count FROM dea_data_lake.events_raw GROUP BY source ORDER BY count DESC;",
+    "WorkGroup": "dea-pipeline"
+   },
+   "Metadata": {
+    "aws:cdk:path": "DataEngineerPipeline/EventsBySource"
+   }
+  },
+  "CuratedEventsByDay": {
+   "Type": "AWS::Athena::NamedQuery",
+   "Properties": {
+    "Database": "dea_data_lake",
+    "Description": "Query curated Parquet data using partition pruning",
+    "Name": "Curated events by day (partitioned)",
+    "QueryString": "SELECT year, month, day, COUNT(*) as count FROM dea_data_lake.events_curated GROUP BY year, month, day ORDER BY year, month, day;",
+    "WorkGroup": "dea-pipeline"
+   },
+   "Metadata": {
+    "aws:cdk:path": "DataEngineerPipeline/CuratedEventsByDay"
+   }
+  },
   "GlueJobRoleF1B69418": {
    "Type": "AWS::IAM::Role",
    "Properties": {
@@ -1428,7 +1480,7 @@
      "Name": "glueetl",
      "PythonVersion": "3",
      "ScriptLocation": {
-      "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/448cede7abea73019c8d51a2350c007a85da550a684f028acb7d74c08d6073c9.py"
+      "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ec294d8f0d5c9f673439ec56b8b396576af0b35f75926b51179ad32f6644bfac.py"
      }
     },
     "DefaultArguments": {
@@ -1918,7 +1970,7 @@
   "CDKMetadata": {
    "Type": "AWS::CDK::Metadata",
    "Properties": {
-    "Analytics": "v2:deflate64:H4sIAAAAAAAA/21RXW+jMBD8LX13fP38ASmXq1q1PUROucdqMRviAmvkXSeKEP/9ZCDQSvc0s8MYz6xv9c3Dtb6+ghOvTFGtapvrbitgKgUn/ujQ3Opu1xqV7GmXJioNeW3NNuSEErWFZS4I/oG8xkVftDWzMxbEOprNkWye0wjvIE8geIKzSr09guDy42cS9ISzYUwyTWsRMIcGSdSk7FqzoaJ1lmSyXsZeVZaQLceGHqEZgg6sV3ynu8dgqvHOiY2Qutqa8yJP8zg8AmOvaley7l5d+eRdaKP1wntVQ5MXoLtfgcyl/8w3RyTZuuANvkHbWiqHrfxXTdE3ltk66pWFRneZG5c94JJyZLHSBzCjsF5HUGUdUHfJnn6CQA48nJ1f7MXlvQI5IIFO9vTX+WosgzEM6y4L022hxr5XGfIQMEqJo8KO3QKLa75++8rnMt9cqXdHW6CPq1RD1K1AOZX+HaQN0qv0LAdHP+70zb2+v/pka1c+kNgGdTbiP85R38XLAgAA"
+    "Analytics": "v2:deflate64:H4sIAAAAAAAA/21Sy07DMBD8Fu6ueVR8QCkFgXiEFMERbZwlNUnsyF4XVVH+nXWSJiBx2tnxZD2zzoU8vzyTZyfw7RcqLxeVzmS7JVClYOqjRXUh27dGifWneUvWIglZpdU2ZAYpcjNKbSB8hazCmZ+5lfdWaSBtzSSOYHOXxPIEdAuE33AQidN7hvPgO0PoGB8Fg5OxWxF73dVoSIwMm92YvLHa0Cg9tp0otUGvfUzoEOreaI864ZeyvQqqHO4c0VASy5EPMz32Q3MFHjtR2YKnPtji1tnQROkR8xnUWQ6yvQlGHfNPeLNn61sbnMJHaBptin4r/7IJulp7z591QkMt29QOy+7r7HJAMdIHeI/k5SoWUVQBZcuCayDI2HcUTy92b7NOAO3QQC96t66c0jxBjflLQMdjMZrjtGkYb+fadSJF3xuO1NqaXA9Zgydb/z77jadwf1SJs3udo4urFb11/iGLcQnPgZrAT5kcaGfN6VKeL+Xy5MtrvXDBkK5RpkP9AYooYlnbAgAA"
    },
    "Metadata": {
     "aws:cdk:path": "DataEngineerPipeline/CDKMetadata/Default"

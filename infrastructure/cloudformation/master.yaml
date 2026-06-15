@@ -40,7 +40,7 @@ Parameters:
   DeployEC2Stack:
     Type: String
     Description: Deploy EC2 Auto Scaling Group and ALB stack
-    Default: 'true'
+    Default: 'false'
     AllowedValues: ['true', 'false']
 
   DeployRoute53Stack:

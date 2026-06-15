@@ -100,8 +100,8 @@ with Diagram("",
     db >> Edge(color="#e65100", style="bold") >> kinesis
 
     kinesis >> Edge(label="Real-time", color="#1565c0", style="bold") >> transform
-    transform >> Edge(label="Parquet", color="#2e7d32", style="bold") >> s3_raw
-    s3_raw >> Edge(label="ETL", color="#2e7d32", style="bold") >> s3_curated
+    transform >> Edge(label="JSON", color="#2e7d32", style="bold") >> s3_raw
+    s3_raw >> Edge(label="Glue ETL\n(→ Parquet)", color="#2e7d32", style="bold") >> s3_curated
 
     s3_curated >> Edge(color="#6a1b9a", style="bold") >> athena
     s3_curated >> Edge(color="#6a1b9a", style="bold") >> redshift
@@ -154,7 +154,7 @@ with Diagram("",
     kinesis = KinesisDataStreams("Kinesis\nData Streams")
 
     with Cluster("Serverless Processing", graph_attr=PROCESSING_CLUSTER):
-        lambda_fn = Lambda("Lambda\nTransform\n• Validate\n• Enrich\n• Convert to Parquet")
+        lambda_fn = Lambda("Lambda\nTransform\n• Validate\n• Enrich\n• Write JSON")
 
     with Cluster("Data Lake", graph_attr=STORAGE_CLUSTER):
         s3_raw = S3("s3://data-lake/raw/\nyyyy/mm/dd/")

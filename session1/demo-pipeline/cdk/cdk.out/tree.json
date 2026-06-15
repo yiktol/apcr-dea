@@ -1663,6 +1663,78 @@
               "version": "2.150.0"
             }
           },
+          "RepairCuratedPartitions": {
+            "id": "RepairCuratedPartitions",
+            "path": "DataEngineerPipeline/RepairCuratedPartitions",
+            "attributes": {
+              "aws:cdk:cloudformation:type": "AWS::Athena::NamedQuery",
+              "aws:cdk:cloudformation:props": {
+                "database": "dea_data_lake",
+                "description": "Run after Glue ETL job to register new partitions in the catalog",
+                "name": "Repair events_curated partitions",
+                "queryString": "MSCK REPAIR TABLE dea_data_lake.events_curated;",
+                "workGroup": "dea-pipeline"
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_athena.CfnNamedQuery",
+              "version": "2.150.0"
+            }
+          },
+          "CountAllEvents": {
+            "id": "CountAllEvents",
+            "path": "DataEngineerPipeline/CountAllEvents",
+            "attributes": {
+              "aws:cdk:cloudformation:type": "AWS::Athena::NamedQuery",
+              "aws:cdk:cloudformation:props": {
+                "database": "dea_data_lake",
+                "description": "Quick count of all records in the raw events table",
+                "name": "Count all events (raw)",
+                "queryString": "SELECT COUNT(*) as total_events FROM dea_data_lake.events_raw;",
+                "workGroup": "dea-pipeline"
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_athena.CfnNamedQuery",
+              "version": "2.150.0"
+            }
+          },
+          "EventsBySource": {
+            "id": "EventsBySource",
+            "path": "DataEngineerPipeline/EventsBySource",
+            "attributes": {
+              "aws:cdk:cloudformation:type": "AWS::Athena::NamedQuery",
+              "aws:cdk:cloudformation:props": {
+                "database": "dea_data_lake",
+                "description": "Breakdown of events by source type",
+                "name": "Events by source",
+                "queryString": "SELECT source, COUNT(*) as count FROM dea_data_lake.events_raw GROUP BY source ORDER BY count DESC;",
+                "workGroup": "dea-pipeline"
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_athena.CfnNamedQuery",
+              "version": "2.150.0"
+            }
+          },
+          "CuratedEventsByDay": {
+            "id": "CuratedEventsByDay",
+            "path": "DataEngineerPipeline/CuratedEventsByDay",
+            "attributes": {
+              "aws:cdk:cloudformation:type": "AWS::Athena::NamedQuery",
+              "aws:cdk:cloudformation:props": {
+                "database": "dea_data_lake",
+                "description": "Query curated Parquet data using partition pruning",
+                "name": "Curated events by day (partitioned)",
+                "queryString": "SELECT year, month, day, COUNT(*) as count FROM dea_data_lake.events_curated GROUP BY year, month, day ORDER BY year, month, day;",
+                "workGroup": "dea-pipeline"
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_athena.CfnNamedQuery",
+              "version": "2.150.0"
+            }
+          },
           "GlueScriptAsset": {
             "id": "GlueScriptAsset",
             "path": "DataEngineerPipeline/GlueScriptAsset",
@@ -1869,7 +1941,7 @@
                   "name": "glueetl",
                   "pythonVersion": "3",
                   "scriptLocation": {
-                    "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/448cede7abea73019c8d51a2350c007a85da550a684f028acb7d74c08d6073c9.py"
+                    "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ec294d8f0d5c9f673439ec56b8b396576af0b35f75926b51179ad32f6644bfac.py"
                   }
                 },
                 "defaultArguments": {

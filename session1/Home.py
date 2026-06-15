@@ -116,6 +116,7 @@ def main():
     2. **Monitor Pipeline** — Watch Lambda processing in real-time (Velocity)
     3. **Query Data** — Run Athena SQL on the data lake (Volume + Value)
     4. **Governance** — See PII detection and masking in action (Veracity)
+    5. **ETL Job** — Run Glue ETL to convert raw JSON → curated Parquet (Volume)
     """)
 
     # Architecture diagram

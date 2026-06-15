@@ -264,6 +264,47 @@ class DataPipelineStack(Stack):
             ),
         )
 
+        # Athena saved queries
+        athena.CfnNamedQuery(
+            self,
+            "RepairCuratedPartitions",
+            database="dea_data_lake",
+            work_group="dea-pipeline",
+            name="Repair events_curated partitions",
+            description="Run after Glue ETL job to register new partitions in the catalog",
+            query_string="MSCK REPAIR TABLE dea_data_lake.events_curated;",
+        )
+
+        athena.CfnNamedQuery(
+            self,
+            "CountAllEvents",
+            database="dea_data_lake",
+            work_group="dea-pipeline",
+            name="Count all events (raw)",
+            description="Quick count of all records in the raw events table",
+            query_string="SELECT COUNT(*) as total_events FROM dea_data_lake.events_raw;",
+        )
+
+        athena.CfnNamedQuery(
+            self,
+            "EventsBySource",
+            database="dea_data_lake",
+            work_group="dea-pipeline",
+            name="Events by source",
+            description="Breakdown of events by source type",
+            query_string="SELECT source, COUNT(*) as count FROM dea_data_lake.events_raw GROUP BY source ORDER BY count DESC;",
+        )
+
+        athena.CfnNamedQuery(
+            self,
+            "CuratedEventsByDay",
+            database="dea_data_lake",
+            work_group="dea-pipeline",
+            name="Curated events by day (partitioned)",
+            description="Query curated Parquet data using partition pruning",
+            query_string="SELECT year, month, day, COUNT(*) as count FROM dea_data_lake.events_curated GROUP BY year, month, day ORDER BY year, month, day;",
+        )
+
         # ============================================================
         # ETL (Volume → Value) - Glue Job: Raw JSON → Curated Parquet
         # ============================================================
