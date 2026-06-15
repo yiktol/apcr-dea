@@ -9,6 +9,7 @@ EtlPipelineStack(
     app,
     "DeaSession2Pipeline",
     description="DEA Session 2 - ETL Pipeline Orchestration Demo",
+    env=cdk.Environment(region="ap-southeast-1"),
 )
 
 app.synth()

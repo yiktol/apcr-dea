@@ -1628,41 +1628,27 @@ Outputs:
   OrderProcessingQueueURL: 
     Description: "URL of the primary order processing queue"
     Value: !Ref OrderProcessingQueue
-    Export:
-      Name: PROCESSING-QUEUE-URL
   
   OrderDeliveryQueueURL: 
     Description: "URL of the order delivery queue"
     Value: !Ref OrderDeliveryQueue
-    Export:
-      Name: DELIVERY-QUEUE-URL
 
   OrderProcessingDLQURL: 
     Description: "URL of the dead letter queue"
     Value: !Ref OrderProcessingDLQ
-    Export:
-      Name: DLQ-URL
      
   CoffeeOrdersTableName:
-    Value: !Ref CoffeeOrdersTable
     Description: "Name of the DynamoDB table for coffee orders"
-    Export:
-      Name: COFFEESHOP-TABLE-NAME
+    Value: !Ref CoffeeOrdersTable
       
   OrderNotificationTopicARN: 
     Description: "ARN of the SNS topic for order notifications"
     Value: !Ref OrderNotificationTopic
-    Export:
-      Name: "ORDER-NOTIFICATION-TOPIC-ARN"
       
   ApiEndpoint:
     Description: "API Gateway endpoint URL for accessing the Coffee Shop API"
     Value: !Sub "https://${CoffeeShopApi}.execute-api.${AWS::Region}.amazonaws.com/${ApiGatewayStage}/"
-    Export:
-      Name: COFFEESHOP-API-ENDPOINT
 
   CustomDomainEndpoint:
     Description: "Custom domain endpoint for the Coffee Shop API"
     Value: !Sub "https://${ApiDomainName}/${ApiGatewayStage}/"
-    Export:
-      Name: COFFEESHOP-CUSTOM-DOMAIN

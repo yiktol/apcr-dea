@@ -63,7 +63,8 @@ def get_stream_metrics(stream_name, minutes=30):
             )
             datapoints = sorted(response["Datapoints"], key=lambda x: x["Timestamp"])
             metrics[metric_name] = datapoints
-        except Exception:
+        except Exception as e:
+            st.error(f"CloudWatch error ({metric_name}): {e}")
             metrics[metric_name] = []
 
     return metrics
@@ -96,7 +97,8 @@ def get_lambda_metrics(function_name, minutes=30):
             )
             datapoints = sorted(response["Datapoints"], key=lambda x: x["Timestamp"])
             metrics[metric_name] = datapoints
-        except Exception:
+        except Exception as e:
+            st.error(f"CloudWatch error ({metric_name}): {e}")
             metrics[metric_name] = []
 
     return metrics

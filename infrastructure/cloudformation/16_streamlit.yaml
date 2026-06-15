@@ -98,6 +98,7 @@ Resources:
                   - kinesis:GetRecords
                   - kinesis:GetShardIterator
                   - kinesis:DescribeStream
+                  - kinesis:DescribeStreamSummary
                   - kinesis:ListStreams
                   - kinesis:ListShards
                 Resource: "*"
@@ -111,7 +112,11 @@ Resources:
                   - glue:GetPartitions
                   - glue:StartJobRun
                   - glue:GetJobRun
+                  - glue:GetJobRuns
                   - glue:GetJob
+                  - glue:StartCrawler
+                  - glue:GetCrawler
+                  - glue:GetCrawlers
                 Resource: "*"
               - Sid: AthenaAccess
                 Effect: Allow
@@ -126,8 +131,13 @@ Resources:
                 Action:
                   - s3:GetObject
                   - s3:PutObject
+                  - s3:DeleteObject
                   - s3:ListBucket
+                  - s3:ListBucketVersions
                   - s3:GetBucketLocation
+                  - s3:GetBucketVersioning
+                  - s3:GetObjectVersion
+                  - s3:ListObjectVersions
                 Resource: "*"
               - Sid: LambdaAccess
                 Effect: Allow
@@ -140,6 +150,7 @@ Resources:
                 Effect: Allow
                 Action:
                   - cloudwatch:GetMetricData
+                  - cloudwatch:GetMetricStatistics
                   - cloudwatch:ListMetrics
                   - logs:DescribeLogGroups
                   - logs:DescribeLogStreams
@@ -166,6 +177,52 @@ Resources:
                 Effect: Allow
                 Action:
                   - secretsmanager:GetSecretValue
+                Resource: "*"
+              - Sid: StepFunctionsAccess
+                Effect: Allow
+                Action:
+                  - states:StartExecution
+                  - states:DescribeExecution
+                  - states:ListExecutions
+                  - states:GetExecutionHistory
+                  - states:ListStateMachines
+                Resource: "*"
+              - Sid: DynamoDBAccess
+                Effect: Allow
+                Action:
+                  - dynamodb:PutItem
+                  - dynamodb:GetItem
+                  - dynamodb:Scan
+                  - dynamodb:Query
+                  - dynamodb:DeleteItem
+                  - dynamodb:DescribeTable
+                Resource: "*"
+              - Sid: FirehoseAccess
+                Effect: Allow
+                Action:
+                  - firehose:PutRecord
+                  - firehose:PutRecordBatch
+                  - firehose:DescribeDeliveryStream
+                Resource: "*"
+              - Sid: SNSAccess
+                Effect: Allow
+                Action:
+                  - sns:Publish
+                  - sns:ListTopics
+                Resource: "*"
+              - Sid: IoTAccess
+                Effect: Allow
+                Action:
+                  - iot:Publish
+                  - iot:DescribeEndpoint
+                  - iot:CreateTopicRule
+                  - iot:DeleteTopicRule
+                  - iot:GetTopicRule
+                  - iot:ListTopicRules
+                  - iam:GetRole
+                  - iam:CreateRole
+                  - iam:PutRolePolicy
+                  - iam:PassRole
                 Resource: "*"
 
   InstanceProfile:
@@ -241,7 +298,7 @@ Resources:
             write_files:
             - content: |
                 @reboot /bin/bash /home/ubuntu/environment/apcr-dea/session1/setup.sh
-                # @reboot /bin/bash /home/ubuntu/environment/apcr-dea/session2/setup.sh
+                @reboot /bin/bash /home/ubuntu/environment/apcr-dea/session2/setup.sh
                 # @reboot /bin/bash /home/ubuntu/environment/apcr-dea/session3/setup.sh
                 # @reboot /bin/bash /home/ubuntu/environment/apcr-dea/session4/setup.sh
                 # @reboot /bin/bash /home/ubuntu/environment/apcr-dea/session5/setup.sh
@@ -256,7 +313,7 @@ Resources:
             - chown -R ubuntu:root /home/ubuntu/environment
             - su - ubuntu -c "crontab /home/ubuntu/environment/mycrontab"
             - su - ubuntu -c "/bin/bash /home/ubuntu/environment/apcr-dea/session1/setup.sh"
-            # - su - ubuntu -c "/bin/bash /home/ubuntu/environment/apcr-dea/session2/setup.sh"
+            - su - ubuntu -c "/bin/bash /home/ubuntu/environment/apcr-dea/session2/setup.sh"
             # - su - ubuntu -c "/bin/bash /home/ubuntu/environment/apcr-dea/session3/setup.sh"
             # - su - ubuntu -c "/bin/bash /home/ubuntu/environment/apcr-dea/session4/setup.sh"
             # - su - ubuntu -c "/bin/bash /home/ubuntu/environment/apcr-dea/session5/setup.sh"

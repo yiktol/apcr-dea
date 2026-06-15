@@ -1,13 +1,19 @@
 """
 CDK Stack: ETL Pipeline Orchestration — Session 2
 
-Covers all four task statements:
-- Task 1.1: Data ingestion (Kinesis Data Streams + Data Firehose)
+Pipeline flow:
+  IoT Devices → IoT Core → IoT Rule → Kinesis Data Streams → Data Firehose → S3 raw/
+  → Glue Crawler → Data Catalog
+  → Step Functions (Validate → Glue ETL → Notify)
+  → S3 curated/ (Parquet)
+  → Athena queries
+
+Covers:
+- Task 1.1: Data ingestion (IoT Core, Kinesis, Firehose)
 - Task 1.2: Transform & process (Glue ETL: JSON → Parquet)
 - Task 1.3: Orchestrate pipelines (Step Functions workflow)
-- Task 1.4: Programming concepts (CI/CD, Lambda, Athena)
+- Task 1.4: Programming concepts (Athena SQL, CI/CD patterns)
 """
-import json
 import aws_cdk as cdk
 from aws_cdk import (
     Stack,
@@ -17,18 +23,15 @@ from aws_cdk import (
     aws_kinesis as kinesis,
     aws_kinesisfirehose as firehose,
     aws_lambda as lambda_,
-    aws_lambda_event_sources as event_sources,
     aws_s3 as s3,
     aws_s3_assets as s3_assets,
     aws_iam as iam,
+    aws_iot as iot,
     aws_glue as glue,
     aws_athena as athena,
     aws_stepfunctions as sfn,
     aws_stepfunctions_tasks as sfn_tasks,
     aws_sns as sns,
-    aws_sns_subscriptions as subs,
-    aws_events as events,
-    aws_events_targets as targets,
     aws_logs as logs,
 )
 from constructs import Construct
@@ -39,7 +42,7 @@ class EtlPipelineStack(Stack):
         super().__init__(scope, construct_id, **kwargs)
 
         # ============================================================
-        # STORAGE — S3 Data Lake with zones
+        # STORAGE — S3 Data Lake
         # ============================================================
         data_lake_bucket = s3.Bucket(
             self,
@@ -58,16 +61,6 @@ class EtlPipelineStack(Stack):
             ],
         )
 
-        # Firehose destination bucket (separate prefix)
-        firehose_bucket = s3.Bucket(
-            self,
-            "FirehoseBucket",
-            removal_policy=RemovalPolicy.DESTROY,
-            auto_delete_objects=True,
-            encryption=s3.BucketEncryption.S3_MANAGED,
-            block_public_access=s3.BlockPublicAccess.BLOCK_ALL,
-        )
-
         # Athena results bucket
         athena_results_bucket = s3.Bucket(
             self,
@@ -80,7 +73,7 @@ class EtlPipelineStack(Stack):
         )
 
         # ============================================================
-        # INGESTION — Kinesis Data Streams (Task 1.1)
+        # INGESTION — Kinesis Data Streams
         # ============================================================
         stream = kinesis.Stream(
             self,
@@ -92,236 +85,70 @@ class EtlPipelineStack(Stack):
         )
 
         # ============================================================
-        # INGESTION — Data Firehose (Task 1.1 comparison)
+        # INGESTION — Data Firehose (Kinesis → S3 raw/)
         # ============================================================
         firehose_role = iam.Role(
             self,
             "FirehoseRole",
             assumed_by=iam.ServicePrincipal("firehose.amazonaws.com"),
         )
-        firehose_bucket.grant_read_write(firehose_role)
+        data_lake_bucket.grant_read_write(firehose_role)
+        stream.grant_read(firehose_role)
 
         delivery_stream = firehose.CfnDeliveryStream(
             self,
             "DeliveryStream",
             delivery_stream_name="dea-s2-firehose",
-            delivery_stream_type="DirectPut",
-            s3_destination_configuration=firehose.CfnDeliveryStream.S3DestinationConfigurationProperty(
-                bucket_arn=firehose_bucket.bucket_arn,
+            delivery_stream_type="KinesisStreamAsSource",
+            kinesis_stream_source_configuration=firehose.CfnDeliveryStream.KinesisStreamSourceConfigurationProperty(
+                kinesis_stream_arn=stream.stream_arn,
                 role_arn=firehose_role.role_arn,
-                prefix="delivered/year=!{timestamp:yyyy}/month=!{timestamp:MM}/day=!{timestamp:dd}/",
+            ),
+            s3_destination_configuration=firehose.CfnDeliveryStream.S3DestinationConfigurationProperty(
+                bucket_arn=data_lake_bucket.bucket_arn,
+                role_arn=firehose_role.role_arn,
+                prefix="raw/year=!{timestamp:yyyy}/month=!{timestamp:MM}/day=!{timestamp:dd}/",
                 error_output_prefix="errors/",
                 buffering_hints=firehose.CfnDeliveryStream.BufferingHintsProperty(
                     interval_in_seconds=60,
                     size_in_m_bs=1,
                 ),
-                compression_format="GZIP",
+                compression_format="UNCOMPRESSED",
             ),
         )
 
         # ============================================================
-        # PROCESSING — Lambda Consumer (Kinesis → S3 raw zone)
+        # INGESTION — IoT Rule (IoT Core → Kinesis)
         # ============================================================
-        consumer_log_group = logs.LogGroup(
+        iot_to_kinesis_role = iam.Role(
             self,
-            "ConsumerLogGroup",
-            retention=logs.RetentionDays.ONE_WEEK,
-            removal_policy=RemovalPolicy.DESTROY,
+            "IoTToKinesisRole",
+            assumed_by=iam.ServicePrincipal("iot.amazonaws.com"),
         )
+        stream.grant_write(iot_to_kinesis_role)
 
-        consumer_fn = lambda_.Function(
+        iot.CfnTopicRule(
             self,
-            "ConsumerFunction",
-            function_name="dea-s2-stream-consumer",
-            runtime=lambda_.Runtime.PYTHON_3_12,
-            handler="index.handler",
-            code=lambda_.Code.from_asset("lambda_fns/consumer"),
-            timeout=Duration.minutes(2),
-            memory_size=256,
-            environment={
-                "DATA_LAKE_BUCKET": data_lake_bucket.bucket_name,
-                "RAW_PREFIX": "raw/",
-            },
-            log_group=consumer_log_group,
-        )
-
-        data_lake_bucket.grant_read_write(consumer_fn)
-
-        consumer_fn.add_event_source(
-            event_sources.KinesisEventSource(
-                stream,
-                starting_position=lambda_.StartingPosition.LATEST,
-                batch_size=100,
-                max_batching_window=Duration.seconds(30),
-                retry_attempts=3,
-                parallelization_factor=2,
-            )
-        )
-
-        # ============================================================
-        # ORCHESTRATION — Step Functions ETL Workflow (Task 1.3)
-        # ============================================================
-
-        # Validator Lambda
-        validator_fn = lambda_.Function(
-            self,
-            "ValidatorFunction",
-            function_name="dea-s2-validator",
-            runtime=lambda_.Runtime.PYTHON_3_12,
-            handler="index.handler",
-            code=lambda_.Code.from_asset("lambda_fns/validator"),
-            timeout=Duration.minutes(1),
-            memory_size=256,
-            environment={
-                "DATA_LAKE_BUCKET": data_lake_bucket.bucket_name,
-                "RAW_PREFIX": "raw/",
-            },
-        )
-        data_lake_bucket.grant_read(validator_fn)
-
-        # Notifier Lambda
-        notification_topic = sns.Topic(
-            self,
-            "PipelineNotifications",
-            topic_name="dea-s2-pipeline-notifications",
-            display_name="DEA Pipeline Notifications",
-        )
-
-        notifier_fn = lambda_.Function(
-            self,
-            "NotifierFunction",
-            function_name="dea-s2-notifier",
-            runtime=lambda_.Runtime.PYTHON_3_12,
-            handler="index.handler",
-            code=lambda_.Code.from_asset("lambda_fns/notifier"),
-            timeout=Duration.seconds(30),
-            memory_size=128,
-            environment={
-                "SNS_TOPIC_ARN": notification_topic.topic_arn,
-            },
-        )
-        notification_topic.grant_publish(notifier_fn)
-
-        # Glue ETL Job
-        glue_script_asset = s3_assets.Asset(
-            self,
-            "GlueScriptAsset",
-            path="glue_scripts/transform_etl.py",
-        )
-
-        glue_role = iam.Role(
-            self,
-            "GlueJobRole",
-            role_name="dea-s2-glue-etl-role",
-            assumed_by=iam.ServicePrincipal("glue.amazonaws.com"),
-            managed_policies=[
-                iam.ManagedPolicy.from_aws_managed_policy_name(
-                    "service-role/AWSGlueServiceRole"
-                ),
-            ],
-        )
-        data_lake_bucket.grant_read_write(glue_role)
-        glue_script_asset.grant_read(glue_role)
-
-        glue_job = glue.CfnJob(
-            self,
-            "TransformEtlJob",
-            name="dea-s2-transform-etl",
-            description="Session 2: JSON → Parquet (partitioned, deduplicated, compressed)",
-            role=glue_role.role_arn,
-            command=glue.CfnJob.JobCommandProperty(
-                name="glueetl",
-                python_version="3",
-                script_location=glue_script_asset.s3_object_url,
+            "IoTToKinesisRule",
+            rule_name="dea_s2_to_kinesis",
+            topic_rule_payload=iot.CfnTopicRule.TopicRulePayloadProperty(
+                sql="SELECT *, timestamp() as ingested_at, topic() as source_topic FROM 'iot/simulator/#'",
+                description="Route IoT Device Simulator messages to Kinesis for Session 2 pipeline",
+                rule_disabled=False,
+                actions=[
+                    iot.CfnTopicRule.ActionProperty(
+                        kinesis=iot.CfnTopicRule.KinesisActionProperty(
+                            stream_name=stream.stream_name,
+                            role_arn=iot_to_kinesis_role.role_arn,
+                            partition_key="${topic()}",
+                        ),
+                    ),
+                ],
             ),
-            default_arguments={
-                "--job-language": "python",
-                "--DATA_LAKE_BUCKET": data_lake_bucket.bucket_name,
-                "--enable-metrics": "true",
-                "--enable-continuous-cloudwatch-log": "true",
-            },
-            glue_version="4.0",
-            number_of_workers=2,
-            worker_type="G.1X",
-            timeout=10,
-            max_retries=0,
-        )
-
-        # Step Functions State Machine
-        validate_step = sfn_tasks.LambdaInvoke(
-            self,
-            "ValidateData",
-            lambda_function=validator_fn,
-            output_path="$.Payload",
-            retry_on_service_exceptions=True,
-        )
-
-        run_glue_job = sfn_tasks.GlueStartJobRun(
-            self,
-            "RunGlueETL",
-            glue_job_name="dea-s2-transform-etl",
-            integration_pattern=sfn.IntegrationPattern.RUN_JOB,
-            arguments=sfn.TaskInput.from_object({
-                "--DATA_LAKE_BUCKET": data_lake_bucket.bucket_name,
-            }),
-            result_path="$.glueResult",
-        )
-        run_glue_job.add_retry(
-            errors=["States.ALL"],
-            interval=Duration.seconds(30),
-            max_attempts=2,
-            backoff_rate=2.0,
-        )
-
-        notify_success = sfn_tasks.LambdaInvoke(
-            self,
-            "NotifySuccess",
-            lambda_function=notifier_fn,
-            payload=sfn.TaskInput.from_object({
-                "status": "SUCCESS",
-                "message": "ETL pipeline completed successfully",
-                "jobName": "dea-s2-transform-etl",
-            }),
-            result_path="$.notifyResult",
-        )
-
-        notify_failure = sfn_tasks.LambdaInvoke(
-            self,
-            "NotifyFailure",
-            lambda_function=notifier_fn,
-            payload=sfn.TaskInput.from_object({
-                "status": "FAILURE",
-                "message": "ETL pipeline failed",
-                "jobName": "dea-s2-transform-etl",
-            }),
-            result_path="$.notifyResult",
-        )
-
-        # Error handling
-        handle_error = sfn.Pass(self, "HandleError", result=sfn.Result.from_object({"error": "true"}))
-        handle_error.next(notify_failure)
-
-        # Build the workflow
-        definition = (
-            validate_step
-            .next(
-                run_glue_job
-                .add_catch(handle_error, errors=["States.ALL"], result_path="$.error")
-            )
-            .next(notify_success)
-        )
-
-        state_machine = sfn.StateMachine(
-            self,
-            "EtlOrchestrator",
-            state_machine_name="dea-s2-etl-orchestrator",
-            definition_body=sfn.DefinitionBody.from_chainable(definition),
-            timeout=Duration.minutes(30),
-            tracing_enabled=True,
         )
 
         # ============================================================
-        # ANALYTICS — Glue Catalog + Athena (Task 1.4)
+        # CATALOG — Glue Database + Crawler
         # ============================================================
         glue_database = glue.CfnDatabase(
             self,
@@ -333,7 +160,55 @@ class EtlPipelineStack(Stack):
             ),
         )
 
-        # Raw table (JSON)
+        # Crawler role
+        crawler_role = iam.Role(
+            self,
+            "CrawlerRole",
+            assumed_by=iam.ServicePrincipal("glue.amazonaws.com"),
+            managed_policies=[
+                iam.ManagedPolicy.from_aws_managed_policy_name(
+                    "service-role/AWSGlueServiceRole"
+                ),
+            ],
+        )
+        data_lake_bucket.grant_read(crawler_role)
+
+        # Glue Crawlers (separate for raw and curated)
+        glue.CfnCrawler(
+            self,
+            "RawCrawler",
+            name="dea-s2-raw-crawler",
+            role=crawler_role.role_arn,
+            database_name="dea_s2_pipeline",
+            targets=glue.CfnCrawler.TargetsProperty(
+                s3_targets=[
+                    glue.CfnCrawler.S3TargetProperty(path=f"s3://{data_lake_bucket.bucket_name}/raw/"),
+                ],
+            ),
+            schema_change_policy=glue.CfnCrawler.SchemaChangePolicyProperty(
+                update_behavior="UPDATE_IN_DATABASE",
+                delete_behavior="LOG",
+            ),
+        )
+
+        glue.CfnCrawler(
+            self,
+            "CuratedCrawler",
+            name="dea-s2-curated-crawler",
+            role=crawler_role.role_arn,
+            database_name="dea_s2_pipeline",
+            targets=glue.CfnCrawler.TargetsProperty(
+                s3_targets=[
+                    glue.CfnCrawler.S3TargetProperty(path=f"s3://{data_lake_bucket.bucket_name}/curated/"),
+                ],
+            ),
+            schema_change_policy=glue.CfnCrawler.SchemaChangePolicyProperty(
+                update_behavior="UPDATE_IN_DATABASE",
+                delete_behavior="LOG",
+            ),
+        )
+
+        # Raw table (JSON) - pre-defined for immediate Athena access
         glue.CfnTable(
             self,
             "RawTable",
@@ -398,7 +273,166 @@ class EtlPipelineStack(Stack):
             ),
         ).add_dependency(glue_database)
 
-        # Athena workgroup
+        # ============================================================
+        # TRANSFORM — Glue ETL Job
+        # ============================================================
+        glue_script_asset = s3_assets.Asset(
+            self,
+            "GlueScriptAsset",
+            path="glue_scripts/transform_etl.py",
+        )
+
+        glue_role = iam.Role(
+            self,
+            "GlueJobRole",
+            role_name="dea-s2-glue-etl-role",
+            assumed_by=iam.ServicePrincipal("glue.amazonaws.com"),
+            managed_policies=[
+                iam.ManagedPolicy.from_aws_managed_policy_name(
+                    "service-role/AWSGlueServiceRole"
+                ),
+            ],
+        )
+        data_lake_bucket.grant_read_write(glue_role)
+        glue_script_asset.grant_read(glue_role)
+
+        glue.CfnJob(
+            self,
+            "TransformEtlJob",
+            name="dea-s2-transform-etl",
+            description="Session 2: JSON to Parquet (partitioned, deduplicated, compressed)",
+            role=glue_role.role_arn,
+            command=glue.CfnJob.JobCommandProperty(
+                name="glueetl",
+                python_version="3",
+                script_location=glue_script_asset.s3_object_url,
+            ),
+            default_arguments={
+                "--job-language": "python",
+                "--DATA_LAKE_BUCKET": data_lake_bucket.bucket_name,
+                "--enable-metrics": "true",
+                "--enable-continuous-cloudwatch-log": "true",
+            },
+            glue_version="4.0",
+            number_of_workers=2,
+            worker_type="G.1X",
+            timeout=10,
+            max_retries=0,
+        )
+
+        # ============================================================
+        # ORCHESTRATION — Step Functions
+        # ============================================================
+        # Validator Lambda
+        validator_fn = lambda_.Function(
+            self,
+            "ValidatorFunction",
+            function_name="dea-s2-validator",
+            runtime=lambda_.Runtime.PYTHON_3_12,
+            handler="index.handler",
+            code=lambda_.Code.from_asset("lambda_fns/validator"),
+            timeout=Duration.minutes(1),
+            memory_size=256,
+            environment={
+                "DATA_LAKE_BUCKET": data_lake_bucket.bucket_name,
+                "RAW_PREFIX": "raw/",
+            },
+        )
+        data_lake_bucket.grant_read(validator_fn)
+
+        # Notifier Lambda + SNS
+        notification_topic = sns.Topic(
+            self,
+            "PipelineNotifications",
+            topic_name="dea-s2-pipeline-notifications",
+            display_name="DEA Pipeline Notifications",
+        )
+
+        notifier_fn = lambda_.Function(
+            self,
+            "NotifierFunction",
+            function_name="dea-s2-notifier",
+            runtime=lambda_.Runtime.PYTHON_3_12,
+            handler="index.handler",
+            code=lambda_.Code.from_asset("lambda_fns/notifier"),
+            timeout=Duration.seconds(30),
+            memory_size=128,
+            environment={
+                "SNS_TOPIC_ARN": notification_topic.topic_arn,
+            },
+        )
+        notification_topic.grant_publish(notifier_fn)
+
+        # State Machine definition
+        validate_step = sfn_tasks.LambdaInvoke(
+            self, "ValidateData",
+            lambda_function=validator_fn,
+            output_path="$.Payload",
+            retry_on_service_exceptions=True,
+        )
+
+        run_glue_job = sfn_tasks.GlueStartJobRun(
+            self, "RunGlueETL",
+            glue_job_name="dea-s2-transform-etl",
+            integration_pattern=sfn.IntegrationPattern.RUN_JOB,
+            arguments=sfn.TaskInput.from_object({
+                "--DATA_LAKE_BUCKET": data_lake_bucket.bucket_name,
+            }),
+            result_path="$.glueResult",
+        )
+        run_glue_job.add_retry(
+            errors=["States.ALL"],
+            interval=Duration.seconds(30),
+            max_attempts=2,
+            backoff_rate=2.0,
+        )
+
+        notify_success = sfn_tasks.LambdaInvoke(
+            self, "NotifySuccess",
+            lambda_function=notifier_fn,
+            payload=sfn.TaskInput.from_object({
+                "status": "SUCCESS",
+                "message": "ETL pipeline completed successfully",
+                "jobName": "dea-s2-transform-etl",
+            }),
+            result_path="$.notifyResult",
+        )
+
+        notify_failure = sfn_tasks.LambdaInvoke(
+            self, "NotifyFailure",
+            lambda_function=notifier_fn,
+            payload=sfn.TaskInput.from_object({
+                "status": "FAILURE",
+                "message": "ETL pipeline failed",
+                "jobName": "dea-s2-transform-etl",
+            }),
+            result_path="$.notifyResult",
+        )
+
+        handle_error = sfn.Pass(self, "HandleError", result=sfn.Result.from_object({"error": "true"}))
+        handle_error.next(notify_failure)
+
+        definition = (
+            validate_step
+            .next(
+                run_glue_job
+                .add_catch(handle_error, errors=["States.ALL"], result_path="$.error")
+            )
+            .next(notify_success)
+        )
+
+        state_machine = sfn.StateMachine(
+            self,
+            "EtlOrchestrator",
+            state_machine_name="dea-s2-etl-orchestrator",
+            definition_body=sfn.DefinitionBody.from_chainable(definition),
+            timeout=Duration.minutes(30),
+            tracing_enabled=True,
+        )
+
+        # ============================================================
+        # ANALYTICS — Athena Workgroup + Saved Queries
+        # ============================================================
         athena.CfnWorkGroup(
             self,
             "AthenaWorkgroup",
@@ -414,6 +448,34 @@ class EtlPipelineStack(Stack):
             ),
         )
 
+        # Saved queries
+        athena.CfnNamedQuery(
+            self, "RepairPartitions",
+            database="dea_s2_pipeline",
+            work_group="dea-s2-pipeline",
+            name="Repair curated partitions",
+            description="Register new partitions after ETL job",
+            query_string="MSCK REPAIR TABLE dea_s2_pipeline.events_curated;",
+        )
+
+        athena.CfnNamedQuery(
+            self, "CountRawEvents",
+            database="dea_s2_pipeline",
+            work_group="dea-s2-pipeline",
+            name="Count raw events",
+            description="Count all records in raw JSON table",
+            query_string="SELECT COUNT(*) as total FROM dea_s2_pipeline.events_raw;",
+        )
+
+        athena.CfnNamedQuery(
+            self, "CompareFormats",
+            database="dea_s2_pipeline",
+            work_group="dea-s2-pipeline",
+            name="Compare raw vs curated scan",
+            description="Run on both tables to compare data scanned",
+            query_string="SELECT source, COUNT(*) as cnt FROM dea_s2_pipeline.events_curated GROUP BY source ORDER BY cnt DESC;",
+        )
+
         # ============================================================
         # OUTPUTS
         # ============================================================
@@ -421,12 +483,13 @@ class EtlPipelineStack(Stack):
         CfnOutput(self, "StreamArn", value=stream.stream_arn)
         CfnOutput(self, "FirehoseName", value="dea-s2-firehose")
         CfnOutput(self, "DataLakeBucket", value=data_lake_bucket.bucket_name)
-        CfnOutput(self, "FirehoseBucket", value=firehose_bucket.bucket_name)
         CfnOutput(self, "AthenaResultsBucket", value=athena_results_bucket.bucket_name)
         CfnOutput(self, "AthenaWorkgroup", value="dea-s2-pipeline")
         CfnOutput(self, "GlueDatabase", value="dea_s2_pipeline")
         CfnOutput(self, "GlueJobName", value="dea-s2-transform-etl")
+        CfnOutput(self, "RawCrawlerName", value="dea-s2-raw-crawler")
+        CfnOutput(self, "CuratedCrawlerName", value="dea-s2-curated-crawler")
         CfnOutput(self, "StateMachineArn", value=state_machine.state_machine_arn)
         CfnOutput(self, "StateMachineName", value=state_machine.state_machine_name)
-        CfnOutput(self, "ConsumerFunctionName", value=consumer_fn.function_name)
         CfnOutput(self, "SnsTopicArn", value=notification_topic.topic_arn)
+        CfnOutput(self, "IoTRuleName", value="dea_s2_to_kinesis")

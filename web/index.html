@@ -531,7 +531,10 @@
       <div class="tab-container">
         <div class="tab-nav">
           <button class="tab-button active" onclick="openTab(event, 'session1')">
-            <span class="tab-icon">📊</span>Data Pipeline
+            <span class="tab-icon">📊</span>5 V's of Big Data
+          </button>
+          <button class="tab-button" onclick="openTab(event, 'session2')">
+            <span class="tab-icon">🔄</span>ETL Pipeline
           </button>
           <button class="tab-button" onclick="openTab(event, 'networking')">
             <span class="tab-icon">�</span>Networking & Security
@@ -666,6 +669,147 @@
                   <p class="description">VPC with private subnets, NAT Gateway for secure outbound access, and VPC Endpoints for private connectivity to AWS services. Ensures data pipeline components operate securely within isolated network boundaries.</p>
                   <ul class="demo-links">
                     <li><a href="https://demo.aws.yikyakyuk.com/dea-session1/" target="_blank" class="demo-button">Pipeline Home</a></li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Session 2: ETL Pipeline Tab -->
+          <div id="session2" class="tab-pane">
+            <div class="architecture-grid">
+              <!-- IoT Device Simulator -->
+              <div class="architecture-item">
+                <div class="architecture-header">
+                  <div class="architecture-number">⚙️</div>
+                  <h3 class="architecture-title">IoT Device Simulator</h3>
+                </div>
+                <div class="architecture-image">
+                  <img src="img/s2_iot_simulator.png" alt="IoT Device Simulator Architecture" class="diagram-image" data-full="img/s2_iot_simulator.png">
+                </div>
+                <div class="architecture-content">
+                  <p class="description">AWS IoT Device Simulator generates realistic connected vehicle telemetry (speed, engine, fuel, GPS) and publishes to IoT Core via MQTT. A Step Functions engine orchestrates thousands of simulated devices.</p>
+                  <ul class="demo-links">
+                    <li><a href="https://demo.aws.yikyakyuk.com/dea-session2/Ingest" target="_blank" class="demo-button">Ingest Data</a></li>
+                  </ul>
+                </div>
+              </div>
+
+              <!-- Full Pipeline -->
+              <div class="architecture-item">
+                <div class="architecture-header">
+                  <div class="architecture-number">00</div>
+                  <h3 class="architecture-title">End-to-End ETL Pipeline</h3>
+                </div>
+                <div class="architecture-image">
+                  <img src="img/s2_00_full_pipeline.png" alt="Full ETL Pipeline" class="diagram-image" data-full="img/s2_00_full_pipeline.png">
+                </div>
+                <div class="architecture-content">
+                  <p class="description">Complete serverless pipeline: IoT Device Simulator → IoT Core → Kinesis → Firehose → S3 raw → Glue Crawler → Data Catalog → Step Functions → Glue ETL → S3 curated (Parquet) → Athena → QuickSight.</p>
+                  <ul class="demo-links">
+                    <li><a href="https://demo.aws.yikyakyuk.com/dea-session2/" target="_blank" class="demo-button">Pipeline Home</a></li>
+                  </ul>
+                </div>
+              </div>
+
+              <!-- Ingest -->
+              <div class="architecture-item">
+                <div class="architecture-header">
+                  <div class="architecture-number">01</div>
+                  <h3 class="architecture-title">Ingest (IoT → Kinesis → Firehose)</h3>
+                </div>
+                <div class="architecture-image">
+                  <img src="img/s2_01_ingest.png" alt="Ingestion Layer" class="diagram-image" data-full="img/s2_01_ingest.png">
+                </div>
+                <div class="architecture-content">
+                  <p class="description">Self-driving cars publish telemetry via IoT Core. An IoT Rule routes messages to Kinesis Data Streams, which feeds Data Firehose for buffered delivery to S3 raw zone as JSON.</p>
+                  <ul class="demo-links">
+                    <li><a href="https://demo.aws.yikyakyuk.com/dea-session2/Ingest" target="_blank" class="demo-button">Ingest Data</a></li>
+                  </ul>
+                </div>
+              </div>
+
+              <!-- Crawl & Catalog -->
+              <div class="architecture-item">
+                <div class="architecture-header">
+                  <div class="architecture-number">02</div>
+                  <h3 class="architecture-title">Crawl & Catalog (Glue)</h3>
+                </div>
+                <div class="architecture-image">
+                  <img src="img/s2_02_crawl_catalog.png" alt="Crawl and Catalog" class="diagram-image" data-full="img/s2_02_crawl_catalog.png">
+                </div>
+                <div class="architecture-content">
+                  <p class="description">Glue Crawlers scan S3, detect file formats, infer schemas, discover partitions, and write metadata to the Glue Data Catalog — making data queryable by Athena, Redshift Spectrum, and EMR.</p>
+                  <ul class="demo-links">
+                    <li><a href="https://demo.aws.yikyakyuk.com/dea-session2/Crawl_Catalog" target="_blank" class="demo-button">Crawl & Catalog</a></li>
+                  </ul>
+                </div>
+              </div>
+
+              <!-- Transform -->
+              <div class="architecture-item">
+                <div class="architecture-header">
+                  <div class="architecture-number">03</div>
+                  <h3 class="architecture-title">Transform (Glue ETL)</h3>
+                </div>
+                <div class="architecture-image">
+                  <img src="img/s2_03_transform.png" alt="Transform ETL" class="diagram-image" data-full="img/s2_03_transform.png">
+                </div>
+                <div class="architecture-content">
+                  <p class="description">Glue ETL PySpark job reads raw JSON, deduplicates by event ID, partitions by year/month/day, compresses with Snappy, and writes optimized Parquet to the curated zone.</p>
+                  <ul class="demo-links">
+                    <li><a href="https://demo.aws.yikyakyuk.com/dea-session2/Transform" target="_blank" class="demo-button">Transform</a></li>
+                  </ul>
+                </div>
+              </div>
+
+              <!-- Orchestrate -->
+              <div class="architecture-item">
+                <div class="architecture-header">
+                  <div class="architecture-number">04</div>
+                  <h3 class="architecture-title">Orchestrate (Step Functions)</h3>
+                </div>
+                <div class="architecture-image">
+                  <img src="img/s2_04_orchestrate.png" alt="Orchestrate" class="diagram-image" data-full="img/s2_04_orchestrate.png">
+                </div>
+                <div class="architecture-content">
+                  <p class="description">AWS Step Functions coordinates the ETL workflow: EventBridge trigger → Validate (Lambda) → Glue ETL Job → Notify (SNS). Includes error handling with retry and failure notifications.</p>
+                  <ul class="demo-links">
+                    <li><a href="https://demo.aws.yikyakyuk.com/dea-session2/Orchestrate" target="_blank" class="demo-button">Orchestrate</a></li>
+                  </ul>
+                </div>
+              </div>
+
+              <!-- Query -->
+              <div class="architecture-item">
+                <div class="architecture-header">
+                  <div class="architecture-number">05</div>
+                  <h3 class="architecture-title">Query & Analyze (Athena)</h3>
+                </div>
+                <div class="architecture-image">
+                  <img src="img/s2_05_query.png" alt="Query" class="diagram-image" data-full="img/s2_05_query.png">
+                </div>
+                <div class="architecture-content">
+                  <p class="description">Amazon Athena queries raw JSON vs curated Parquet to demonstrate cost savings from columnar format and partition pruning. Athena charges $5/TB scanned — Parquet reduces this by 80-90%.</p>
+                  <ul class="demo-links">
+                    <li><a href="https://demo.aws.yikyakyuk.com/dea-session2/Query" target="_blank" class="demo-button">Query & Analyze</a></li>
+                  </ul>
+                </div>
+              </div>
+
+              <!-- Visualize -->
+              <div class="architecture-item">
+                <div class="architecture-header">
+                  <div class="architecture-number">06</div>
+                  <h3 class="architecture-title">Visualize (QuickSight)</h3>
+                </div>
+                <div class="architecture-image">
+                  <img src="img/s2_06_visualize.png" alt="Visualize" class="diagram-image" data-full="img/s2_06_visualize.png">
+                </div>
+                <div class="architecture-content">
+                  <p class="description">Amazon QuickSight connects to Athena for serverless BI dashboards. SPICE in-memory cache for fast loads, or Direct Query for always-current data from the curated Parquet zone.</p>
+                  <ul class="demo-links">
+                    <li><a href="https://demo.aws.yikyakyuk.com/dea-session2/Visualize" target="_blank" class="demo-button">Visualize</a></li>
                   </ul>
                 </div>
               </div>

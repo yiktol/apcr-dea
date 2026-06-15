@@ -746,8 +746,6 @@ Outputs:
   DynamoDBTableName:
     Description: DynamoDB table name
     Value: !Ref KmsAppTable
-    Export:
-      Name: !Sub '${AWS::StackName}-DynamoDBTableName'
 
   # Security Outputs
   KMSKeyId:

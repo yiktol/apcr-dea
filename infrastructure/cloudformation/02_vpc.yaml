@@ -286,73 +286,49 @@ Outputs:
   VpcId:
     Description: ID of the created VPC
     Value: !Ref Vpc
-    Export:
-      Name: VpcId
 
   VpcCidrBlock:
     Description: IPv4 CIDR block of the VPC
     Value: !Ref VpcCidrBlock
-    Export:
-      Name: VpcCidrBlock
 
   Ipv6CidrBlocks:
     Description: IPv6 CIDR block of the VPC
     Value: !Select [0, !GetAtt Vpc.Ipv6CidrBlocks]
-    Export:
-      Name: Ipv6CidrBlocks
 
   InternetGatewayId:
     Description: ID of the Internet Gateway
     Value: !Ref InternetGateway
-    Export:
-      Name: InternetGatewayId
 
   PublicRouteTableId:
     Description: ID of the public route table
     Value: !Ref PublicRouteTable
-    Export:
-      Name: PublicRouteTableId
 
   PrivateRouteTableId:
     Description: ID of the private route table
     Value: !Ref PrivateRouteTable
-    Export:
-      Name: PrivateRouteTableId
 
   # Public Subnet Outputs
   PublicSubnetOne:
     Description: ID of public subnet in first AZ
     Value: !Ref PublicSubnetOne
-    Export:
-      Name: PublicSubnetOne
 
   PublicSubnetTwo:
     Description: ID of public subnet in second AZ
     Value: !Ref PublicSubnetTwo
-    Export:
-      Name: PublicSubnetTwo
 
   PublicSubnetThree:
     Description: ID of public subnet in third AZ
     Value: !Ref PublicSubnetThree
-    Export:
-      Name: PublicSubnetThree
 
   # Private Subnet Outputs
   PrivateSubnetOne:
     Description: ID of private subnet in first AZ
     Value: !Ref PrivateSubnetOne
-    Export:
-      Name: PrivateSubnetOne
 
   PrivateSubnetTwo:
     Description: ID of private subnet in second AZ
     Value: !Ref PrivateSubnetTwo
-    Export:
-      Name: PrivateSubnetTwo
 
   PrivateSubnetThree:
     Description: ID of private subnet in third AZ
     Value: !Ref PrivateSubnetThree
-    Export:
-      Name: PrivateSubnetThree

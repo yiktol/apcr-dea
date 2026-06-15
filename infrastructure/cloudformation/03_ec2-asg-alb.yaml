@@ -860,8 +860,6 @@ Outputs:
   InstanceSecurityGroupId:
     Description: ID of the Instance Security Group
     Value: !Ref InstanceSecurityGroup
-    Export:
-      Name: InstanceSecurityGroup
 
   # Launch Template Outputs
   LaunchTemplateId:

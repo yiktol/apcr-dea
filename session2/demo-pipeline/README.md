@@ -5,47 +5,45 @@ AWS CDK stack for the ETL Pipeline Orchestration demo.
 ## Architecture
 
 ```
-Producers (Streamlit UI)
+IoT Device Simulator
+    │
+    ▼ (MQTT publish)
+IoT Core → IoT Rule
+    │
+    ▼ (route to stream)
+Kinesis Data Streams (2 shards)
+    │
+    ▼ (delivery stream)
+Data Firehose → S3 raw/ (JSON, partitioned by date)
+    │
+    ├── Glue Crawler → Data Catalog (schema + partitions)
+    │
+    ▼ (Step Functions orchestration)
+    Validate (Lambda) → Glue ETL → Notify (Lambda → SNS)
     │
     ▼
-Kinesis Data Streams (2 shards)  ←  resharding demo
-    │
-    ├──► Lambda Consumer → S3 raw/
+S3 curated/ (Parquet, Snappy, partitioned)
     │
     ▼
-Data Firehose → S3 firehose/     ←  side-by-side comparison
-    │
-    ▼
-Step Functions (Standard Workflow)
-    ├── Validate (Lambda)
-    ├── Transform (Glue ETL)
-    └── Notify (Lambda + SNS)
-    │
-    ▼
-S3 Data Lake: raw/ → curated/ (Parquet)
-    │
-    ▼
-Athena + Glue Catalog  ←  SQL optimization demo
+Athena (SQL queries, cost comparison)
 ```
 
-## Structure
+## Resources Created
 
-```
-cdk/
-├── app.py                     # CDK app entry point
-├── cdk.json
-├── requirements.txt
-├── stacks/
-│   └── pipeline_stack.py      # Main stack (all resources)
-├── lambda_fns/
-│   ├── consumer/index.py      # Kinesis → S3 raw zone
-│   ├── validator/index.py     # Validates data before ETL
-│   └── notifier/index.py      # SNS notification on completion
-├── glue_scripts/
-│   └── transform_etl.py       # Glue ETL: JSON → Parquet (partitioned, deduped)
-└── stepfunctions/
-    └── etl_workflow.json       # Step Functions ASL definition
-```
+| Service | Resource | Purpose |
+|---------|----------|---------|
+| Kinesis | dea-s2-ingestion-stream | 2-shard provisioned stream |
+| Firehose | dea-s2-firehose | KDS → S3 raw/ delivery |
+| IoT Core | dea_s2_to_kinesis rule | IoT → Kinesis routing |
+| S3 | Data Lake Bucket | raw/ and curated/ zones |
+| Glue | dea-s2-datalake-crawler | Schema discovery |
+| Glue | dea_s2_pipeline database | Data Catalog |
+| Glue | dea-s2-transform-etl | JSON → Parquet ETL job |
+| Step Functions | dea-s2-etl-orchestrator | Validate → ETL → Notify |
+| Lambda | dea-s2-validator | Validates raw data |
+| Lambda | dea-s2-notifier | SNS notifications |
+| SNS | dea-s2-pipeline-notifications | Pipeline alerts |
+| Athena | dea-s2-pipeline workgroup | Query execution |
 
 ## Deploy
 
@@ -58,27 +56,44 @@ cdk bootstrap   # Only once per account/region
 cdk deploy
 ```
 
-## Post-Deploy
-
-```bash
-cd ../scripts
-python produce_records.py --count 100
-```
-
 ## Teardown
 
 ```bash
-cd cdk
 cdk destroy --all
 ```
 
-## Frontend
+## IoT Device Simulator
 
-The Streamlit app lives in `session2/` (one level up):
+The pipeline integrates with the [AWS IoT Device Simulator](https://aws.amazon.com/solutions/implementations/iot-device-simulator/) 
+for generating realistic vehicle telemetry. Deploy it separately:
 
 ```bash
-cd ..
-./setup.sh
-# or
-python -m streamlit run Home.py --server.port 8087
+export REGION=ap-southeast-1
+export USER_EMAIL=your-email@example.com
+
+aws cloudformation create-stack \
+  --region $REGION \
+  --stack-name iot-device-simulator \
+  --template-url https://solutions-reference.s3.amazonaws.com/iot-device-simulator/latest/iot-device-simulator.template \
+  --capabilities CAPABILITY_IAM CAPABILITY_NAMED_IAM CAPABILITY_AUTO_EXPAND \
+  --parameters ParameterKey=UserEmail,ParameterValue=$USER_EMAIL
+```
+
+After deployment (~10 min), get the console URL:
+```bash
+aws cloudformation describe-stacks \
+  --region $REGION \
+  --stack-name iot-device-simulator \
+  --query "Stacks[0].Outputs[?OutputKey=='ConsoleURL'].OutputValue" \
+  --output text
+```
+
+Create a "Connected Vehicle" device type with topic `iot/simulator/vehicle`. 
+The CDK stack's IoT Rule (`dea_s2_to_kinesis`) automatically routes these messages into the pipeline.
+
+## Frontend
+
+```bash
+cd ../../   # back to session2/
+./setup.sh  # runs on port 8087
 ```
