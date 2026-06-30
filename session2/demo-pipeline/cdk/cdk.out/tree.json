@@ -1,0 +1,2214 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "DeaSession2Pipeline": {
+        "id": "DeaSession2Pipeline",
+        "path": "DeaSession2Pipeline",
+        "children": {
+          "DataLakeBucket": {
+            "id": "DataLakeBucket",
+            "path": "DeaSession2Pipeline/DataLakeBucket",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "DeaSession2Pipeline/DataLakeBucket/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
+                  "aws:cdk:cloudformation:props": {
+                    "bucketEncryption": {
+                      "serverSideEncryptionConfiguration": [
+                        {
+                          "serverSideEncryptionByDefault": {
+                            "sseAlgorithm": "AES256"
+                          }
+                        }
+                      ]
+                    },
+                    "lifecycleConfiguration": {
+                      "rules": [
+                        {
+                          "expirationInDays": 30,
+                          "id": "ExpireRawAfter30Days",
+                          "prefix": "raw/",
+                          "status": "Enabled"
+                        }
+                      ]
+                    },
+                    "publicAccessBlockConfiguration": {
+                      "blockPublicAcls": true,
+                      "blockPublicPolicy": true,
+                      "ignorePublicAcls": true,
+                      "restrictPublicBuckets": true
+                    },
+                    "tags": [
+                      {
+                        "key": "aws-cdk:auto-delete-objects",
+                        "value": "true"
+                      }
+                    ]
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3.CfnBucket",
+                  "version": "2.150.0"
+                }
+              },
+              "Policy": {
+                "id": "Policy",
+                "path": "DeaSession2Pipeline/DataLakeBucket/Policy",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "DeaSession2Pipeline/DataLakeBucket/Policy/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::S3::BucketPolicy",
+                      "aws:cdk:cloudformation:props": {
+                        "bucket": {
+                          "Ref": "DataLakeBucket0256EA8E"
+                        },
+                        "policyDocument": {
+                          "Statement": [
+                            {
+                              "Action": [
+                                "s3:PutBucketPolicy",
+                                "s3:GetBucket*",
+                                "s3:List*",
+                                "s3:DeleteObject*"
+                              ],
+                              "Effect": "Allow",
+                              "Principal": {
+                                "AWS": {
+                                  "Fn::GetAtt": [
+                                    "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
+                                    "Arn"
+                                  ]
+                                }
+                              },
+                              "Resource": [
+                                {
+                                  "Fn::GetAtt": [
+                                    "DataLakeBucket0256EA8E",
+                                    "Arn"
+                                  ]
+                                },
+                                {
+                                  "Fn::Join": [
+                                    "",
+                                    [
+                                      {
+                                        "Fn::GetAtt": [
+                                          "DataLakeBucket0256EA8E",
+                                          "Arn"
+                                        ]
+                                      },
+                                      "/*"
+                                    ]
+                                  ]
+                                }
+                              ]
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3.CfnBucketPolicy",
+                      "version": "2.150.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3.BucketPolicy",
+                  "version": "2.150.0"
+                }
+              },
+              "AutoDeleteObjectsCustomResource": {
+                "id": "AutoDeleteObjectsCustomResource",
+                "path": "DeaSession2Pipeline/DataLakeBucket/AutoDeleteObjectsCustomResource",
+                "children": {
+                  "Default": {
+                    "id": "Default",
+                    "path": "DeaSession2Pipeline/DataLakeBucket/AutoDeleteObjectsCustomResource/Default",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnResource",
+                      "version": "2.150.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CustomResource",
+                  "version": "2.150.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_s3.Bucket",
+              "version": "2.150.0"
+            }
+          },
+          "Custom::S3AutoDeleteObjectsCustomResourceProvider": {
+            "id": "Custom::S3AutoDeleteObjectsCustomResourceProvider",
+            "path": "DeaSession2Pipeline/Custom::S3AutoDeleteObjectsCustomResourceProvider",
+            "children": {
+              "Staging": {
+                "id": "Staging",
+                "path": "DeaSession2Pipeline/Custom::S3AutoDeleteObjectsCustomResourceProvider/Staging",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.AssetStaging",
+                  "version": "2.150.0"
+                }
+              },
+              "Role": {
+                "id": "Role",
+                "path": "DeaSession2Pipeline/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnResource",
+                  "version": "2.150.0"
+                }
+              },
+              "Handler": {
+                "id": "Handler",
+                "path": "DeaSession2Pipeline/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnResource",
+                  "version": "2.150.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CustomResourceProviderBase",
+              "version": "2.150.0"
+            }
+          },
+          "AthenaResultsBucket": {
+            "id": "AthenaResultsBucket",
+            "path": "DeaSession2Pipeline/AthenaResultsBucket",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "DeaSession2Pipeline/AthenaResultsBucket/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
+                  "aws:cdk:cloudformation:props": {
+                    "lifecycleConfiguration": {
+                      "rules": [
+                        {
+                          "expirationInDays": 7,
+                          "status": "Enabled"
+                        }
+                      ]
+                    },
+                    "tags": [
+                      {
+                        "key": "aws-cdk:auto-delete-objects",
+                        "value": "true"
+                      }
+                    ]
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3.CfnBucket",
+                  "version": "2.150.0"
+                }
+              },
+              "Policy": {
+                "id": "Policy",
+                "path": "DeaSession2Pipeline/AthenaResultsBucket/Policy",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "DeaSession2Pipeline/AthenaResultsBucket/Policy/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::S3::BucketPolicy",
+                      "aws:cdk:cloudformation:props": {
+                        "bucket": {
+                          "Ref": "AthenaResultsBucket879938FA"
+                        },
+                        "policyDocument": {
+                          "Statement": [
+                            {
+                              "Action": [
+                                "s3:PutBucketPolicy",
+                                "s3:GetBucket*",
+                                "s3:List*",
+                                "s3:DeleteObject*"
+                              ],
+                              "Effect": "Allow",
+                              "Principal": {
+                                "AWS": {
+                                  "Fn::GetAtt": [
+                                    "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
+                                    "Arn"
+                                  ]
+                                }
+                              },
+                              "Resource": [
+                                {
+                                  "Fn::GetAtt": [
+                                    "AthenaResultsBucket879938FA",
+                                    "Arn"
+                                  ]
+                                },
+                                {
+                                  "Fn::Join": [
+                                    "",
+                                    [
+                                      {
+                                        "Fn::GetAtt": [
+                                          "AthenaResultsBucket879938FA",
+                                          "Arn"
+                                        ]
+                                      },
+                                      "/*"
+                                    ]
+                                  ]
+                                }
+                              ]
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3.CfnBucketPolicy",
+                      "version": "2.150.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3.BucketPolicy",
+                  "version": "2.150.0"
+                }
+              },
+              "AutoDeleteObjectsCustomResource": {
+                "id": "AutoDeleteObjectsCustomResource",
+                "path": "DeaSession2Pipeline/AthenaResultsBucket/AutoDeleteObjectsCustomResource",
+                "children": {
+                  "Default": {
+                    "id": "Default",
+                    "path": "DeaSession2Pipeline/AthenaResultsBucket/AutoDeleteObjectsCustomResource/Default",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnResource",
+                      "version": "2.150.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CustomResource",
+                  "version": "2.150.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_s3.Bucket",
+              "version": "2.150.0"
+            }
+          },
+          "IngestionStream": {
+            "id": "IngestionStream",
+            "path": "DeaSession2Pipeline/IngestionStream",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "DeaSession2Pipeline/IngestionStream/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Kinesis::Stream",
+                  "aws:cdk:cloudformation:props": {
+                    "name": "dea-s2-ingestion-stream",
+                    "retentionPeriodHours": 24,
+                    "shardCount": 2,
+                    "streamEncryption": {
+                      "Fn::If": [
+                        "AwsCdkKinesisEncryptedStreamsUnsupportedRegions",
+                        {
+                          "Ref": "AWS::NoValue"
+                        },
+                        {
+                          "EncryptionType": "KMS",
+                          "KeyId": "alias/aws/kinesis"
+                        }
+                      ]
+                    },
+                    "streamModeDetails": {
+                      "streamMode": "PROVISIONED"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_kinesis.CfnStream",
+                  "version": "2.150.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_kinesis.Stream",
+              "version": "2.150.0"
+            }
+          },
+          "AwsCdkKinesisEncryptedStreamsUnsupportedRegions": {
+            "id": "AwsCdkKinesisEncryptedStreamsUnsupportedRegions",
+            "path": "DeaSession2Pipeline/AwsCdkKinesisEncryptedStreamsUnsupportedRegions",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnCondition",
+              "version": "2.150.0"
+            }
+          },
+          "FirehoseRole": {
+            "id": "FirehoseRole",
+            "path": "DeaSession2Pipeline/FirehoseRole",
+            "children": {
+              "ImportFirehoseRole": {
+                "id": "ImportFirehoseRole",
+                "path": "DeaSession2Pipeline/FirehoseRole/ImportFirehoseRole",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Resource",
+                  "version": "2.150.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "DeaSession2Pipeline/FirehoseRole/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                  "aws:cdk:cloudformation:props": {
+                    "assumeRolePolicyDocument": {
+                      "Statement": [
+                        {
+                          "Action": "sts:AssumeRole",
+                          "Effect": "Allow",
+                          "Principal": {
+                            "Service": "firehose.amazonaws.com"
+                          }
+                        }
+                      ],
+                      "Version": "2012-10-17"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                  "version": "2.150.0"
+                }
+              },
+              "DefaultPolicy": {
+                "id": "DefaultPolicy",
+                "path": "DeaSession2Pipeline/FirehoseRole/DefaultPolicy",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "DeaSession2Pipeline/FirehoseRole/DefaultPolicy/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                      "aws:cdk:cloudformation:props": {
+                        "policyDocument": {
+                          "Statement": [
+                            {
+                              "Action": [
+                                "s3:GetObject*",
+                                "s3:GetBucket*",
+                                "s3:List*",
+                                "s3:DeleteObject*",
+                                "s3:PutObject",
+                                "s3:PutObjectLegalHold",
+                                "s3:PutObjectRetention",
+                                "s3:PutObjectTagging",
+                                "s3:PutObjectVersionTagging",
+                                "s3:Abort*"
+                              ],
+                              "Effect": "Allow",
+                              "Resource": [
+                                {
+                                  "Fn::GetAtt": [
+                                    "DataLakeBucket0256EA8E",
+                                    "Arn"
+                                  ]
+                                },
+                                {
+                                  "Fn::Join": [
+                                    "",
+                                    [
+                                      {
+                                        "Fn::GetAtt": [
+                                          "DataLakeBucket0256EA8E",
+                                          "Arn"
+                                        ]
+                                      },
+                                      "/*"
+                                    ]
+                                  ]
+                                }
+                              ]
+                            },
+                            {
+                              "Action": [
+                                "kinesis:DescribeStreamSummary",
+                                "kinesis:GetRecords",
+                                "kinesis:GetShardIterator",
+                                "kinesis:ListShards",
+                                "kinesis:SubscribeToShard",
+                                "kinesis:DescribeStream",
+                                "kinesis:ListStreams",
+                                "kinesis:DescribeStreamConsumer"
+                              ],
+                              "Effect": "Allow",
+                              "Resource": {
+                                "Fn::GetAtt": [
+                                  "IngestionStream56E76A34",
+                                  "Arn"
+                                ]
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "policyName": "FirehoseRoleDefaultPolicyF034DFF7",
+                        "roles": [
+                          {
+                            "Ref": "FirehoseRoleAA67C190"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                      "version": "2.150.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Policy",
+                  "version": "2.150.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_iam.Role",
+              "version": "2.150.0"
+            }
+          },
+          "DeliveryStream": {
+            "id": "DeliveryStream",
+            "path": "DeaSession2Pipeline/DeliveryStream",
+            "attributes": {
+              "aws:cdk:cloudformation:type": "AWS::KinesisFirehose::DeliveryStream",
+              "aws:cdk:cloudformation:props": {
+                "deliveryStreamName": "dea-s2-firehose",
+                "deliveryStreamType": "KinesisStreamAsSource",
+                "kinesisStreamSourceConfiguration": {
+                  "kinesisStreamArn": {
+                    "Fn::GetAtt": [
+                      "IngestionStream56E76A34",
+                      "Arn"
+                    ]
+                  },
+                  "roleArn": {
+                    "Fn::GetAtt": [
+                      "FirehoseRoleAA67C190",
+                      "Arn"
+                    ]
+                  }
+                },
+                "s3DestinationConfiguration": {
+                  "bucketArn": {
+                    "Fn::GetAtt": [
+                      "DataLakeBucket0256EA8E",
+                      "Arn"
+                    ]
+                  },
+                  "roleArn": {
+                    "Fn::GetAtt": [
+                      "FirehoseRoleAA67C190",
+                      "Arn"
+                    ]
+                  },
+                  "bufferingHints": {
+                    "intervalInSeconds": 60,
+                    "sizeInMBs": 1
+                  },
+                  "compressionFormat": "UNCOMPRESSED",
+                  "errorOutputPrefix": "errors/",
+                  "prefix": "raw/year=!{timestamp:yyyy}/month=!{timestamp:MM}/day=!{timestamp:dd}/"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_kinesisfirehose.CfnDeliveryStream",
+              "version": "2.150.0"
+            }
+          },
+          "IoTToKinesisRole": {
+            "id": "IoTToKinesisRole",
+            "path": "DeaSession2Pipeline/IoTToKinesisRole",
+            "children": {
+              "ImportIoTToKinesisRole": {
+                "id": "ImportIoTToKinesisRole",
+                "path": "DeaSession2Pipeline/IoTToKinesisRole/ImportIoTToKinesisRole",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Resource",
+                  "version": "2.150.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "DeaSession2Pipeline/IoTToKinesisRole/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                  "aws:cdk:cloudformation:props": {
+                    "assumeRolePolicyDocument": {
+                      "Statement": [
+                        {
+                          "Action": "sts:AssumeRole",
+                          "Effect": "Allow",
+                          "Principal": {
+                            "Service": "iot.amazonaws.com"
+                          }
+                        }
+                      ],
+                      "Version": "2012-10-17"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                  "version": "2.150.0"
+                }
+              },
+              "DefaultPolicy": {
+                "id": "DefaultPolicy",
+                "path": "DeaSession2Pipeline/IoTToKinesisRole/DefaultPolicy",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "DeaSession2Pipeline/IoTToKinesisRole/DefaultPolicy/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                      "aws:cdk:cloudformation:props": {
+                        "policyDocument": {
+                          "Statement": [
+                            {
+                              "Action": [
+                                "kinesis:ListShards",
+                                "kinesis:PutRecord",
+                                "kinesis:PutRecords"
+                              ],
+                              "Effect": "Allow",
+                              "Resource": {
+                                "Fn::GetAtt": [
+                                  "IngestionStream56E76A34",
+                                  "Arn"
+                                ]
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "policyName": "IoTToKinesisRoleDefaultPolicyDF2FCEB8",
+                        "roles": [
+                          {
+                            "Ref": "IoTToKinesisRole76305405"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                      "version": "2.150.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Policy",
+                  "version": "2.150.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_iam.Role",
+              "version": "2.150.0"
+            }
+          },
+          "IoTToKinesisRule": {
+            "id": "IoTToKinesisRule",
+            "path": "DeaSession2Pipeline/IoTToKinesisRule",
+            "attributes": {
+              "aws:cdk:cloudformation:type": "AWS::IoT::TopicRule",
+              "aws:cdk:cloudformation:props": {
+                "ruleName": "dea_s2_to_kinesis",
+                "topicRulePayload": {
+                  "actions": [
+                    {
+                      "kinesis": {
+                        "roleArn": {
+                          "Fn::GetAtt": [
+                            "IoTToKinesisRole76305405",
+                            "Arn"
+                          ]
+                        },
+                        "streamName": {
+                          "Ref": "IngestionStream56E76A34"
+                        },
+                        "partitionKey": "${topic()}"
+                      }
+                    }
+                  ],
+                  "sql": "SELECT *, timestamp() as ingested_at, topic() as source_topic FROM 'iot/simulator/#'",
+                  "description": "Route IoT Device Simulator messages to Kinesis for Session 2 pipeline",
+                  "ruleDisabled": false
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_iot.CfnTopicRule",
+              "version": "2.150.0"
+            }
+          },
+          "GlueDatabase": {
+            "id": "GlueDatabase",
+            "path": "DeaSession2Pipeline/GlueDatabase",
+            "attributes": {
+              "aws:cdk:cloudformation:type": "AWS::Glue::Database",
+              "aws:cdk:cloudformation:props": {
+                "catalogId": {
+                  "Ref": "AWS::AccountId"
+                },
+                "databaseInput": {
+                  "description": "Session 2 - ETL Pipeline Orchestration",
+                  "name": "dea_s2_pipeline"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_glue.CfnDatabase",
+              "version": "2.150.0"
+            }
+          },
+          "CrawlerRole": {
+            "id": "CrawlerRole",
+            "path": "DeaSession2Pipeline/CrawlerRole",
+            "children": {
+              "ImportCrawlerRole": {
+                "id": "ImportCrawlerRole",
+                "path": "DeaSession2Pipeline/CrawlerRole/ImportCrawlerRole",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Resource",
+                  "version": "2.150.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "DeaSession2Pipeline/CrawlerRole/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                  "aws:cdk:cloudformation:props": {
+                    "assumeRolePolicyDocument": {
+                      "Statement": [
+                        {
+                          "Action": "sts:AssumeRole",
+                          "Effect": "Allow",
+                          "Principal": {
+                            "Service": "glue.amazonaws.com"
+                          }
+                        }
+                      ],
+                      "Version": "2012-10-17"
+                    },
+                    "managedPolicyArns": [
+                      {
+                        "Fn::Join": [
+                          "",
+                          [
+                            "arn:",
+                            {
+                              "Ref": "AWS::Partition"
+                            },
+                            ":iam::aws:policy/service-role/AWSGlueServiceRole"
+                          ]
+                        ]
+                      }
+                    ]
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                  "version": "2.150.0"
+                }
+              },
+              "DefaultPolicy": {
+                "id": "DefaultPolicy",
+                "path": "DeaSession2Pipeline/CrawlerRole/DefaultPolicy",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "DeaSession2Pipeline/CrawlerRole/DefaultPolicy/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                      "aws:cdk:cloudformation:props": {
+                        "policyDocument": {
+                          "Statement": [
+                            {
+                              "Action": [
+                                "s3:GetObject*",
+                                "s3:GetBucket*",
+                                "s3:List*"
+                              ],
+                              "Effect": "Allow",
+                              "Resource": [
+                                {
+                                  "Fn::GetAtt": [
+                                    "DataLakeBucket0256EA8E",
+                                    "Arn"
+                                  ]
+                                },
+                                {
+                                  "Fn::Join": [
+                                    "",
+                                    [
+                                      {
+                                        "Fn::GetAtt": [
+                                          "DataLakeBucket0256EA8E",
+                                          "Arn"
+                                        ]
+                                      },
+                                      "/*"
+                                    ]
+                                  ]
+                                }
+                              ]
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "policyName": "CrawlerRoleDefaultPolicy145A4322",
+                        "roles": [
+                          {
+                            "Ref": "CrawlerRoleA9495AEE"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                      "version": "2.150.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Policy",
+                  "version": "2.150.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_iam.Role",
+              "version": "2.150.0"
+            }
+          },
+          "RawCrawler": {
+            "id": "RawCrawler",
+            "path": "DeaSession2Pipeline/RawCrawler",
+            "attributes": {
+              "aws:cdk:cloudformation:type": "AWS::Glue::Crawler",
+              "aws:cdk:cloudformation:props": {
+                "databaseName": "dea_s2_pipeline",
+                "name": "dea-s2-raw-crawler",
+                "role": {
+                  "Fn::GetAtt": [
+                    "CrawlerRoleA9495AEE",
+                    "Arn"
+                  ]
+                },
+                "schemaChangePolicy": {
+                  "deleteBehavior": "LOG",
+                  "updateBehavior": "UPDATE_IN_DATABASE"
+                },
+                "targets": {
+                  "s3Targets": [
+                    {
+                      "path": {
+                        "Fn::Join": [
+                          "",
+                          [
+                            "s3://",
+                            {
+                              "Ref": "DataLakeBucket0256EA8E"
+                            },
+                            "/raw/"
+                          ]
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_glue.CfnCrawler",
+              "version": "2.150.0"
+            }
+          },
+          "CuratedCrawler": {
+            "id": "CuratedCrawler",
+            "path": "DeaSession2Pipeline/CuratedCrawler",
+            "attributes": {
+              "aws:cdk:cloudformation:type": "AWS::Glue::Crawler",
+              "aws:cdk:cloudformation:props": {
+                "databaseName": "dea_s2_pipeline",
+                "name": "dea-s2-curated-crawler",
+                "role": {
+                  "Fn::GetAtt": [
+                    "CrawlerRoleA9495AEE",
+                    "Arn"
+                  ]
+                },
+                "schemaChangePolicy": {
+                  "deleteBehavior": "LOG",
+                  "updateBehavior": "UPDATE_IN_DATABASE"
+                },
+                "targets": {
+                  "s3Targets": [
+                    {
+                      "path": {
+                        "Fn::Join": [
+                          "",
+                          [
+                            "s3://",
+                            {
+                              "Ref": "DataLakeBucket0256EA8E"
+                            },
+                            "/curated/"
+                          ]
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_glue.CfnCrawler",
+              "version": "2.150.0"
+            }
+          },
+          "RawTable": {
+            "id": "RawTable",
+            "path": "DeaSession2Pipeline/RawTable",
+            "attributes": {
+              "aws:cdk:cloudformation:type": "AWS::Glue::Table",
+              "aws:cdk:cloudformation:props": {
+                "catalogId": {
+                  "Ref": "AWS::AccountId"
+                },
+                "databaseName": "dea_s2_pipeline",
+                "tableInput": {
+                  "name": "events_raw",
+                  "parameters": {
+                    "classification": "json"
+                  },
+                  "storageDescriptor": {
+                    "columns": [
+                      {
+                        "name": "event_id",
+                        "type": "string"
+                      },
+                      {
+                        "name": "event_type",
+                        "type": "string"
+                      },
+                      {
+                        "name": "source",
+                        "type": "string"
+                      },
+                      {
+                        "name": "timestamp",
+                        "type": "string"
+                      },
+                      {
+                        "name": "device_id",
+                        "type": "string"
+                      },
+                      {
+                        "name": "user_id",
+                        "type": "string"
+                      },
+                      {
+                        "name": "payload",
+                        "type": "string"
+                      }
+                    ],
+                    "inputFormat": "org.apache.hadoop.mapred.TextInputFormat",
+                    "location": {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "s3://",
+                          {
+                            "Ref": "DataLakeBucket0256EA8E"
+                          },
+                          "/raw/"
+                        ]
+                      ]
+                    },
+                    "outputFormat": "org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat",
+                    "serdeInfo": {
+                      "serializationLibrary": "org.openx.data.jsonserde.JsonSerDe"
+                    }
+                  },
+                  "tableType": "EXTERNAL_TABLE"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_glue.CfnTable",
+              "version": "2.150.0"
+            }
+          },
+          "CuratedTable": {
+            "id": "CuratedTable",
+            "path": "DeaSession2Pipeline/CuratedTable",
+            "attributes": {
+              "aws:cdk:cloudformation:type": "AWS::Glue::Table",
+              "aws:cdk:cloudformation:props": {
+                "catalogId": {
+                  "Ref": "AWS::AccountId"
+                },
+                "databaseName": "dea_s2_pipeline",
+                "tableInput": {
+                  "name": "events_curated",
+                  "parameters": {
+                    "classification": "parquet",
+                    "compressionType": "snappy"
+                  },
+                  "partitionKeys": [
+                    {
+                      "name": "year",
+                      "type": "string"
+                    },
+                    {
+                      "name": "month",
+                      "type": "string"
+                    },
+                    {
+                      "name": "day",
+                      "type": "string"
+                    }
+                  ],
+                  "storageDescriptor": {
+                    "columns": [
+                      {
+                        "name": "event_id",
+                        "type": "string"
+                      },
+                      {
+                        "name": "event_type",
+                        "type": "string"
+                      },
+                      {
+                        "name": "source",
+                        "type": "string"
+                      },
+                      {
+                        "name": "timestamp",
+                        "type": "string"
+                      },
+                      {
+                        "name": "device_id",
+                        "type": "string"
+                      },
+                      {
+                        "name": "user_id",
+                        "type": "string"
+                      },
+                      {
+                        "name": "payload",
+                        "type": "string"
+                      }
+                    ],
+                    "inputFormat": "org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat",
+                    "location": {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "s3://",
+                          {
+                            "Ref": "DataLakeBucket0256EA8E"
+                          },
+                          "/curated/"
+                        ]
+                      ]
+                    },
+                    "outputFormat": "org.apache.hadoop.hive.ql.io.parquet.MapredParquetOutputFormat",
+                    "serdeInfo": {
+                      "serializationLibrary": "org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe"
+                    }
+                  },
+                  "tableType": "EXTERNAL_TABLE"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_glue.CfnTable",
+              "version": "2.150.0"
+            }
+          },
+          "GlueScriptAsset": {
+            "id": "GlueScriptAsset",
+            "path": "DeaSession2Pipeline/GlueScriptAsset",
+            "children": {
+              "Stage": {
+                "id": "Stage",
+                "path": "DeaSession2Pipeline/GlueScriptAsset/Stage",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.AssetStaging",
+                  "version": "2.150.0"
+                }
+              },
+              "AssetBucket": {
+                "id": "AssetBucket",
+                "path": "DeaSession2Pipeline/GlueScriptAsset/AssetBucket",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                  "version": "2.150.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
+              "version": "2.150.0"
+            }
+          },
+          "GlueJobRole": {
+            "id": "GlueJobRole",
+            "path": "DeaSession2Pipeline/GlueJobRole",
+            "children": {
+              "ImportGlueJobRole": {
+                "id": "ImportGlueJobRole",
+                "path": "DeaSession2Pipeline/GlueJobRole/ImportGlueJobRole",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Resource",
+                  "version": "2.150.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "DeaSession2Pipeline/GlueJobRole/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                  "aws:cdk:cloudformation:props": {
+                    "assumeRolePolicyDocument": {
+                      "Statement": [
+                        {
+                          "Action": "sts:AssumeRole",
+                          "Effect": "Allow",
+                          "Principal": {
+                            "Service": "glue.amazonaws.com"
+                          }
+                        }
+                      ],
+                      "Version": "2012-10-17"
+                    },
+                    "managedPolicyArns": [
+                      {
+                        "Fn::Join": [
+                          "",
+                          [
+                            "arn:",
+                            {
+                              "Ref": "AWS::Partition"
+                            },
+                            ":iam::aws:policy/service-role/AWSGlueServiceRole"
+                          ]
+                        ]
+                      }
+                    ],
+                    "roleName": "dea-s2-glue-etl-role"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                  "version": "2.150.0"
+                }
+              },
+              "DefaultPolicy": {
+                "id": "DefaultPolicy",
+                "path": "DeaSession2Pipeline/GlueJobRole/DefaultPolicy",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "DeaSession2Pipeline/GlueJobRole/DefaultPolicy/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                      "aws:cdk:cloudformation:props": {
+                        "policyDocument": {
+                          "Statement": [
+                            {
+                              "Action": [
+                                "s3:GetObject*",
+                                "s3:GetBucket*",
+                                "s3:List*",
+                                "s3:DeleteObject*",
+                                "s3:PutObject",
+                                "s3:PutObjectLegalHold",
+                                "s3:PutObjectRetention",
+                                "s3:PutObjectTagging",
+                                "s3:PutObjectVersionTagging",
+                                "s3:Abort*"
+                              ],
+                              "Effect": "Allow",
+                              "Resource": [
+                                {
+                                  "Fn::GetAtt": [
+                                    "DataLakeBucket0256EA8E",
+                                    "Arn"
+                                  ]
+                                },
+                                {
+                                  "Fn::Join": [
+                                    "",
+                                    [
+                                      {
+                                        "Fn::GetAtt": [
+                                          "DataLakeBucket0256EA8E",
+                                          "Arn"
+                                        ]
+                                      },
+                                      "/*"
+                                    ]
+                                  ]
+                                }
+                              ]
+                            },
+                            {
+                              "Action": [
+                                "s3:GetObject*",
+                                "s3:GetBucket*",
+                                "s3:List*"
+                              ],
+                              "Effect": "Allow",
+                              "Resource": [
+                                {
+                                  "Fn::Join": [
+                                    "",
+                                    [
+                                      "arn:aws:s3:::",
+                                      {
+                                        "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-ap-southeast-1"
+                                      }
+                                    ]
+                                  ]
+                                },
+                                {
+                                  "Fn::Join": [
+                                    "",
+                                    [
+                                      "arn:aws:s3:::",
+                                      {
+                                        "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-ap-southeast-1"
+                                      },
+                                      "/*"
+                                    ]
+                                  ]
+                                }
+                              ]
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "policyName": "GlueJobRoleDefaultPolicy94EFA0CF",
+                        "roles": [
+                          {
+                            "Ref": "GlueJobRoleF1B69418"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                      "version": "2.150.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Policy",
+                  "version": "2.150.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_iam.Role",
+              "version": "2.150.0"
+            }
+          },
+          "TransformEtlJob": {
+            "id": "TransformEtlJob",
+            "path": "DeaSession2Pipeline/TransformEtlJob",
+            "attributes": {
+              "aws:cdk:cloudformation:type": "AWS::Glue::Job",
+              "aws:cdk:cloudformation:props": {
+                "command": {
+                  "name": "glueetl",
+                  "pythonVersion": "3",
+                  "scriptLocation": {
+                    "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-ap-southeast-1/855e32ad57b23e43449cca2664620d6acf3fc00b53187071c1aa9fb98135eb3c.py"
+                  }
+                },
+                "defaultArguments": {
+                  "--job-language": "python",
+                  "--DATA_LAKE_BUCKET": {
+                    "Ref": "DataLakeBucket0256EA8E"
+                  },
+                  "--enable-metrics": "true",
+                  "--enable-continuous-cloudwatch-log": "true"
+                },
+                "description": "Session 2: JSON to Parquet (partitioned, deduplicated, compressed)",
+                "glueVersion": "4.0",
+                "maxRetries": 0,
+                "name": "dea-s2-transform-etl",
+                "numberOfWorkers": 2,
+                "role": {
+                  "Fn::GetAtt": [
+                    "GlueJobRoleF1B69418",
+                    "Arn"
+                  ]
+                },
+                "timeout": 10,
+                "workerType": "G.1X"
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_glue.CfnJob",
+              "version": "2.150.0"
+            }
+          },
+          "ValidatorFunction": {
+            "id": "ValidatorFunction",
+            "path": "DeaSession2Pipeline/ValidatorFunction",
+            "children": {
+              "ServiceRole": {
+                "id": "ServiceRole",
+                "path": "DeaSession2Pipeline/ValidatorFunction/ServiceRole",
+                "children": {
+                  "ImportServiceRole": {
+                    "id": "ImportServiceRole",
+                    "path": "DeaSession2Pipeline/ValidatorFunction/ServiceRole/ImportServiceRole",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "2.150.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "DeaSession2Pipeline/ValidatorFunction/ServiceRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "lambda.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "managedPolicyArns": [
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                              ]
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "version": "2.150.0"
+                    }
+                  },
+                  "DefaultPolicy": {
+                    "id": "DefaultPolicy",
+                    "path": "DeaSession2Pipeline/ValidatorFunction/ServiceRole/DefaultPolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "DeaSession2Pipeline/ValidatorFunction/ServiceRole/DefaultPolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": [
+                                    "s3:GetObject*",
+                                    "s3:GetBucket*",
+                                    "s3:List*"
+                                  ],
+                                  "Effect": "Allow",
+                                  "Resource": [
+                                    {
+                                      "Fn::GetAtt": [
+                                        "DataLakeBucket0256EA8E",
+                                        "Arn"
+                                      ]
+                                    },
+                                    {
+                                      "Fn::Join": [
+                                        "",
+                                        [
+                                          {
+                                            "Fn::GetAtt": [
+                                              "DataLakeBucket0256EA8E",
+                                              "Arn"
+                                            ]
+                                          },
+                                          "/*"
+                                        ]
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "ValidatorFunctionServiceRoleDefaultPolicyAB704E7B",
+                            "roles": [
+                              {
+                                "Ref": "ValidatorFunctionServiceRole072370F9"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                          "version": "2.150.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.Policy",
+                      "version": "2.150.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "version": "2.150.0"
+                }
+              },
+              "Code": {
+                "id": "Code",
+                "path": "DeaSession2Pipeline/ValidatorFunction/Code",
+                "children": {
+                  "Stage": {
+                    "id": "Stage",
+                    "path": "DeaSession2Pipeline/ValidatorFunction/Code/Stage",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.AssetStaging",
+                      "version": "2.150.0"
+                    }
+                  },
+                  "AssetBucket": {
+                    "id": "AssetBucket",
+                    "path": "DeaSession2Pipeline/ValidatorFunction/Code/AssetBucket",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                      "version": "2.150.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
+                  "version": "2.150.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "DeaSession2Pipeline/ValidatorFunction/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
+                  "aws:cdk:cloudformation:props": {
+                    "code": {
+                      "s3Bucket": {
+                        "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-ap-southeast-1"
+                      },
+                      "s3Key": "69532cb6eb832f6a690039424d055fca03d1041245784a15493f9e8eccf2c3e9.zip"
+                    },
+                    "environment": {
+                      "variables": {
+                        "DATA_LAKE_BUCKET": {
+                          "Ref": "DataLakeBucket0256EA8E"
+                        },
+                        "RAW_PREFIX": "raw/"
+                      }
+                    },
+                    "functionName": "dea-s2-validator",
+                    "handler": "index.handler",
+                    "memorySize": 256,
+                    "role": {
+                      "Fn::GetAtt": [
+                        "ValidatorFunctionServiceRole072370F9",
+                        "Arn"
+                      ]
+                    },
+                    "runtime": "python3.12",
+                    "timeout": 60
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
+                  "version": "2.150.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_lambda.Function",
+              "version": "2.150.0"
+            }
+          },
+          "PipelineNotifications": {
+            "id": "PipelineNotifications",
+            "path": "DeaSession2Pipeline/PipelineNotifications",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "DeaSession2Pipeline/PipelineNotifications/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::SNS::Topic",
+                  "aws:cdk:cloudformation:props": {
+                    "displayName": "DEA Pipeline Notifications",
+                    "topicName": "dea-s2-pipeline-notifications"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_sns.CfnTopic",
+                  "version": "2.150.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_sns.Topic",
+              "version": "2.150.0"
+            }
+          },
+          "NotifierFunction": {
+            "id": "NotifierFunction",
+            "path": "DeaSession2Pipeline/NotifierFunction",
+            "children": {
+              "ServiceRole": {
+                "id": "ServiceRole",
+                "path": "DeaSession2Pipeline/NotifierFunction/ServiceRole",
+                "children": {
+                  "ImportServiceRole": {
+                    "id": "ImportServiceRole",
+                    "path": "DeaSession2Pipeline/NotifierFunction/ServiceRole/ImportServiceRole",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "2.150.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "DeaSession2Pipeline/NotifierFunction/ServiceRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "lambda.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "managedPolicyArns": [
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                              ]
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "version": "2.150.0"
+                    }
+                  },
+                  "DefaultPolicy": {
+                    "id": "DefaultPolicy",
+                    "path": "DeaSession2Pipeline/NotifierFunction/ServiceRole/DefaultPolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "DeaSession2Pipeline/NotifierFunction/ServiceRole/DefaultPolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "sns:Publish",
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Ref": "PipelineNotifications84B145AD"
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "NotifierFunctionServiceRoleDefaultPolicyDFAFB18E",
+                            "roles": [
+                              {
+                                "Ref": "NotifierFunctionServiceRole124F1226"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                          "version": "2.150.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.Policy",
+                      "version": "2.150.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "version": "2.150.0"
+                }
+              },
+              "Code": {
+                "id": "Code",
+                "path": "DeaSession2Pipeline/NotifierFunction/Code",
+                "children": {
+                  "Stage": {
+                    "id": "Stage",
+                    "path": "DeaSession2Pipeline/NotifierFunction/Code/Stage",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.AssetStaging",
+                      "version": "2.150.0"
+                    }
+                  },
+                  "AssetBucket": {
+                    "id": "AssetBucket",
+                    "path": "DeaSession2Pipeline/NotifierFunction/Code/AssetBucket",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                      "version": "2.150.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
+                  "version": "2.150.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "DeaSession2Pipeline/NotifierFunction/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
+                  "aws:cdk:cloudformation:props": {
+                    "code": {
+                      "s3Bucket": {
+                        "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-ap-southeast-1"
+                      },
+                      "s3Key": "d0a8c5f0490e9248cfd7bd7c58cd689b1ff6599346786b8e5915341e43fcd4d8.zip"
+                    },
+                    "environment": {
+                      "variables": {
+                        "SNS_TOPIC_ARN": {
+                          "Ref": "PipelineNotifications84B145AD"
+                        }
+                      }
+                    },
+                    "functionName": "dea-s2-notifier",
+                    "handler": "index.handler",
+                    "memorySize": 128,
+                    "role": {
+                      "Fn::GetAtt": [
+                        "NotifierFunctionServiceRole124F1226",
+                        "Arn"
+                      ]
+                    },
+                    "runtime": "python3.12",
+                    "timeout": 30
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
+                  "version": "2.150.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_lambda.Function",
+              "version": "2.150.0"
+            }
+          },
+          "ValidateData": {
+            "id": "ValidateData",
+            "path": "DeaSession2Pipeline/ValidateData",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_stepfunctions_tasks.LambdaInvoke",
+              "version": "2.150.0"
+            }
+          },
+          "RunGlueETL": {
+            "id": "RunGlueETL",
+            "path": "DeaSession2Pipeline/RunGlueETL",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_stepfunctions_tasks.GlueStartJobRun",
+              "version": "2.150.0"
+            }
+          },
+          "NotifySuccess": {
+            "id": "NotifySuccess",
+            "path": "DeaSession2Pipeline/NotifySuccess",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_stepfunctions_tasks.LambdaInvoke",
+              "version": "2.150.0"
+            }
+          },
+          "NotifyFailure": {
+            "id": "NotifyFailure",
+            "path": "DeaSession2Pipeline/NotifyFailure",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_stepfunctions_tasks.LambdaInvoke",
+              "version": "2.150.0"
+            }
+          },
+          "HandleError": {
+            "id": "HandleError",
+            "path": "DeaSession2Pipeline/HandleError",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_stepfunctions.Pass",
+              "version": "2.150.0"
+            }
+          },
+          "EtlOrchestrator": {
+            "id": "EtlOrchestrator",
+            "path": "DeaSession2Pipeline/EtlOrchestrator",
+            "children": {
+              "Role": {
+                "id": "Role",
+                "path": "DeaSession2Pipeline/EtlOrchestrator/Role",
+                "children": {
+                  "ImportRole": {
+                    "id": "ImportRole",
+                    "path": "DeaSession2Pipeline/EtlOrchestrator/Role/ImportRole",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "2.150.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "DeaSession2Pipeline/EtlOrchestrator/Role/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "states.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "version": "2.150.0"
+                    }
+                  },
+                  "DefaultPolicy": {
+                    "id": "DefaultPolicy",
+                    "path": "DeaSession2Pipeline/EtlOrchestrator/Role/DefaultPolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "DeaSession2Pipeline/EtlOrchestrator/Role/DefaultPolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "lambda:InvokeFunction",
+                                  "Effect": "Allow",
+                                  "Resource": [
+                                    {
+                                      "Fn::GetAtt": [
+                                        "ValidatorFunction3E7569DB",
+                                        "Arn"
+                                      ]
+                                    },
+                                    {
+                                      "Fn::Join": [
+                                        "",
+                                        [
+                                          {
+                                            "Fn::GetAtt": [
+                                              "ValidatorFunction3E7569DB",
+                                              "Arn"
+                                            ]
+                                          },
+                                          ":*"
+                                        ]
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "Action": [
+                                    "glue:StartJobRun",
+                                    "glue:GetJobRun",
+                                    "glue:GetJobRuns",
+                                    "glue:BatchStopJobRun"
+                                  ],
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::Join": [
+                                      "",
+                                      [
+                                        "arn:aws:glue:ap-southeast-1:",
+                                        {
+                                          "Ref": "AWS::AccountId"
+                                        },
+                                        ":job/dea-s2-transform-etl"
+                                      ]
+                                    ]
+                                  }
+                                },
+                                {
+                                  "Action": "lambda:InvokeFunction",
+                                  "Effect": "Allow",
+                                  "Resource": [
+                                    {
+                                      "Fn::GetAtt": [
+                                        "NotifierFunctionEB33F81B",
+                                        "Arn"
+                                      ]
+                                    },
+                                    {
+                                      "Fn::Join": [
+                                        "",
+                                        [
+                                          {
+                                            "Fn::GetAtt": [
+                                              "NotifierFunctionEB33F81B",
+                                              "Arn"
+                                            ]
+                                          },
+                                          ":*"
+                                        ]
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "Action": [
+                                    "xray:PutTraceSegments",
+                                    "xray:PutTelemetryRecords",
+                                    "xray:GetSamplingRules",
+                                    "xray:GetSamplingTargets"
+                                  ],
+                                  "Effect": "Allow",
+                                  "Resource": "*"
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "EtlOrchestratorRoleDefaultPolicyE4AFB1DB",
+                            "roles": [
+                              {
+                                "Ref": "EtlOrchestratorRole6EFD33EE"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                          "version": "2.150.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.Policy",
+                      "version": "2.150.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "version": "2.150.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "DeaSession2Pipeline/EtlOrchestrator/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::StepFunctions::StateMachine",
+                  "aws:cdk:cloudformation:props": {
+                    "definitionString": {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "{\"StartAt\":\"ValidateData\",\"States\":{\"ValidateData\":{\"Next\":\"RunGlueETL\",\"Retry\":[{\"ErrorEquals\":[\"Lambda.ClientExecutionTimeoutException\",\"Lambda.ServiceException\",\"Lambda.AWSLambdaException\",\"Lambda.SdkClientException\"],\"IntervalSeconds\":2,\"MaxAttempts\":6,\"BackoffRate\":2}],\"Type\":\"Task\",\"OutputPath\":\"$.Payload\",\"Resource\":\"arn:",
+                          {
+                            "Ref": "AWS::Partition"
+                          },
+                          ":states:::lambda:invoke\",\"Parameters\":{\"FunctionName\":\"",
+                          {
+                            "Fn::GetAtt": [
+                              "ValidatorFunction3E7569DB",
+                              "Arn"
+                            ]
+                          },
+                          "\",\"Payload.$\":\"$\"}},\"RunGlueETL\":{\"Next\":\"NotifySuccess\",\"Retry\":[{\"ErrorEquals\":[\"States.ALL\"],\"IntervalSeconds\":30,\"MaxAttempts\":2,\"BackoffRate\":2}],\"Catch\":[{\"ErrorEquals\":[\"States.ALL\"],\"ResultPath\":\"$.error\",\"Next\":\"HandleError\"}],\"Type\":\"Task\",\"ResultPath\":\"$.glueResult\",\"Resource\":\"arn:",
+                          {
+                            "Ref": "AWS::Partition"
+                          },
+                          ":states:::glue:startJobRun.sync\",\"Parameters\":{\"JobName\":\"dea-s2-transform-etl\",\"Arguments\":{\"--DATA_LAKE_BUCKET\":\"",
+                          {
+                            "Ref": "DataLakeBucket0256EA8E"
+                          },
+                          "\"}}},\"NotifySuccess\":{\"End\":true,\"Retry\":[{\"ErrorEquals\":[\"Lambda.ClientExecutionTimeoutException\",\"Lambda.ServiceException\",\"Lambda.AWSLambdaException\",\"Lambda.SdkClientException\"],\"IntervalSeconds\":2,\"MaxAttempts\":6,\"BackoffRate\":2}],\"Type\":\"Task\",\"ResultPath\":\"$.notifyResult\",\"Resource\":\"arn:",
+                          {
+                            "Ref": "AWS::Partition"
+                          },
+                          ":states:::lambda:invoke\",\"Parameters\":{\"FunctionName\":\"",
+                          {
+                            "Fn::GetAtt": [
+                              "NotifierFunctionEB33F81B",
+                              "Arn"
+                            ]
+                          },
+                          "\",\"Payload\":{\"status\":\"SUCCESS\",\"message\":\"ETL pipeline completed successfully\",\"jobName\":\"dea-s2-transform-etl\"}}},\"HandleError\":{\"Type\":\"Pass\",\"Result\":{\"error\":\"true\"},\"Next\":\"NotifyFailure\"},\"NotifyFailure\":{\"End\":true,\"Retry\":[{\"ErrorEquals\":[\"Lambda.ClientExecutionTimeoutException\",\"Lambda.ServiceException\",\"Lambda.AWSLambdaException\",\"Lambda.SdkClientException\"],\"IntervalSeconds\":2,\"MaxAttempts\":6,\"BackoffRate\":2}],\"Type\":\"Task\",\"ResultPath\":\"$.notifyResult\",\"Resource\":\"arn:",
+                          {
+                            "Ref": "AWS::Partition"
+                          },
+                          ":states:::lambda:invoke\",\"Parameters\":{\"FunctionName\":\"",
+                          {
+                            "Fn::GetAtt": [
+                              "NotifierFunctionEB33F81B",
+                              "Arn"
+                            ]
+                          },
+                          "\",\"Payload\":{\"status\":\"FAILURE\",\"message\":\"ETL pipeline failed\",\"jobName\":\"dea-s2-transform-etl\"}}}},\"TimeoutSeconds\":1800}"
+                        ]
+                      ]
+                    },
+                    "roleArn": {
+                      "Fn::GetAtt": [
+                        "EtlOrchestratorRole6EFD33EE",
+                        "Arn"
+                      ]
+                    },
+                    "stateMachineName": "dea-s2-etl-orchestrator",
+                    "tracingConfiguration": {
+                      "enabled": true
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_stepfunctions.CfnStateMachine",
+                  "version": "2.150.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_stepfunctions.StateMachine",
+              "version": "2.150.0"
+            }
+          },
+          "AthenaWorkgroup": {
+            "id": "AthenaWorkgroup",
+            "path": "DeaSession2Pipeline/AthenaWorkgroup",
+            "attributes": {
+              "aws:cdk:cloudformation:type": "AWS::Athena::WorkGroup",
+              "aws:cdk:cloudformation:props": {
+                "name": "dea-s2-pipeline",
+                "recursiveDeleteOption": true,
+                "state": "ENABLED",
+                "workGroupConfiguration": {
+                  "enforceWorkGroupConfiguration": true,
+                  "publishCloudWatchMetricsEnabled": true,
+                  "resultConfiguration": {
+                    "outputLocation": {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "s3://",
+                          {
+                            "Ref": "AthenaResultsBucket879938FA"
+                          },
+                          "/results/"
+                        ]
+                      ]
+                    }
+                  }
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_athena.CfnWorkGroup",
+              "version": "2.150.0"
+            }
+          },
+          "RepairPartitions": {
+            "id": "RepairPartitions",
+            "path": "DeaSession2Pipeline/RepairPartitions",
+            "attributes": {
+              "aws:cdk:cloudformation:type": "AWS::Athena::NamedQuery",
+              "aws:cdk:cloudformation:props": {
+                "database": "dea_s2_pipeline",
+                "description": "Register new partitions after ETL job",
+                "name": "Repair curated partitions",
+                "queryString": "MSCK REPAIR TABLE dea_s2_pipeline.events_curated;",
+                "workGroup": "dea-s2-pipeline"
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_athena.CfnNamedQuery",
+              "version": "2.150.0"
+            }
+          },
+          "CountRawEvents": {
+            "id": "CountRawEvents",
+            "path": "DeaSession2Pipeline/CountRawEvents",
+            "attributes": {
+              "aws:cdk:cloudformation:type": "AWS::Athena::NamedQuery",
+              "aws:cdk:cloudformation:props": {
+                "database": "dea_s2_pipeline",
+                "description": "Count all records in raw JSON table",
+                "name": "Count raw events",
+                "queryString": "SELECT COUNT(*) as total FROM dea_s2_pipeline.events_raw;",
+                "workGroup": "dea-s2-pipeline"
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_athena.CfnNamedQuery",
+              "version": "2.150.0"
+            }
+          },
+          "CompareFormats": {
+            "id": "CompareFormats",
+            "path": "DeaSession2Pipeline/CompareFormats",
+            "attributes": {
+              "aws:cdk:cloudformation:type": "AWS::Athena::NamedQuery",
+              "aws:cdk:cloudformation:props": {
+                "database": "dea_s2_pipeline",
+                "description": "Run on both tables to compare data scanned",
+                "name": "Compare raw vs curated scan",
+                "queryString": "SELECT source, COUNT(*) as cnt FROM dea_s2_pipeline.events_curated GROUP BY source ORDER BY cnt DESC;",
+                "workGroup": "dea-s2-pipeline"
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_athena.CfnNamedQuery",
+              "version": "2.150.0"
+            }
+          },
+          "OutputStreamName": {
+            "id": "OutputStreamName",
+            "path": "DeaSession2Pipeline/OutputStreamName",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnOutput",
+              "version": "2.150.0"
+            }
+          },
+          "OutputStreamArn": {
+            "id": "OutputStreamArn",
+            "path": "DeaSession2Pipeline/OutputStreamArn",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnOutput",
+              "version": "2.150.0"
+            }
+          },
+          "OutputFirehoseName": {
+            "id": "OutputFirehoseName",
+            "path": "DeaSession2Pipeline/OutputFirehoseName",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnOutput",
+              "version": "2.150.0"
+            }
+          },
+          "OutputDataLakeBucket": {
+            "id": "OutputDataLakeBucket",
+            "path": "DeaSession2Pipeline/OutputDataLakeBucket",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnOutput",
+              "version": "2.150.0"
+            }
+          },
+          "OutputAthenaResultsBucket": {
+            "id": "OutputAthenaResultsBucket",
+            "path": "DeaSession2Pipeline/OutputAthenaResultsBucket",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnOutput",
+              "version": "2.150.0"
+            }
+          },
+          "OutputAthenaWorkgroup": {
+            "id": "OutputAthenaWorkgroup",
+            "path": "DeaSession2Pipeline/OutputAthenaWorkgroup",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnOutput",
+              "version": "2.150.0"
+            }
+          },
+          "OutputGlueDatabase": {
+            "id": "OutputGlueDatabase",
+            "path": "DeaSession2Pipeline/OutputGlueDatabase",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnOutput",
+              "version": "2.150.0"
+            }
+          },
+          "OutputGlueJobName": {
+            "id": "OutputGlueJobName",
+            "path": "DeaSession2Pipeline/OutputGlueJobName",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnOutput",
+              "version": "2.150.0"
+            }
+          },
+          "OutputRawCrawlerName": {
+            "id": "OutputRawCrawlerName",
+            "path": "DeaSession2Pipeline/OutputRawCrawlerName",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnOutput",
+              "version": "2.150.0"
+            }
+          },
+          "OutputCuratedCrawlerName": {
+            "id": "OutputCuratedCrawlerName",
+            "path": "DeaSession2Pipeline/OutputCuratedCrawlerName",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnOutput",
+              "version": "2.150.0"
+            }
+          },
+          "OutputStateMachineArn": {
+            "id": "OutputStateMachineArn",
+            "path": "DeaSession2Pipeline/OutputStateMachineArn",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnOutput",
+              "version": "2.150.0"
+            }
+          },
+          "OutputStateMachineName": {
+            "id": "OutputStateMachineName",
+            "path": "DeaSession2Pipeline/OutputStateMachineName",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnOutput",
+              "version": "2.150.0"
+            }
+          },
+          "OutputSnsTopicArn": {
+            "id": "OutputSnsTopicArn",
+            "path": "DeaSession2Pipeline/OutputSnsTopicArn",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnOutput",
+              "version": "2.150.0"
+            }
+          },
+          "OutputIoTRuleName": {
+            "id": "OutputIoTRuleName",
+            "path": "DeaSession2Pipeline/OutputIoTRuleName",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnOutput",
+              "version": "2.150.0"
+            }
+          },
+          "CDKMetadata": {
+            "id": "CDKMetadata",
+            "path": "DeaSession2Pipeline/CDKMetadata",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "DeaSession2Pipeline/CDKMetadata/Default",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnResource",
+                  "version": "2.150.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.6.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "DeaSession2Pipeline/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "2.150.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "DeaSession2Pipeline/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "2.150.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "2.150.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.6.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "aws-cdk-lib.App",
+      "version": "2.150.0"
+    }
+  }
+}

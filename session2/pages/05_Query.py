@@ -23,7 +23,7 @@ raw JSON vs curated Parquet — the format optimization from Step 3 pays off her
 
 
 def get_config():
-    if "s2_config" not in st.session_state:
+    if "s2_config" not in st.session_state or not st.session_state.s2_config:
         try:
             cfn = boto3.client("cloudformation")
             response = cfn.describe_stacks(StackName="DeaSession2Pipeline")
@@ -35,8 +35,8 @@ def get_config():
 
 
 config = get_config()
-database = config.get("GlueDatabase", "dea_s2_pipeline")
-workgroup = config.get("AthenaWorkgroup", "dea-s2-pipeline")
+database = config.get("OutputGlueDatabase", "dea_s2_pipeline")
+workgroup = config.get("OutputAthenaWorkgroup", "dea-s2-pipeline")
 
 # ============================================================
 # Architecture

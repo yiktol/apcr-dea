@@ -22,7 +22,7 @@ compresses with Snappy, and writes optimized **Parquet** to the curated zone.
 
 
 def get_config():
-    if "s2_config" not in st.session_state:
+    if "s2_config" not in st.session_state or not st.session_state.s2_config:
         try:
             cfn = boto3.client("cloudformation")
             response = cfn.describe_stacks(StackName="DeaSession2Pipeline")
@@ -34,8 +34,8 @@ def get_config():
 
 
 config = get_config()
-bucket = config.get("DataLakeBucket", "")
-glue_job_name = config.get("GlueJobName", "dea-s2-transform-etl")
+bucket = config.get("OutputDataLakeBucket", "")
+glue_job_name = config.get("OutputGlueJobName", "dea-s2-transform-etl")
 
 # ============================================================
 # Architecture

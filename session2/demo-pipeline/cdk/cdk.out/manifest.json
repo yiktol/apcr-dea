@@ -1,0 +1,389 @@
+{
+  "version": "36.0.0",
+  "artifacts": {
+    "DeaSession2Pipeline.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "DeaSession2Pipeline.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "DeaSession2Pipeline": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/ap-southeast-1",
+      "properties": {
+        "templateFile": "DeaSession2Pipeline.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-ap-southeast-1",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-ap-southeast-1",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-ap-southeast-1/b7be38f9503732627e4eac8613c680908f3c162897099d3c8cdcb20626c84d0f.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "DeaSession2Pipeline.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-ap-southeast-1",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "DeaSession2Pipeline.assets"
+      ],
+      "metadata": {
+        "/DeaSession2Pipeline/DataLakeBucket/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DataLakeBucket0256EA8E"
+          }
+        ],
+        "/DeaSession2Pipeline/DataLakeBucket/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DataLakeBucketPolicy52869FB4"
+          }
+        ],
+        "/DeaSession2Pipeline/DataLakeBucket/AutoDeleteObjectsCustomResource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DataLakeBucketAutoDeleteObjectsCustomResourceBA68F53A"
+          }
+        ],
+        "/DeaSession2Pipeline/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
+          }
+        ],
+        "/DeaSession2Pipeline/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F"
+          }
+        ],
+        "/DeaSession2Pipeline/AthenaResultsBucket/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AthenaResultsBucket879938FA"
+          }
+        ],
+        "/DeaSession2Pipeline/AthenaResultsBucket/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AthenaResultsBucketPolicyD63DEF63"
+          }
+        ],
+        "/DeaSession2Pipeline/AthenaResultsBucket/AutoDeleteObjectsCustomResource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AthenaResultsBucketAutoDeleteObjectsCustomResourceD2206C34"
+          }
+        ],
+        "/DeaSession2Pipeline/IngestionStream/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IngestionStream56E76A34"
+          }
+        ],
+        "/DeaSession2Pipeline/AwsCdkKinesisEncryptedStreamsUnsupportedRegions": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsCdkKinesisEncryptedStreamsUnsupportedRegions"
+          }
+        ],
+        "/DeaSession2Pipeline/FirehoseRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FirehoseRoleAA67C190"
+          }
+        ],
+        "/DeaSession2Pipeline/FirehoseRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FirehoseRoleDefaultPolicyF034DFF7"
+          }
+        ],
+        "/DeaSession2Pipeline/DeliveryStream": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DeliveryStream"
+          }
+        ],
+        "/DeaSession2Pipeline/IoTToKinesisRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IoTToKinesisRole76305405"
+          }
+        ],
+        "/DeaSession2Pipeline/IoTToKinesisRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IoTToKinesisRoleDefaultPolicyDF2FCEB8"
+          }
+        ],
+        "/DeaSession2Pipeline/IoTToKinesisRule": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IoTToKinesisRule"
+          }
+        ],
+        "/DeaSession2Pipeline/GlueDatabase": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "GlueDatabase"
+          }
+        ],
+        "/DeaSession2Pipeline/CrawlerRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CrawlerRoleA9495AEE"
+          }
+        ],
+        "/DeaSession2Pipeline/CrawlerRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CrawlerRoleDefaultPolicy145A4322"
+          }
+        ],
+        "/DeaSession2Pipeline/RawCrawler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RawCrawler"
+          }
+        ],
+        "/DeaSession2Pipeline/CuratedCrawler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CuratedCrawler"
+          }
+        ],
+        "/DeaSession2Pipeline/RawTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RawTable"
+          }
+        ],
+        "/DeaSession2Pipeline/CuratedTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CuratedTable"
+          }
+        ],
+        "/DeaSession2Pipeline/GlueJobRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "GlueJobRoleF1B69418"
+          }
+        ],
+        "/DeaSession2Pipeline/GlueJobRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "GlueJobRoleDefaultPolicy94EFA0CF"
+          }
+        ],
+        "/DeaSession2Pipeline/TransformEtlJob": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TransformEtlJob"
+          }
+        ],
+        "/DeaSession2Pipeline/ValidatorFunction/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ValidatorFunctionServiceRole072370F9"
+          }
+        ],
+        "/DeaSession2Pipeline/ValidatorFunction/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ValidatorFunctionServiceRoleDefaultPolicyAB704E7B"
+          }
+        ],
+        "/DeaSession2Pipeline/ValidatorFunction/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ValidatorFunction3E7569DB"
+          }
+        ],
+        "/DeaSession2Pipeline/PipelineNotifications/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PipelineNotifications84B145AD"
+          }
+        ],
+        "/DeaSession2Pipeline/NotifierFunction/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "NotifierFunctionServiceRole124F1226"
+          }
+        ],
+        "/DeaSession2Pipeline/NotifierFunction/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "NotifierFunctionServiceRoleDefaultPolicyDFAFB18E"
+          }
+        ],
+        "/DeaSession2Pipeline/NotifierFunction/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "NotifierFunctionEB33F81B"
+          }
+        ],
+        "/DeaSession2Pipeline/EtlOrchestrator/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EtlOrchestratorRole6EFD33EE"
+          }
+        ],
+        "/DeaSession2Pipeline/EtlOrchestrator/Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EtlOrchestratorRoleDefaultPolicyE4AFB1DB"
+          }
+        ],
+        "/DeaSession2Pipeline/EtlOrchestrator/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EtlOrchestrator3EDF410F"
+          }
+        ],
+        "/DeaSession2Pipeline/AthenaWorkgroup": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AthenaWorkgroup"
+          }
+        ],
+        "/DeaSession2Pipeline/RepairPartitions": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RepairPartitions"
+          }
+        ],
+        "/DeaSession2Pipeline/CountRawEvents": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CountRawEvents"
+          }
+        ],
+        "/DeaSession2Pipeline/CompareFormats": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CompareFormats"
+          }
+        ],
+        "/DeaSession2Pipeline/OutputStreamName": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "OutputStreamName"
+          }
+        ],
+        "/DeaSession2Pipeline/OutputStreamArn": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "OutputStreamArn"
+          }
+        ],
+        "/DeaSession2Pipeline/OutputFirehoseName": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "OutputFirehoseName"
+          }
+        ],
+        "/DeaSession2Pipeline/OutputDataLakeBucket": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "OutputDataLakeBucket"
+          }
+        ],
+        "/DeaSession2Pipeline/OutputAthenaResultsBucket": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "OutputAthenaResultsBucket"
+          }
+        ],
+        "/DeaSession2Pipeline/OutputAthenaWorkgroup": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "OutputAthenaWorkgroup"
+          }
+        ],
+        "/DeaSession2Pipeline/OutputGlueDatabase": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "OutputGlueDatabase"
+          }
+        ],
+        "/DeaSession2Pipeline/OutputGlueJobName": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "OutputGlueJobName"
+          }
+        ],
+        "/DeaSession2Pipeline/OutputRawCrawlerName": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "OutputRawCrawlerName"
+          }
+        ],
+        "/DeaSession2Pipeline/OutputCuratedCrawlerName": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "OutputCuratedCrawlerName"
+          }
+        ],
+        "/DeaSession2Pipeline/OutputStateMachineArn": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "OutputStateMachineArn"
+          }
+        ],
+        "/DeaSession2Pipeline/OutputStateMachineName": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "OutputStateMachineName"
+          }
+        ],
+        "/DeaSession2Pipeline/OutputSnsTopicArn": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "OutputSnsTopicArn"
+          }
+        ],
+        "/DeaSession2Pipeline/OutputIoTRuleName": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "OutputIoTRuleName"
+          }
+        ],
+        "/DeaSession2Pipeline/CDKMetadata/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CDKMetadata"
+          }
+        ],
+        "/DeaSession2Pipeline/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/DeaSession2Pipeline/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "DeaSession2Pipeline"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}

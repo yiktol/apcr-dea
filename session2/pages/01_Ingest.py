@@ -28,7 +28,7 @@ to **Kinesis Data Streams**, which feeds **Data Firehose** to deliver data to S3
 # Config
 # ============================================================
 def get_config():
-    if "s2_config" not in st.session_state:
+    if "s2_config" not in st.session_state or not st.session_state.s2_config:
         try:
             cfn = boto3.client("cloudformation")
             response = cfn.describe_stacks(StackName="DeaSession2Pipeline")
@@ -43,8 +43,8 @@ def get_config():
 
 
 config = get_config()
-stream_name = config.get("StreamName", "dea-s2-ingestion-stream")
-firehose_name = config.get("FirehoseName", "dea-s2-firehose")
+stream_name = config.get("OutputStreamName", "dea-s2-ingestion-stream")
+firehose_name = config.get("OutputFirehoseName", "dea-s2-firehose")
 
 # ============================================================
 # Architecture

@@ -116,6 +116,8 @@ class EtlPipelineStack(Stack):
                 compression_format="UNCOMPRESSED",
             ),
         )
+        # Ensure Firehose waits for the role's policy to be created
+        delivery_stream.node.add_dependency(firehose_role)
 
         # ============================================================
         # INGESTION — IoT Rule (IoT Core → Kinesis)
@@ -174,7 +176,7 @@ class EtlPipelineStack(Stack):
         data_lake_bucket.grant_read(crawler_role)
 
         # Glue Crawlers (separate for raw and curated)
-        glue.CfnCrawler(
+        raw_crawler = glue.CfnCrawler(
             self,
             "RawCrawler",
             name="dea-s2-raw-crawler",
@@ -190,8 +192,9 @@ class EtlPipelineStack(Stack):
                 delete_behavior="LOG",
             ),
         )
+        raw_crawler.add_dependency(glue_database)
 
-        glue.CfnCrawler(
+        curated_crawler = glue.CfnCrawler(
             self,
             "CuratedCrawler",
             name="dea-s2-curated-crawler",
@@ -207,6 +210,7 @@ class EtlPipelineStack(Stack):
                 delete_behavior="LOG",
             ),
         )
+        curated_crawler.add_dependency(glue_database)
 
         # Raw table (JSON) - pre-defined for immediate Athena access
         glue.CfnTable(
@@ -433,7 +437,7 @@ class EtlPipelineStack(Stack):
         # ============================================================
         # ANALYTICS — Athena Workgroup + Saved Queries
         # ============================================================
-        athena.CfnWorkGroup(
+        workgroup = athena.CfnWorkGroup(
             self,
             "AthenaWorkgroup",
             name="dea-s2-pipeline",
@@ -449,7 +453,7 @@ class EtlPipelineStack(Stack):
         )
 
         # Saved queries
-        athena.CfnNamedQuery(
+        repair_query = athena.CfnNamedQuery(
             self, "RepairPartitions",
             database="dea_s2_pipeline",
             work_group="dea-s2-pipeline",
@@ -457,8 +461,9 @@ class EtlPipelineStack(Stack):
             description="Register new partitions after ETL job",
             query_string="MSCK REPAIR TABLE dea_s2_pipeline.events_curated;",
         )
+        repair_query.add_dependency(workgroup)
 
-        athena.CfnNamedQuery(
+        count_query = athena.CfnNamedQuery(
             self, "CountRawEvents",
             database="dea_s2_pipeline",
             work_group="dea-s2-pipeline",
@@ -466,8 +471,9 @@ class EtlPipelineStack(Stack):
             description="Count all records in raw JSON table",
             query_string="SELECT COUNT(*) as total FROM dea_s2_pipeline.events_raw;",
         )
+        count_query.add_dependency(workgroup)
 
-        athena.CfnNamedQuery(
+        compare_query = athena.CfnNamedQuery(
             self, "CompareFormats",
             database="dea_s2_pipeline",
             work_group="dea-s2-pipeline",
@@ -475,21 +481,22 @@ class EtlPipelineStack(Stack):
             description="Run on both tables to compare data scanned",
             query_string="SELECT source, COUNT(*) as cnt FROM dea_s2_pipeline.events_curated GROUP BY source ORDER BY cnt DESC;",
         )
+        compare_query.add_dependency(workgroup)
 
         # ============================================================
         # OUTPUTS
         # ============================================================
-        CfnOutput(self, "StreamName", value=stream.stream_name)
-        CfnOutput(self, "StreamArn", value=stream.stream_arn)
-        CfnOutput(self, "FirehoseName", value="dea-s2-firehose")
-        CfnOutput(self, "DataLakeBucket", value=data_lake_bucket.bucket_name)
-        CfnOutput(self, "AthenaResultsBucket", value=athena_results_bucket.bucket_name)
-        CfnOutput(self, "AthenaWorkgroup", value="dea-s2-pipeline")
-        CfnOutput(self, "GlueDatabase", value="dea_s2_pipeline")
-        CfnOutput(self, "GlueJobName", value="dea-s2-transform-etl")
-        CfnOutput(self, "RawCrawlerName", value="dea-s2-raw-crawler")
-        CfnOutput(self, "CuratedCrawlerName", value="dea-s2-curated-crawler")
-        CfnOutput(self, "StateMachineArn", value=state_machine.state_machine_arn)
-        CfnOutput(self, "StateMachineName", value=state_machine.state_machine_name)
-        CfnOutput(self, "SnsTopicArn", value=notification_topic.topic_arn)
-        CfnOutput(self, "IoTRuleName", value="dea_s2_to_kinesis")
+        CfnOutput(self, "OutputStreamName", value=stream.stream_name)
+        CfnOutput(self, "OutputStreamArn", value=stream.stream_arn)
+        CfnOutput(self, "OutputFirehoseName", value="dea-s2-firehose")
+        CfnOutput(self, "OutputDataLakeBucket", value=data_lake_bucket.bucket_name)
+        CfnOutput(self, "OutputAthenaResultsBucket", value=athena_results_bucket.bucket_name)
+        CfnOutput(self, "OutputAthenaWorkgroup", value="dea-s2-pipeline")
+        CfnOutput(self, "OutputGlueDatabase", value="dea_s2_pipeline")
+        CfnOutput(self, "OutputGlueJobName", value="dea-s2-transform-etl")
+        CfnOutput(self, "OutputRawCrawlerName", value="dea-s2-raw-crawler")
+        CfnOutput(self, "OutputCuratedCrawlerName", value="dea-s2-curated-crawler")
+        CfnOutput(self, "OutputStateMachineArn", value=state_machine.state_machine_arn)
+        CfnOutput(self, "OutputStateMachineName", value=state_machine.state_machine_name)
+        CfnOutput(self, "OutputSnsTopicArn", value=notification_topic.topic_arn)
+        CfnOutput(self, "OutputIoTRuleName", value="dea_s2_to_kinesis")

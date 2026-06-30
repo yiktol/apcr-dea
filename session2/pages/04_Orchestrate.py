@@ -22,7 +22,7 @@ The state machine validates data, runs the Glue ETL job, and sends notifications
 
 
 def get_config():
-    if "s2_config" not in st.session_state:
+    if "s2_config" not in st.session_state or not st.session_state.s2_config:
         try:
             cfn = boto3.client("cloudformation")
             response = cfn.describe_stacks(StackName="DeaSession2Pipeline")
@@ -34,7 +34,7 @@ def get_config():
 
 
 config = get_config()
-state_machine_arn = config.get("StateMachineArn", "")
+state_machine_arn = config.get("OutputStateMachineArn", "")
 
 # ============================================================
 # Architecture
